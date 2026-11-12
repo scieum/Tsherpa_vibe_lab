@@ -1026,7 +1026,7 @@
                     "산소의 이동 모드에서는 시작 버튼을 눌러 가열하고, 검은색 산화 구리(II)가 붉은색 구리로 변하는 모습과 입자 모형에서 산소 원자가 옮겨 가는 모습을 관찰한다.",
                     "전자의 이동 모드에서는 구리줄·아연의 모양(직선·하트·나선)을 고른 뒤 시작 버튼을 눌러 비커 속에서 금속이 석출되고 용액 색이 변하는 모습과 전자가 옮겨 가는 모습을 관찰한다.",
                     "반응식 아래에 산화(산소를 얻음·전자를 잃음)와 환원(산소를 잃음·전자를 얻음) 표시가 같은 순간에 함께 켜지는지 확인한다.",
-                    "생활 속 산화·환원 모드에서는 광합성·세포호흡, 메테인의 연소, 철이 녹스는 반응 중 하나를 고르고 시작 버튼을 눌러 어떤 물질이 산화되고 어떤 물질이 환원되는지 관찰한다. 처음부터 다시 하려면 초기화 버튼을 누른다."
+                    "생활 속 산화·환원 모드에서는 광합성, 세포호흡, 메테인의 연소, 철이 녹스는 반응 중 하나를 고르고 시작 버튼을 눌러 어떤 물질이 산화되고 어떤 물질이 환원되는지 관찰한다. 처음부터 다시 하려면 초기화 버튼을 누른다."
                 ]
             },
             "concept": [
@@ -1084,12 +1084,12 @@
            ████                                                                ████
            ████████████████████████████████████████████████████████████████████████ */
         const SIM_CONFIG = {
-            duration: { oxygen: 9, electron: 9, life: 12 },   /* 진행도 0→100 %에 걸리는 시간(초) */
+            duration: { oxygen: 9, electron: 9, life: 9 },   /* 진행도 0→100 %에 걸리는 시간(초) */
             modeNames: { oxygen: '산소의 이동', electron: '전자의 이동', life: '생활 속 산화·환원' },
             rxnNames: {
                 oxygen: ['산화 구리(II) + 탄소(숯가루)', '산화 구리(II) + 수소', '철의 제련(용광로)'],
                 electron: ['구리 + 질산 은 수용액', '마그네슘의 연소', '아연 + 황산 구리(II) 수용액'],
-                life: ['광합성·세포호흡', '메테인의 연소', '철이 녹스는 반응']
+                life: ['광합성', '세포호흡', '메테인의 연소', '철이 녹스는 반응']
             },
             /* 꼬리표 근거 문구 (key = 모드 첫 글자 + 반응 번호). 광합성·세포호흡은 '산화'·'환원'만,
                메테인은 메테인 쪽만 근거, 산소의 환원은 산소의 이동으로 설명하지 않음 (지도서 p.91, 교과서 p.162) */
@@ -1097,8 +1097,9 @@
                 o: { ox: '산소를 얻음', red: '산소를 잃음' },
                 e: { ox: '전자를 잃음', red: '전자를 얻음' },
                 l0: { ox: '', red: '' },
-                l1: { ox: '산소를 얻음', red: '' },
-                l2: { ox: '전자를 잃음', red: '전자를 얻음' }
+                l1: { ox: '', red: '' },
+                l2: { ox: '산소를 얻음', red: '' },
+                l3: { ox: '전자를 잃음', red: '전자를 얻음' }
             }
         };
         /* ████ ZONE B 끝 ████████████████████████████████████████████████████████ */
@@ -1381,11 +1382,11 @@
             e0: [['2Ag⁺', 'red'], [' + '], ['Cu', 'ox'], [' → '], ['2Ag', 'redP'], [' + '], ['Cu²⁺', 'oxP']],
             e1: [['2Mg', 'ox'], [' + '], ['O₂', 'red'], [' → '], ['2MgO'], [' ( '], ['2Mg²⁺', 'oxP'], [' + '], ['2O²⁻', 'redP'], [' )']],
             e2: [['Zn', 'ox'], [' + '], ['Cu²⁺', 'red'], [' → '], ['Zn²⁺', 'oxP'], [' + '], ['Cu', 'redP']],
-            /* 생활 속: l0a 광합성, l0b 세포호흡 (교과서 p.44 식), l1 메테인 (p.45), l2 철 녹 (p.42) */
-            l0a: [['6CO₂', 'red'], [' + '], ['6H₂O', 'ox'], [' → '], ['C₆H₁₂O₆', 'redP'], [' + '], ['6O₂', 'oxP']],
-            l0b: [['C₆H₁₂O₆', 'ox'], [' + '], ['6O₂', 'red'], [' → '], ['6CO₂', 'oxP'], [' + '], ['6H₂O', 'redP']],
-            l1: [['CH₄', 'ox'], [' + '], ['2O₂', 'red'], [' → '], ['CO₂', 'oxP'], [' + '], ['2H₂O', 'redP']],
-            l2: [['4Fe', 'ox'], [' + '], ['3O₂', 'red'], [' → '], ['2Fe₂O₃', 'oxP redP']]
+            /* 생활 속: l0 광합성, l1 세포호흡 (교과서 p.44 식), l2 메테인 (p.45), l3 철 녹 (p.42) */
+            l0: [['6CO₂', 'red'], [' + '], ['6H₂O', 'ox'], [' → '], ['C₆H₁₂O₆', 'redP'], [' + '], ['6O₂', 'oxP']],
+            l1: [['C₆H₁₂O₆', 'ox'], [' + '], ['6O₂', 'red'], [' → '], ['6CO₂', 'oxP'], [' + '], ['6H₂O', 'redP']],
+            l2: [['CH₄', 'ox'], [' + '], ['2O₂', 'red'], [' → '], ['CO₂', 'oxP'], [' + '], ['2H₂O', 'redP']],
+            l3: [['4Fe', 'ox'], [' + '], ['3O₂', 'red'], [' → '], ['2Fe₂O₃', 'oxP redP']]
         };
 
         /* 반응 완료 때 안내 상자 (교과서 p.40-45, 지도서 p.114, R 대조 결정) */
@@ -1396,128 +1397,138 @@
             e0: '구리줄 표면에 반짝이는 은백색의 은이 석출되고, 무색의 수용액이 점점 푸른색으로 변한다.',
             e1: '마그네슘 리본이 매우 밝은 빛을 내며 타서 산화 마그네슘이 된다.',
             e2: '아연 표면에 붉은색 구리가 붙고, 푸른색 수용액의 색이 점점 옅어진다.',
-            l0a: '광합성: 빛에너지가 화학 에너지로 전환되며, 이산화 탄소에서 환원이 일어나고, 물에서 산화가 일어난다.',
-            l0b: '세포호흡: 생명활동에 필요한 에너지를 얻는 반응으로, 포도당에서 산화가 일어나고, 산소에서 환원이 일어난다.',
-            l1: '액화천연가스의 주성분인 메테인이 완전 연소하면 이산화 탄소와 물이 생성되면서 열에너지가 발생한다. 메테인에서 산화가 일어나고, 산소에서 환원이 일어난다.',
-            l2: '철(Fe)이 산소와 만나 서서히 산화되어 산화 철(III)(Fe₂O₃)이 된다. 이 반응에서 환원 반응은 산소의 이동으로 설명하기 어렵다.'
+            l0: '광합성: 빛에너지가 화학 에너지로 전환되며, 이산화 탄소에서 환원이 일어나고, 물에서 산화가 일어난다.',
+            l1: '세포호흡: 생명활동에 필요한 에너지를 얻는 반응으로, 포도당에서 산화가 일어나고, 산소에서 환원이 일어난다.',
+            l2: '액화천연가스의 주성분인 메테인이 완전 연소하면 이산화 탄소와 물이 생성되면서 열에너지가 발생한다. 메테인에서 산화가 일어나고, 산소에서 환원이 일어난다.',
+            l3: '철(Fe)이 산소와 만나 서서히 산화되어 산화 철(III)(Fe₂O₃)이 된다. 이 반응에서 환원 반응은 산소의 이동으로 설명하기 어렵다.'
         };
 
         /* 입자·전자 모형 (기준 상자 400×240). t는 모형 시간 0~1, ch = [전 전하, 후 전하, 바뀌는 시각] */
         const ROW = (el, xs, y) => xs.map(x => ({ el, at: [x, y] }));
         const MODELS = {
-            /* 산소의 이동: 이온 결합 물질·금속은 결정 조각, 탄소는 낱개 원자, CO·H₂·CO₂·H₂O는 낱개 분자 (00_input.md 사용자 지적).
-               결정 표면의 O가 하나씩 차례로 떨어져 나가 붙고, 남은 금속 원자가 모여 금속 결정이 된다. 전하는 쓰지 않는다. */
+            /* 산소의 이동: 이온 결합 물질·금속은 결정 조각, 탄소는 낱개 원자, CO·H₂·CO₂·H₂O는 가로로 눕힌 낱개 분자 (00_input.md 사용자 지적·수정 2).
+               결정의 O들이 각자 자기 짝으로 거의 동시에(조금씩 시차) 옮겨 가고, 남은 금속 원자가 모여 금속 결정이 된다. 전하는 쓰지 않는다.
+               꼬리표는 모형 위 띠에 같은 높이로 놓이므로 tags에는 x만 쓴다. */
             o0: {
-                rs: { Cu: 18, O: 13, C: 14 },
+                rs: { Cu: 18, O: 14, C: 14 },
                 atoms: [
-                    { el: 'Cu', at: [40, 86], to: [60, 84], t: [0.78, 0.95] }, { el: 'Cu', at: [104, 86], to: [96, 84], t: [0.78, 0.95] },
-                    { el: 'Cu', at: [72, 118], to: [60, 120], t: [0.78, 0.95] }, { el: 'Cu', at: [136, 118], to: [96, 120], t: [0.78, 0.95] },
-                    { el: 'O', at: [136, 86], to: [300, 97], t: [0, 0.2] },
-                    { el: 'O', at: [104, 118], to: [300, 143], t: [0.15, 0.37], via: [104, 175] },
-                    { el: 'O', at: [72, 86], to: [300, 43], t: [0.32, 0.56], via: [72, 0] },
-                    { el: 'O', at: [40, 118], to: [300, 197], t: [0.5, 0.74], via: [40, 230] },
-                    { el: 'C', at: [300, 70] }, { el: 'C', at: [300, 170] }
+                    /* Cu는 처음 결정 자리에 그대로 남고 O 자리만 빈다 */
+                    { el: 'Cu', at: [40, 86] }, { el: 'Cu', at: [104, 86] }, { el: 'Cu', at: [72, 118] }, { el: 'Cu', at: [136, 118] },
+                    /* 탄소 원자 2개 (엇갈린 격자), 이산화 탄소는 가로 O–C–O */
+                    { el: 'C', at: [250, 75] }, { el: 'C', at: [330, 165] },
+                    { el: 'O', at: [72, 86], to: [222, 75], t: [0, 0.55], via: [72, 20] },
+                    { el: 'O', at: [136, 86], to: [278, 75], t: [0.06, 0.61], via: [310, 0] },
+                    { el: 'O', at: [40, 118], to: [302, 165], t: [0.12, 0.67], via: [40, 220] },
+                    { el: 'O', at: [104, 118], to: [358, 165], t: [0.18, 0.73], via: [380, 260] }
                 ], electrons: [],
-                labels: [{ b: [88, 156, '산화 구리(II) (CuO)'], a: [78, 156, '구리 (Cu)'], t: 0.95 }, { b: [300, 226, '탄소 (C)'], a: [300, 226, '이산화 탄소 (CO₂)'], t: 0.74 }],
-                tags: { red: [88, 22], ox: [300, 14] }
+                labels: [{ b: [88, 160, '산화 구리(II) (CuO)'], a: [88, 160, '구리 (Cu)'], t: 0.75 }, { b: [290, 218, '탄소 (C)'], a: [290, 218, '이산화 탄소 (CO₂)'], t: 0.75 }],
+                tags: { red: [88], ox: [270], y: 44 }
             },
             o1: {
-                rs: { Cu: 18, O: 13, H: 10 },
+                rs: { Cu: 18, O: 14, H: 10 },
                 atoms: [
-                    { el: 'Cu', at: [40, 86], to: [60, 84], t: [0.8, 0.95] }, { el: 'Cu', at: [104, 86], to: [96, 84], t: [0.8, 0.95] },
-                    { el: 'Cu', at: [72, 118], to: [60, 120], t: [0.8, 0.95] }, { el: 'Cu', at: [136, 118], to: [96, 120], t: [0.8, 0.95] },
-                    { el: 'O', at: [136, 86], to: [300, 89], t: [0, 0.2] },
-                    { el: 'O', at: [104, 118], to: [300, 139], t: [0.18, 0.4], via: [104, 175] },
-                    { el: 'O', at: [72, 86], to: [300, 39], t: [0.36, 0.6], via: [72, 0] },
-                    { el: 'O', at: [40, 118], to: [300, 189], t: [0.54, 0.78], via: [40, 230] },
-                    ...[[95, 0.2], [145, 0.4], [45, 0.6], [195, 0.78]].flatMap(([y, e]) => [
-                        { el: 'H', at: [290, y], to: [288, y + 8], t: [e - 0.06, e] }, { el: 'H', at: [310, y], to: [312, y + 8], t: [e - 0.06, e] }])
+                    { el: 'Cu', at: [40, 86] }, { el: 'Cu', at: [104, 86] }, { el: 'Cu', at: [72, 118] }, { el: 'Cu', at: [136, 118] },
+                    /* 수소 분자 4개를 2×2 격자로. 물은 가로 방향 굽은 H–O–H (O가 위, H가 양옆 아래). H를 먼저 그려 붙는 O가 위에 오게 */
+                    ...[[240, 80, 0.55], [330, 80, 0.61], [240, 165, 0.67], [330, 165, 0.73]].flatMap(([x, y, e]) => [
+                        { el: 'H', at: [x - 10, y], to: [x - 15, y + 8], t: [e - 0.08, e] }, { el: 'H', at: [x + 10, y], to: [x + 15, y + 8], t: [e - 0.08, e] }]),
+                    { el: 'O', at: [136, 86], to: [240, 72], t: [0, 0.55] },
+                    { el: 'O', at: [72, 86], to: [330, 72], t: [0.06, 0.61], via: [72, -40] },
+                    { el: 'O', at: [40, 118], to: [240, 157], t: [0.12, 0.67], via: [40, 200] },
+                    { el: 'O', at: [104, 118], to: [330, 157], t: [0.18, 0.73], via: [104, 260] }
                 ], electrons: [],
-                labels: [{ b: [88, 156, '산화 구리(II) (CuO)'], a: [78, 156, '구리 (Cu)'], t: 0.95 }, { b: [300, 228, '수소 (H₂)'], a: [300, 228, '물 (H₂O)'], t: 0.78 }],
-                tags: { red: [88, 22], ox: [300, 14] }
+                labels: [{ b: [88, 160, '산화 구리(II) (CuO)'], a: [88, 160, '구리 (Cu)'], t: 0.75 }, { b: [285, 218, '수소 (H₂)'], a: [285, 218, '물 (H₂O)'], t: 0.75 }],
+                tags: { red: [88], ox: [285], y: 40 }
             },
             o2: {
                 rs: { Fe: 17, O: 13, C: 14 },
                 atoms: [
-                    { el: 'Fe', at: [75, 95], to: [80, 95], t: [0.9, 1] }, { el: 'Fe', at: [135, 95], to: [114, 95], t: [0.9, 1] },
-                    { el: 'Fe', at: [90, 127], to: [80, 129], t: [0.9, 1] }, { el: 'Fe', at: [150, 127], to: [114, 129], t: [0.9, 1] },
-                    { el: 'O', at: [165, 95], to: [273, 96], t: [0, 0.2] },
-                    { el: 'O', at: [180, 127], to: [273, 132], t: [0.14, 0.34] },
-                    { el: 'O', at: [105, 95], to: [273, 60], t: [0.28, 0.48], via: [105, 10] },
-                    { el: 'O', at: [120, 127], to: [273, 168], t: [0.42, 0.62], via: [120, 190] },
-                    { el: 'O', at: [45, 95], to: [273, 24], t: [0.56, 0.76], via: [45, 5] },
-                    { el: 'O', at: [60, 127], to: [273, 204], t: [0.7, 0.9], via: [60, 215] },
-                    ...[24, 60, 96, 132, 168, 204].flatMap(y => [{ el: 'C', at: [300, y] }, { el: 'O', at: [327, y] }])
+                    /* Fe는 처음 결정 자리에 그대로 남고 O 자리만 빈다 */
+                    { el: 'Fe', at: [75, 95] }, { el: 'Fe', at: [135, 95] }, { el: 'Fe', at: [90, 127] }, { el: 'Fe', at: [150, 127] },
+                    /* 일산화 탄소 6개를 2열 × 3행 격자로, 가로로 눕힌 C–O (새 O는 C 왼쪽에 붙어 O–C–O) */
+                    ...[[255, 60], [345, 60], [255, 120], [345, 120], [255, 180], [345, 180]].flatMap(([x, y]) => [{ el: 'C', at: [x, y] }, { el: 'O', at: [x + 27, y] }]),
+                    { el: 'O', at: [165, 95], to: [228, 120], t: [0, 0.5], via: [200, 100] },
+                    { el: 'O', at: [180, 127], to: [318, 120], t: [0.05, 0.55], via: [290, 150] },
+                    { el: 'O', at: [45, 95], to: [228, 60], t: [0.1, 0.6], via: [45, 20] },
+                    { el: 'O', at: [105, 95], to: [318, 60], t: [0.15, 0.65], via: [105, 0] },
+                    { el: 'O', at: [60, 127], to: [228, 180], t: [0.2, 0.7], via: [60, 215] },
+                    { el: 'O', at: [120, 127], to: [318, 180], t: [0.25, 0.75], via: [140, 230] }
                 ], electrons: [],
-                labels: [{ b: [112, 162, '산화 철(III) (Fe₂O₃)'], a: [97, 162, '철 (Fe)'], t: 0.97 }, { b: [300, 233, '일산화 탄소 (CO)'], a: [300, 233, '이산화 탄소 (CO₂)'], t: 0.9 }],
-                tags: { red: [110, 30], ox: [205, 16] }
+                labels: [{ b: [112, 165, '산화 철(III) (Fe₂O₃)'], a: [112, 165, '철 (Fe)'], t: 0.76 }, { b: [300, 222, '일산화 탄소 (CO)'], a: [300, 222, '이산화 탄소 (CO₂)'], t: 0.76 }],
+                tags: { red: [112], ox: [300], y: 30 }
             },
             e0: surfaceModel('Cu', 'Ag', 2, 'ag', '구리 (Cu) 결정'),
-            /* 마그네슘 결정 + 산소 분자 → 전자 이동 → Mg²⁺·O²⁻가 번갈아 쌓인 산화 마그네슘 결정 (교과서 p.43) */
+            /* 마그네슘 결정 + 산소 분자 2개(가로 줄) → 전자 이동 → Mg²⁺·O²⁻가 번갈아 쌓인 산화 마그네슘 결정 (교과서 p.43) */
             e1: {
                 rs: { Mg: 18, O: 13 },
                 atoms: [
-                    { el: 'Mg', at: [60, 100], to: [200, 100], t: [0.6, 0.76], ch: ['', '2+', 0.04] },
-                    { el: 'Mg', at: [96, 100], to: [264, 100], t: [0.6, 0.76], ch: ['', '2+', 0.12] },
-                    { el: 'Mg', at: [60, 136], to: [232, 132], t: [0.6, 0.76], ch: ['', '2+', 0.2] },
-                    { el: 'Mg', at: [96, 136], to: [296, 132], t: [0.6, 0.76], ch: ['', '2+', 0.28] },
-                    { el: 'O', at: [317, 60], to: [232, 100], t: [0.76, 0.94], via: [232, 40], ch: ['', '2−', 0.34] },
-                    { el: 'O', at: [343, 60], to: [296, 100], t: [0.76, 0.94], via: [296, 40], ch: ['', '2−', 0.42] },
-                    { el: 'O', at: [317, 180], to: [264, 132], t: [0.76, 0.94], via: [264, 195], ch: ['', '2−', 0.5] },
-                    { el: 'O', at: [343, 180], to: [200, 132], t: [0.76, 0.94], via: [200, 200], ch: ['', '2−', 0.58] }
+                    /* 반응물(Mg 결정, O₂ 2개 가로 줄)은 위쪽에 나란히, 생성물 MgO 결정은 아래 가운데 (간격 40) */
+                    { el: 'Mg', at: [50, 80], to: [170, 150], t: [0.6, 0.76], ch: ['', '2+', 0.04] },
+                    { el: 'Mg', at: [86, 80], to: [250, 150], t: [0.6, 0.76], ch: ['', '2+', 0.12] },
+                    { el: 'Mg', at: [50, 116], to: [210, 190], t: [0.6, 0.76], ch: ['', '2+', 0.2] },
+                    { el: 'Mg', at: [86, 116], to: [290, 190], t: [0.6, 0.76], ch: ['', '2+', 0.28] },
+                    { el: 'O', at: [264, 70], to: [210, 150], t: [0.76, 0.94], via: [215, 95], ch: ['', '2−', 0.34] },
+                    { el: 'O', at: [290, 70], to: [290, 150], t: [0.76, 0.94], via: [300, 105], ch: ['', '2−', 0.42] },
+                    { el: 'O', at: [330, 70], to: [250, 190], t: [0.76, 0.94], via: [345, 225], ch: ['', '2−', 0.5] },
+                    { el: 'O', at: [356, 70], to: [170, 190], t: [0.76, 0.94], via: [120, 235], ch: ['', '2−', 0.58] }
                 ],
-                electrons: [0, 1, 2, 3].flatMap(i => [0, 1].map(k => ({ from: i, to: 4 + i, t: [i * 0.08 + k * 0.04, i * 0.08 + k * 0.04 + 0.3], lift: (i < 2 ? 1 : -1) * (36 + 12 * k + 8 * (i % 2)) }))),
-                labels: [{ b: [78, 172, '마그네슘 (Mg)'], a: [78, 172, '마그네슘 이온 (Mg²⁺)'], t: 0.3, end: 0.6 },
-                { b: [330, 120, '산소 (O₂)'], a: [330, 120, '산화 이온 (O²⁻)'], t: 0.58, end: 0.76 },
-                { b: [0, 0, ''], a: [248, 172, '산화 마그네슘 (MgO)'], t: 0.94 }],
-                tags: { ox: [78, 34], red: [330, 22] }
+                electrons: [0, 1, 2, 3].flatMap(i => [0, 1].map(k => ({ from: i, to: 4 + i, t: [i * 0.08 + k * 0.04, i * 0.08 + k * 0.04 + 0.3], lift: 26 + 12 * k + 6 * (i % 2) }))),
+                labels: [{ b: [68, 150, '마그네슘 (Mg)'], a: [68, 150, '마그네슘 이온 (Mg²⁺)'], t: 0.3, end: 0.6 },
+                { b: [310, 100, '산소 (O₂)'], a: [310, 100, '산화 이온 (O²⁻)'], t: 0.58, end: 0.76 },
+                { b: [0, 0, ''], a: [230, 226, '산화 마그네슘 (MgO)'], t: 0.94 }],
+                tags: { ox: [68], red: [310], y: 42 }
             },
             e2: surfaceModel('Zn', 'Cu', 1, 'cu', '아연 (Zn) 결정'),
-            /* 생활 속 ①②: 분자 재배열 모형 (mol). 포도당은 한 덩어리(GLU) */
-            l0a: {
+            /* 생활 속: 분자 재배열 모형 (mol). 같은 분자 여러 개는 가로 줄·격자로. 포도당은 한 덩어리(GLU) */
+            l0: {   /* 광합성 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂ */
+                /* 위: 반응물(CO₂ 3×2, H₂O 3×2 나란히), 아래: 생성물(포도당, O₂ 3×2). 꼬리표는 반응물 묶음 바로 위 같은 높이 */
                 mol: {
-                    react: [...[40, 72, 104, 136, 168, 200].map(y => ['CO2', 60, y]), ...[40, 72, 104, 136, 168, 200].map(y => ['H2O', 148, y - 4])],
-                    prod: [['GLU', 270, 120], ...[40, 72, 104, 136, 168, 200].map(y => ['O2', 362, y])]
+                    arrow: [200, 108, 200, 146],
+                    react: [...[55, 90].flatMap(y => [['CO2', 40, y], ['CO2', 105, y], ['CO2', 170, y]]), ...[50, 88].flatMap(y => [['H2O', 250, y], ['H2O', 300, y], ['H2O', 350, y]])],
+                    prod: [['GLU', 110, 182], ...[168, 204].flatMap(y => [['O2', 245, y], ['O2', 300, y], ['O2', 355, y]])]
                 },
-                labels: [{ x: 60, y: 226, t: '6CO₂', side: 'r' }, { x: 148, y: 226, t: '6H₂O', side: 'r' }, { x: 270, y: 226, t: 'C₆H₁₂O₆', side: 'p' }, { x: 362, y: 226, t: '6O₂', side: 'p' }],
-                tags: { red: [60, 16], ox: [148, 16] }
+                labels: [{ x: 105, y: 120, t: '6CO₂', side: 'r' }, { x: 300, y: 120, t: '6H₂O', side: 'r' }, { x: 110, y: 230, t: 'C₆H₁₂O₆', side: 'p' }, { x: 300, y: 230, t: '6O₂', side: 'p' }],
+                tags: { red: [105], ox: [300], y: 22 }
             },
-            l0b: {
+            l1: {   /* 세포호흡 C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O */
                 mol: {
-                    react: [['GLU', 80, 120], ...[40, 72, 104, 136, 168, 200].map(y => ['O2', 175, y])],
-                    prod: [...[40, 72, 104, 136, 168, 200].map(y => ['CO2', 262, y]), ...[40, 72, 104, 136, 168, 200].map(y => ['H2O', 350, y - 4])]
+                    arrow: [200, 108, 200, 146],
+                    react: [['GLU', 110, 70], ...[55, 90].flatMap(y => [['O2', 245, y], ['O2', 300, y], ['O2', 355, y]])],
+                    prod: [...[168, 204].flatMap(y => [['CO2', 40, y], ['CO2', 105, y], ['CO2', 170, y]]), ...[162, 200].flatMap(y => [['H2O', 250, y], ['H2O', 300, y], ['H2O', 350, y]])]
                 },
-                labels: [{ x: 80, y: 226, t: 'C₆H₁₂O₆', side: 'r' }, { x: 175, y: 226, t: '6O₂', side: 'r' }, { x: 262, y: 226, t: '6CO₂', side: 'p' }, { x: 350, y: 226, t: '6H₂O', side: 'p' }],
-                tags: { ox: [80, 52], red: [175, 16] }
+                labels: [{ x: 110, y: 120, t: 'C₆H₁₂O₆', side: 'r' }, { x: 300, y: 120, t: '6O₂', side: 'r' }, { x: 105, y: 230, t: '6CO₂', side: 'p' }, { x: 300, y: 230, t: '6H₂O', side: 'p' }],
+                tags: { ox: [110], red: [300], y: 22 }
             },
-            l1: {
+            l2: {   /* 메테인의 연소 CH₄ + 2O₂ → CO₂ + 2H₂O */
                 mol: {
                     big: true,
-                    react: [['CH4', 75, 120], ['O2', 165, 82], ['O2', 165, 158]],
-                    prod: [['CO2', 270, 120], ['H2O', 355, 78], ['H2O', 355, 156]]
+                    arrow: [200, 112, 200, 146],
+                    react: [['CH4', 90, 70], ['O2', 230, 70], ['O2', 310, 70]],
+                    prod: [['CO2', 110, 178], ['H2O', 240, 176], ['H2O', 320, 176]]
                 },
-                labels: [{ x: 75, y: 172, t: 'CH₄', side: 'r' }, { x: 165, y: 208, t: '2O₂', side: 'r' }, { x: 270, y: 172, t: 'CO₂', side: 'p' }, { x: 355, y: 208, t: '2H₂O', side: 'p' }],
-                tags: { ox: [75, 52], red: [165, 30] }
+                labels: [{ x: 90, y: 112, t: 'CH₄', side: 'r' }, { x: 270, y: 104, t: '2O₂', side: 'r' }, { x: 110, y: 216, t: 'CO₂', side: 'p' }, { x: 280, y: 216, t: '2H₂O', side: 'p' }],
+                tags: { ox: [90], red: [270], y: 30 }
             },
-            /* 생활 속 ③ 철 녹: 철 결정 4개 + 산소 분자 3개 → 전자 이동 (Fe → Fe³⁺, O → O²⁻) → 산화 철(III) 결정 */
-            l2: (() => {
-                const O0 = [[332, 40], [358, 40], [332, 110], [358, 110], [332, 180], [358, 180]];
-                const OT = [[230, 95, 230, 40], [290, 95, 290, 40], [170, 95, 170, 30], [305, 127, 330, 127], [185, 127, 185, 190], [245, 127, 245, 190]];
-                const FeT = [[50, 95, 200, 95], [84, 95, 260, 95], [50, 129, 215, 127], [84, 129, 275, 127]];
+            /* 생활 속 ④ 철 녹: 철 결정 4개 + 산소 분자 3개(가로 줄) → 전자 이동 (Fe → Fe³⁺, O → O²⁻) → 산화 철(III) 결정 */
+            l3: (() => {
+                /* 반응물(Fe 결정, O₂ 3개 가로 줄)은 위쪽에 나란히, 생성물 Fe₂O₃ 결정은 아래 (간격 40) */
+                const O0 = [[220, 50], [246, 50], [280, 50], [306, 50], [340, 50], [366, 50]];
+                /* [목표 x, y, 경유 x, y] */
+                const OT = [[156, 150, 150, 90], [236, 150, 240, 100], [316, 150, 322, 100], [176, 190, 120, 175], [256, 190, 262, 240], [336, 190, 375, 175]];
+                const FeT = [[50, 80, 196, 150], [84, 80, 276, 150], [50, 114, 216, 190], [84, 114, 296, 190]];
                 const pairs = [[0, 0], [0, 0], [0, 1], [1, 1], [1, 2], [1, 2], [2, 3], [2, 3], [2, 4], [3, 4], [3, 5], [3, 5]];
-                const electrons = pairs.map(([f, o], k) => ({ from: f, to: 4 + o, t: [k * 0.035, k * 0.035 + 0.2], lift: (o < 2 || (o === 2 && f < 2) ? 1 : -1) * (24 + 10 * (k % 3)) }));
+                const electrons = pairs.map(([f, o], k) => ({ from: f, to: 4 + o, t: [k * 0.035, k * 0.035 + 0.2], lift: 18 + 8 * (k % 3) }));
                 const arrive = o => Math.max(...electrons.filter(e => e.to === 4 + o).map(e => e.t[1]));
                 return {
                     rs: { Fe: 17, O: 13 },
                     atoms: [
                         ...FeT.map(([x, y, tx, ty], i) => ({ el: 'Fe', at: [x, y], to: [tx, ty], t: [0.62, 0.78], ch: ['', '3+', (3 * i + 2) * 0.035] })),
-                        ...O0.map(([x, y], o) => ({ el: 'O', at: [x, y], to: [OT[o][0], OT[o][1]], via: [OT[o][2], OT[o][3]], t: [0.78, 0.96], ch: ['', '2−', arrive(o)] }))
+                        ...O0.map(([x, y], o) => ({ el: 'O', at: [x, y], to: [OT[o][0], OT[o][1]], via: [OT[o][2], OT[o][3]], t: [0.78 + 0.02 * (o % 3), 0.96], ch: ['', '2−', arrive(o)] }))
                     ],
                     electrons,
-                    labels: [{ b: [67, 168, '철 (Fe)'], a: [67, 168, '철 이온 (Fe³⁺)'], t: 0.4, end: 0.62 },
-                    { b: [345, 215, '산소 (O₂)'], a: [345, 215, '산화 이온 (O²⁻)'], t: 0.6, end: 0.78 },
-                    { b: [0, 0, ''], a: [237, 168, '산화 철(III) (Fe₂O₃)'], t: 0.96 }],
-                    tags: { ox: [67, 40], red: [345, 14] }
+                    labels: [{ b: [67, 150, '철 (Fe)'], a: [67, 150, '철 이온 (Fe³⁺)'], t: 0.4, end: 0.62 },
+                    { b: [293, 82, '산소 (O₂)'], a: [293, 82, '산화 이온 (O²⁻)'], t: 0.6, end: 0.78 },
+                    { b: [0, 0, ''], a: [246, 226, '산화 철(III) (Fe₂O₃)'], t: 0.96 }],
+                    tags: { ox: [67], red: [293], y: 30 }
                 };
             })()
         };
@@ -1526,19 +1537,19 @@
            ratio = 석출 원자 수 / 산화된 금속 원자 수 (Cu:Ag = 1:2, Zn:Cu = 1:1) */
         function surfaceModel(metal, ion, ratio, sol, rowLabel) {
             /* 금속 결정 조각: 두 층으로 빽빽하게 (아래층은 반 칸 어긋남) */
-            const TOP = 180;
+            const TOP = 166;   /* 아래층 바닥 = 166+36+20 = 222, 라벨은 그 아래 빈 곳(232) */
             const atoms = [...ROW(metal, [40, 120, 160, 240, 280, 360], TOP), ...ROW(metal, [20, 60, 100, 140, 180, 220, 260, 300, 340, 380], TOP + 36)], electrons = [];
             [80, 200, 320].forEach((c, i) => {
                 const w0 = i * 0.3, mi = atoms.length;
-                atoms.push({ el: metal, at: [c, TOP], to: [c, 52], t: [w0 + 0.16, w0 + 0.3], ch: ['', '2+', w0 + 0.05] });
-                const spots = ratio === 2 ? [[c - 40, 90], [c + 40, 118]] : [[c + 40, 104]];
+                atoms.push({ el: metal, at: [c, TOP], to: [c, 44], t: [w0 + 0.16, w0 + 0.3], ch: ['', '2+', w0 + 0.05] });
+                const spots = ratio === 2 ? [[c - 40, 80], [c + 40, 106]] : [[c + 40, 94]];
                 spots.forEach(([x, y], j) => {
                     const ii = atoms.length, arrive = w0 + 0.1 + j * 0.04 + (ratio === 1 ? 0.04 : 0);
                     atoms.push({ el: ion, at: [x, y], to: [x, TOP - 20 - EL[ion].r], t: [arrive + 0.02, w0 + 0.3], ch: [ratio === 2 ? '+' : '2+', '', arrive] });
                     for (let k = 0; k < 3 - ratio; k++) electrons.push({ from: mi, to: ii, t: [w0 + j * 0.04 + k * 0.04, arrive], lift: 30 + 14 * k });
                 });
             });
-            return { sol, atoms, electrons, labels: [{ b: [200, 228, rowLabel], a: [200, 228, rowLabel], t: 0 }], tags: { ox: [70, 18], red: [300, 18] } };
+            return { sol, atoms, electrons, labels: [{ b: [200, 233, rowLabel], a: [200, 233, rowLabel], t: 0 }], tags: { ox: [80], red: [300], y: 20 } };
         }
 
         /* 분자 모양 (기준 좌표, sc = 원자 크기 배율) */
@@ -1560,9 +1571,9 @@
         const isRun = () => sysState.isStarted && !sysState.isPaused;
         const key = () => simData.mode[0] + simData.rxn;
         const font = (px, wt = 700) => `${wt} ${px}px 'Noto Sans KR', sans-serif`;
-        /* 광합성·세포호흡(l0): 진행도 0~50 % 광합성(l0a), 50~100 % 세포호흡(l0b). lp = 그 구간 안의 진행도 0~1 */
-        const phaseKey = () => key() === 'l0' ? (simData.progress <= 0.5 ? 'l0a' : 'l0b') : key();
-        const lp = () => key() !== 'l0' ? simData.progress : simData.progress <= 0.5 ? simData.progress * 2 : (simData.progress - 0.5) * 2;
+        /* 반응마다 진행도 0~100 % (광합성·세포호흡도 각각 따로, 사용자 수정 2) */
+        const phaseKey = () => key();
+        const lp = () => simData.progress;
         const tagSub = () => SIM_CONFIG.tagText[key()] || SIM_CONFIG.tagText[simData.mode[0]];
         const modelTime = () => clamp((lp() - 0.08) / 0.72, 0, 1);
         const tagOn = () => lp() > 0.08;   /* 산화·환원 표시는 이 한 조건으로 함께 켜진다 */
@@ -1604,10 +1615,13 @@
         /* ── 배치: 캔버스 크기에서 ui 배율 하나를 구해 모두 비례 ── */
         function computeLayout(w, h) {
             const ui = clamp(Math.min(w / 1080, h / 700), 0.75, 1.5);
-            const pad = 10 * ui, top = 56;
-            const eqH = 86 * ui;
-            const eq = { y: h - eqH - 6, h: eqH, right: w - 124 };   /* 오른쪽 아래 초기화 버튼을 피함 */
-            const areaBot = eq.y - 6 * ui, H = Math.max(40, areaBot - top);
+            /* 작은 캔버스(휴대폰 세로·가로): 관찰 상자 숨김, 반응식 띠 한 줄, 여백 최소 → 장치·모형이 공간을 최대한 쓴다 */
+            const compact = h < 420 || w < 600;
+            /* top: 캔버스 위 상태 알림(위 16px + 높이 약 36px) 아래에서 시작 */
+            const pad = (compact ? 6 : 10) * ui, top = 60;
+            const eqH = compact ? 32 : 86 * ui;
+            const eq = { y: h - eqH - (compact ? 4 : 6), h: eqH, right: w - 124 };   /* 오른쪽 아래 초기화 버튼을 피함 */
+            const areaBot = eq.y - (compact ? 2 : 6 * ui), H = Math.max(40, areaBot - top);
             const stacked = h > w * 0.95;
             let app, model;
             if (stacked) {
@@ -1615,16 +1629,20 @@
                 app = { x: pad, y: top, w: w - 2 * pad, h: ah };
                 model = { x: pad, y: top + ah + 4 * ui, w: w - 2 * pad, h: H - ah - 4 * ui };
             } else {
-                const W = w - 3 * pad, aw = W * 0.52;
+                const W = w - 3 * pad, aw = W * (compact ? 0.55 : 0.52);
                 app = { x: pad, y: top, w: aw, h: H };
                 model = { x: 2 * pad + aw, y: top, w: W - aw, h: H };
             }
-            return { w, h, ui, eq, app, model, stacked };
+            /* 오른쪽 아래 초기화 버튼(아래 16px + 높이 40px, 폭 약 120px)을 모형 상자가 덮지 않게 */
+            if (model.x + model.w > w - 130) model.h = Math.max(40, Math.min(model.y + model.h, h - 62) - model.y);
+            return { w, h, ui, eq, app, model, stacked, compact };
         }
 
         /* ── 실험 장치 (기준 좌표로 그리고 상자에 맞춰 축소·확대) ── */
         let labelBuf = [];
         const lab = (x, y, t, align = 'center', c) => labelBuf.push({ x, y, t, align, c });
+        /* 띠 라벨: 그림 위('T')·아래('B') 빈 띠에 놓아 그림과 겹치지 않게 하고, to(기준 좌표)가 있으면 지시선으로 잇는다 */
+        const blab = (band, x, t, to, c) => labelBuf.push({ band, x, t, to, c });
 
         /* 불꽃(겉불꽃·속불꽃)이 심지 끝에 붙어 있는 알코올램프. 심지 끝 = by-64, 불꽃 끝 ≈ by-108 */
         function drawFlame(cx, baseY, t) {
@@ -1686,25 +1704,25 @@
             ctx.beginPath(); ctx.moveTo(x0 + 12, cy - R + 5); ctx.lineTo(x1 - 14, cy - R + 5); ctx.stroke();
         }
         /* 가루 더미: 바닥 yb에서 높이 hgt로 쌓인 알갱이. k = 검은색→붉은색 진행, coal = 남는 숯가루 */
-        function drawPile(x0, x1, yb, hgt, k, seed, coal) {
+        function drawPile(x0, x1, yb, hgt, k, seed, coal, g = 1) {
             const topAt = x => { const u = (x - x0) / (x1 - x0); return yb - hgt * (1 - Math.pow(2 * u - 1, 4)) * (0.82 + 0.18 * hr(Math.floor(x) + seed)); };
             ctx.beginPath(); ctx.moveTo(x0, yb);
             for (let x = x0; x <= x1; x += 3) ctx.lineTo(x, topAt(x));
             ctx.lineTo(x1, yb); ctx.closePath();
             ctx.fillStyle = mixHex('#1c1917', '#b8552e', k); ctx.fill();
             const dark = mixHex('#0c0a09', '#8a3416', k), light = mixHex('#57534e', '#e5916a', k);
-            for (let i = 0; i < 70; i++) {
+            for (let i = 0; i < 70 * g; i++) {
                 const x = x0 + 2 + hr(i + seed) * (x1 - x0 - 4), top = topAt(x);
                 const y = top + 1 + hr(i + seed + 200) * Math.max(0.5, yb - top - 1.5);
                 ctx.fillStyle = i % 3 ? dark : light;
-                ctx.beginPath(); ctx.arc(x, y, 0.9 + hr(i + seed + 400) * 1.1, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x, y, (0.9 + hr(i + seed + 400) * 1.1) * g, 0, Math.PI * 2); ctx.fill();
             }
             if (coal) {
                 ctx.fillStyle = '#050505';
-                for (let i = 0; i < 30; i++) {
+                for (let i = 0; i < 30 * g; i++) {
                     if (hr(i + seed + 50) < 0.55 * k) continue;   /* 일부는 반응하지 않고 남는다 */
                     const x = x0 + 3 + hr(i + seed + 600) * (x1 - x0 - 6), top = topAt(x), y = top + 1.5 + hr(i + seed + 700) * Math.max(0.5, yb - top - 3);
-                    const r = 1.5 + hr(i + seed + 800) * 1.1;
+                    const r = (1.5 + hr(i + seed + 800) * 1.1) * g;
                     ctx.beginPath(); ctx.moveTo(x - r, y); ctx.lineTo(x - r * 0.2, y - r); ctx.lineTo(x + r, y - r * 0.3); ctx.lineTo(x + r * 0.4, y + r * 0.8); ctx.closePath(); ctx.fill();
                 }
             }
@@ -1767,7 +1785,6 @@
             const hose = () => { ctx.beginPath(); ctx.moveTo(S.x, S.y); ctx.bezierCurveTo(S.x + 50, S.y - 4, 334, 140, 334, 190); ctx.lineTo(334, 240); };
             hose(); ctx.stroke(); hose(); ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3.5; ctx.stroke();
             ctx.lineWidth = 1;
-            simData.bubbles.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,0.75)'; ctx.fill(); ctx.strokeStyle = '#64748b'; ctx.stroke(); });
             const beaker = () => { ctx.beginPath(); ctx.moveTo(290, 155); ctx.lineTo(296, 160); ctx.lineTo(296, 252); ctx.quadraticCurveTo(296, 256, 300, 256); ctx.lineTo(370, 256); ctx.quadraticCurveTo(374, 256, 374, 252); ctx.lineTo(374, 160); ctx.lineTo(377, 157); };
             beaker(); ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 3; ctx.stroke();
             ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
@@ -1823,7 +1840,8 @@
             ctx.fillStyle = '#a8a29e'; ctx.fillRect(46, 214, 66, 11); ctx.fillRect(208, 214, 66, 11);
             path(); ctx.lineWidth = 14; ctx.strokeStyle = '#78716c'; ctx.lineJoin = 'round'; ctx.stroke();
             const g = ctx.createLinearGradient(0, 52, 0, 272);
-            g.addColorStop(0, '#3f3a36'); g.addColorStop(0.6, on ? '#9a3412' : '#57534e'); g.addColorStop(1, on ? '#f97316' : '#78716c');
+            /* 교과서 p.45 단면처럼 위는 어둡고 아래로 갈수록 붉게 달아오른다 */
+            g.addColorStop(0, '#292524'); g.addColorStop(0.55, on ? '#9a3412' : '#7f1d1d'); g.addColorStop(1, on ? '#f97316' : '#c2410c');
             path(); ctx.fillStyle = g; ctx.fill();
             ctx.save(); path(); ctx.clip();
             /* 원료 층: 철광석(+석회석) 층과 코크스 층이 번갈아 쌓여 천천히 내려온다 */
@@ -1919,37 +1937,7 @@
             const pts = shapePts(simData.shape, cx, 190, 0.8);
             const tp = pts.reduce((b, q) => q[1] < b[1] ? q : b, pts[0]);
             ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(cx, 46); ctx.lineTo(tp[0], tp[1]); ctx.stroke();
-            const line = () => { ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); };
-            ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-            line(); ctx.strokeStyle = zinc ? '#64748b' : '#7c3a12'; ctx.lineWidth = zinc ? 10 : 6.5; ctx.stroke();
-            line(); ctx.strokeStyle = zinc ? '#b6c0cc' : '#d0814e'; ctx.lineWidth = zinc ? 7 : 4; ctx.stroke();
-            const S = sites(pts, 7);
-            if (!zinc) {
-                const path = new Path2D();
-                S.forEach((q, i) => {
-                    const g = smooth(0.02 + 0.25 * hr(i), 1, p); if (g <= 0) return;
-                    [1, -1].forEach(side => {
-                        const ln = (5 + 12 * hr(i * 3 + (side > 0 ? 1 : 2))) * g;
-                        const ang = Math.atan2(q.ny * side, q.nx * side) + (hr(i * 7 + side) - 0.5) * 1.1;
-                        const sx = q.x + Math.cos(ang) * 2.5, sy = q.y + Math.sin(ang) * 2.5;
-                        const ex = sx + Math.cos(ang) * ln, ey = sy + Math.sin(ang) * ln;
-                        path.moveTo(sx, sy); path.lineTo(ex, ey);
-                        const mx = sx + Math.cos(ang) * ln * 0.55, my = sy + Math.sin(ang) * ln * 0.55;
-                        [0.6, -0.6].forEach(b => { path.moveTo(mx, my); path.lineTo(mx + Math.cos(ang + b) * ln * 0.45, my + Math.sin(ang + b) * ln * 0.45); });
-                    });
-                });
-                ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2.6; ctx.stroke(path);
-                ctx.strokeStyle = '#eef2f7'; ctx.lineWidth = 1.3; ctx.stroke(path);
-            } else {
-                S.forEach((q, i) => {
-                    const g = smooth(0.02 + 0.25 * hr(i), 1, p); if (g <= 0) return;
-                    for (let j = 0; j < 3; j++) {
-                        const side = j % 2 ? 1 : -1, off = (4.5 + 2.5 * hr(i * 5 + j)) * side, tj = (hr(i * 11 + j) - 0.5) * 4;
-                        ctx.fillStyle = j % 2 ? '#b45309' : '#9a3412';
-                        ctx.beginPath(); ctx.arc(q.x + q.nx * off + q.ny * tj, q.y + q.ny * off - q.nx * tj, (1.6 + 2.4 * hr(i * 13 + j)) * g, 0, Math.PI * 2); ctx.fill();
-                    }
-                });
-            }
+            drawMetal(pts, zinc, p, 1);
             /* 지시선: 라벨 → 금속(가장 왼쪽 점), 석출물(가장 오른쪽 점) */
             const leader = (x1, y1, x2, y2) => {
                 ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.3; ctx.lineCap = 'round';
@@ -1998,10 +1986,14 @@
             rrect(6, 6, 348, 252, 14); ctx.fillStyle = g; ctx.fill();
             drawLamp(95, 255, on, t);
             const xb = 72 + 140 * smooth(0, 1, p);
-            for (let x = 70; x < xb; x += 5) {
-                const k = (x - 70) / 5, y = 150 + 3 * Math.sin(k * 1.7) + (xb - x) * 0.04;
-                ctx.beginPath(); ctx.ellipse(x, y, 4.5 + 1.5 * hr(k), 3.5 + hr(k + 4), 0, 0, Math.PI * 2);
-                ctx.fillStyle = '#fafafa'; ctx.fill(); ctx.strokeStyle = '#a1a1aa'; ctx.lineWidth = 0.8; ctx.stroke();
+            /* 탄 자리에 남는 흰 산화 마그네슘 가루: 반응 뒤에도 남아 장면이 비지 않게 두껍게 */
+            for (let x = 70; x < xb; x += 4) {
+                const k = (x - 70) / 4, sag = Math.min(14, (xb - x) * 0.06);
+                [[0, 6.5, 5], [6, 5, 4]].forEach(([dy, rx, ry], j) => {
+                    const y = 150 + dy + 3 * Math.sin(k * 1.7 + j) + sag;
+                    ctx.beginPath(); ctx.ellipse(x + j * 2, y, rx + 1.8 * hr(k + j * 50), ry + 1.2 * hr(k + 4 + j * 50), 0, 0, Math.PI * 2);
+                    ctx.fillStyle = j ? '#f4f4f5' : '#fafafa'; ctx.fill(); ctx.strokeStyle = '#a1a1aa'; ctx.lineWidth = 0.8; ctx.stroke();
+                });
             }
             ctx.fillStyle = '#9ca3af'; ctx.fillRect(xb, 147.5, Math.max(0, 222 - xb), 5);
             ctx.fillStyle = '#e5e7eb'; ctx.fillRect(xb, 148, Math.max(0, 222 - xb), 1.5);
@@ -2029,7 +2021,7 @@
         /* ⑥ 광합성·세포호흡 순환 (교과서 p.44): 왼쪽 잎(엽록체) ↔ 오른쪽 마이토콘드리아.
            위 화살표: 포도당·산소 → 마이토콘드리아, 아래 화살표: 이산화 탄소·물 → 잎 */
         function drawCycle(p) {
-            const photo = simData.progress <= 0.5, run = isRun(), t = simData.time;
+            const photo = key() === 'l0', run = isRun(), t = simData.time;   /* 고른 반응 쪽 그림·화살표를 강조 */
             /* 해와 빛 */
             ctx.fillStyle = '#fde047'; ctx.beginPath(); ctx.arc(52, 40, 17, 0, Math.PI * 2); ctx.fill();
             ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.stroke();
@@ -2038,6 +2030,8 @@
             /* 잎 */
             const leafGlow = photo ? 0.35 + 0.65 * Math.min(1, p * 3) : 0.25;
             if (photo) { const gl = ctx.createRadialGradient(120, 150, 10, 120, 150, 95); gl.addColorStop(0, `rgba(134,239,172,${0.55 * leafGlow})`); gl.addColorStop(1, 'rgba(134,239,172,0)'); ctx.fillStyle = gl; ctx.fillRect(20, 50, 200, 200); }
+            if (imgOk('leaf')) ctx.drawImage(IMG.leaf, 46, 76, 148, 150);
+            else {
             ctx.save(); ctx.translate(120, 150); ctx.rotate(-0.35);
             const leaf = () => { ctx.beginPath(); ctx.moveTo(-72, 0); ctx.bezierCurveTo(-40, -50, 40, -50, 72, 0); ctx.bezierCurveTo(40, 50, -40, 50, -72, 0); ctx.closePath(); };
             const lg = ctx.createLinearGradient(0, -40, 0, 40); lg.addColorStop(0, '#4ade80'); lg.addColorStop(1, '#15803d');
@@ -2048,8 +2042,11 @@
             [[-44, -14], [-20, 16], [6, -18], [30, 14], [-56, 10], [44, -10]].forEach(([x, y]) => { ctx.beginPath(); ctx.ellipse(x, y, 6, 3.5, 0.4, 0, Math.PI * 2); ctx.fill(); });
             ctx.restore();
             ctx.strokeStyle = '#166534'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(56, 172); ctx.quadraticCurveTo(44, 196, 40, 216); ctx.stroke();
+            }
             /* 마이토콘드리아 */
             if (!photo) { const gm = ctx.createRadialGradient(330, 150, 10, 330, 150, 95); gm.addColorStop(0, `rgba(253,186,116,${0.6 * Math.min(1, p * 3)})`); gm.addColorStop(1, 'rgba(253,186,116,0)'); ctx.fillStyle = gm; ctx.fillRect(230, 50, 200, 200); }
+            if (imgOk('mitochondrion')) ctx.drawImage(IMG.mitochondrion, 258, 99, 144, 105);
+            else {
             const mg = ctx.createLinearGradient(0, 118, 0, 182); mg.addColorStop(0, '#fed7aa'); mg.addColorStop(1, '#fb923c');
             ctx.beginPath(); ctx.ellipse(330, 150, 70, 34, 0, 0, Math.PI * 2); ctx.fillStyle = mg; ctx.fill(); ctx.strokeStyle = '#c2410c'; ctx.lineWidth = 2.5; ctx.stroke();
             ctx.beginPath(); ctx.ellipse(330, 150, 62, 27, 0, 0, Math.PI * 2); ctx.strokeStyle = '#ea580c'; ctx.lineWidth = 1.5; ctx.stroke();
@@ -2057,6 +2054,7 @@
             for (let i = 0; i < 8; i++) { const x = 280 + i * 13; ctx.lineTo(x, i % 2 ? 128 : 172); ctx.lineTo(x + 6, 150); }
             ctx.stroke();
             ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.beginPath(); ctx.ellipse(310, 130, 26, 5, -0.15, 0, Math.PI * 2); ctx.fill();
+            }
             /* 순환 화살표: 위(광합성 생성물 → 마이토콘드리아), 아래(세포호흡 생성물 → 잎) */
             const arc = (x0, y0, cx, cy, x1, y1, on, col) => {
                 ctx.strokeStyle = on ? col : 'rgba(148,163,184,0.6)'; ctx.lineWidth = on ? 4 : 3; ctx.lineCap = 'round';
@@ -2149,34 +2147,369 @@
             lab(200, 18, '공기 중의 산소');
         }
 
+        /* ── 삽화 이미지 (01_spec.json media, ./contents/ 상대경로). 다 불러오기 전·실패 시에는 코드 그림으로 그린다 ── */
+        const IMG = {};
+        [['apparatus_tube_heat', './contents/apparatus_tube_heat.webp'], ['apparatus_h2_tube', './contents/apparatus_h2_tube.webp'],
+        ['gas_burner', './contents/gas_burner.webp'], ['iron_nail', './contents/iron_nail.webp'],
+        ['leaf', './contents/leaf.webp'], ['mitochondrion', './contents/mitochondrion.webp'],
+        ['beaker_rod', './contents/beaker_rod.webp'], ['blast_furnace', './contents/blast_furnace.webp'], ['tongs_lamp', './contents/tongs_lamp.webp']].forEach(([n, src]) => {
+            const im = new Image();
+            im.onload = () => { IMG[n] = im; draw(); };
+            im.src = src;
+        });
+        const imgOk = n => !!(IMG[n] && IMG[n].naturalWidth);
+        /* 이미지를 (x, y)에 배율 k로 그리고, fn 안에서는 이미지 픽셀 좌표로 바뀌는 부분을 얹는다 */
+        function withImg(n, x, y, k, fn) {
+            ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+            ctx.drawImage(IMG[n], 0, 0);
+            if (fn) fn();
+            ctx.restore();
+        }
+        function leaderLine(x1, y1, x2, y2) {
+            ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.3; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+            ctx.fillStyle = '#475569'; ctx.beginPath(); ctx.arc(x2, y2, 2, 0, Math.PI * 2); ctx.fill();
+        }
+
+        /* ① 이미지판: 시험관 안 가루 더미·남은 숯, 심지 끝 불꽃, 기포와 석회수 흐림만 코드로 얹는다 (이미지 1000×562) */
+        function drawO0Img(p) {
+            const on = isRun() && p < 1, t = simData.time;
+            withImg('apparatus_tube_heat', 0, 10, 0.5, () => {
+                ctx.save(); ctx.translate(75, 170); ctx.rotate(Math.atan2(82, 480));
+                ctx.beginPath(); ctx.moveTo(470, -25); ctx.lineTo(0, -25); ctx.arc(0, 0, 25, -Math.PI / 2, Math.PI / 2, true); ctx.lineTo(470, 25); ctx.closePath(); ctx.clip();
+                drawPile(-25, 235, 24, 19, smooth(0.05, 0.95, p), 11, true, 2.4);
+                ctx.restore();
+                if (on) { ctx.save(); ctx.translate(108, 286); ctx.scale(1.9, 1.9); drawFlame(0, 0, t); ctx.restore(); }
+                const turb = smooth(0.15, 0.9, p);
+                ctx.save();
+                ctx.beginPath(); ctx.moveTo(759, 404); ctx.lineTo(967, 404); ctx.lineTo(967, 528); ctx.quadraticCurveTo(967, 549, 946, 549); ctx.lineTo(780, 549); ctx.quadraticCurveTo(759, 549, 759, 528); ctx.closePath(); ctx.clip();
+                /* 석회수 흐림: 기포가 올라가는 자리(고무관 끝)부터 뿌옇게 번지고, 끝에는 흰 탁한 액체가 된다 */
+                const loc = smooth(0.08, 0.6, p), all = smooth(0.35, 1, p);
+                if (loc > 0) {
+                    const R = 30 + 240 * loc, rg = ctx.createRadialGradient(898, 470, 4, 898, 470, R);
+                    rg.addColorStop(0, `rgba(248,250,252,${0.95 * loc})`); rg.addColorStop(0.6, `rgba(241,245,249,${0.7 * loc})`); rg.addColorStop(1, 'rgba(241,245,249,0)');
+                    ctx.fillStyle = rg; ctx.fillRect(759, 404, 208, 145);
+                }
+                if (all > 0) {
+                    const mg = ctx.createLinearGradient(0, 404, 0, 549);
+                    mg.addColorStop(0, `rgba(241,245,249,${0.85 * all})`); mg.addColorStop(1, `rgba(226,232,240,${0.97 * all})`);
+                    ctx.fillStyle = mg; ctx.fillRect(759, 404, 208, 145);
+                }
+                if (turb > 0) {
+                    ctx.fillStyle = `rgba(148,163,184,${0.55 * turb})`;
+                    for (let i = 0; i < 70; i++) { ctx.beginPath(); ctx.arc(765 + hr(i + 70) * 196, 410 + hr(i + 110) * 134, 2.4, 0, Math.PI * 2); ctx.fill(); }
+                }
+                ctx.lineWidth = 1.6;
+                simData.bubbles.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.fill(); ctx.strokeStyle = '#64748b'; ctx.stroke(); });
+                ctx.restore();
+            });
+            blab('T', 110, p >= 1 ? '구리 가루 + 남은 숯가루' : '산화 구리(II) + 숯가루', [110, 104]);
+            blab('B', 55, '알코올램프');
+            blab('B', 432, '석회수');
+        }
+
+        /* ② 이미지판: 수소 흐름, 관 바닥 가루 더미, 심지 끝 불꽃, 차가운 쪽 물방울 (이미지 1000×546) */
+        function drawO1Img(p) {
+            const on = isRun() && p < 1, t = simData.time;
+            withImg('apparatus_h2_tube', 0, 0, 0.5, () => {
+                ctx.save(); ctx.beginPath(); ctx.rect(185, 188, 640, 74); ctx.clip();
+                if (on) {
+                    ctx.lineWidth = 1.5; ctx.strokeStyle = '#64748b'; ctx.fillStyle = '#f8fafc';
+                    for (let i = 0; i < 9; i++) {
+                        const x = 198 + ((t * 90 + i * 19) % 165), y = 212 + (i % 3) * 12;
+                        [-6, 6].forEach(dx => { ctx.beginPath(); ctx.arc(x + dx, y, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); });
+                    }
+                }
+                drawPile(360, 552, 262, 27, smooth(0.05, 0.95, p), 23, false, 2.6);
+                const n = Math.floor(16 * smooth(0.3, 1, p));
+                for (let i = 0; i < n; i++) {
+                    /* 차가운 쪽: 가루(램프)와 클램프(x≈690) 사이 관 안쪽 벽 */
+                    const x = 588 + hr(i + 20) * 88, y = i % 2 ? 195 : 255, r = 6.5 + hr(i + 40) * 4.5;
+                    ctx.fillStyle = 'rgba(59,130,246,0.85)'; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+                    ctx.strokeStyle = 'rgba(30,64,175,0.8)'; ctx.lineWidth = 1.2; ctx.stroke();
+                    ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.beginPath(); ctx.arc(x - r * 0.35, y - r * 0.35, r * 0.32, 0, Math.PI * 2); ctx.fill();
+                }
+                ctx.restore();
+                if (on) { ctx.save(); ctx.translate(455, 296); ctx.scale(1.15, 1.15); drawFlame(0, 0, t); ctx.restore(); }
+                drawArrow(8, 192, 96, 192, '#64748b', 5, 18);
+            });
+            blab('T', 26, '수소', [26, 94]);
+            blab('T', 228, p >= 1 ? '구리' : '산화 구리(II)', [228, 124]);
+            if (p > 0.35) blab('T', 316, '물방울', [316, 98]);
+            blab('B', 228, '알코올램프');
+        }
+
+        /* ⑦ 이미지판: 가스 구멍 둘레의 파란 불꽃 고리와 열 (이미지 1000×540) */
+        function drawBurnerImg(p) {
+            const on = isRun() && p < 1, t = simData.time;
+            withImg('gas_burner', 0, 44, 0.5, () => {
+                if (on) {
+                    const flame = (x, y, fh, al) => {
+                        const fg = ctx.createLinearGradient(x, y, x, y - fh);
+                        fg.addColorStop(0, `rgba(30,64,175,${0.95 * al})`); fg.addColorStop(0.55, `rgba(96,165,250,${0.85 * al})`); fg.addColorStop(1, 'rgba(191,219,254,0.05)');
+                        ctx.fillStyle = fg; ctx.beginPath(); ctx.moveTo(x - 9, y); ctx.quadraticCurveTo(x - 8, y - fh * 0.6, x, y - fh); ctx.quadraticCurveTo(x + 8, y - fh * 0.6, x + 9, y); ctx.closePath(); ctx.fill();
+                    };
+                    for (let i = 0; i < 26; i++) {   /* 뒤쪽 불꽃: 버너 뚜껑 뒤 테두리에서 위로 */
+                        const a = Math.PI + i / 26 * Math.PI;
+                        flame(505 + Math.cos(a) * 150, 188 + Math.sin(a) * 62, 34 + 6 * Math.sin(t * 20 + i), 0.75);
+                    }
+                    for (let i = 0; i <= 22; i++) {   /* 앞쪽 불꽃: 가스 구멍 줄에서 */
+                        const a = i / 22 * Math.PI;
+                        flame(505 + Math.cos(a) * 150, 216 + Math.sin(a) * 44, 44 + 8 * Math.sin(t * 22 + i * 1.7), 1);
+                    }
+                    ctx.strokeStyle = 'rgba(251,146,60,0.6)'; ctx.lineWidth = 4;
+                    for (let i = 0; i < 6; i++) {
+                        const x = 400 + i * 42, ph = t * 6 + i;
+                        ctx.beginPath(); for (let y = 100; y >= -40; y -= 8) { const xx = x + Math.sin(y * 0.06 + ph) * 8; y === 100 ? ctx.moveTo(xx, y) : ctx.lineTo(xx, y); } ctx.stroke();
+                    }
+                }
+                const out = on ? 1 : smooth(0, 0.2, p) * 0.6;
+                if (out > 0.05) drawArrow(690, 100, 760, -40, `rgba(100,116,139,${out})`, 5, 18);
+                drawArrow(90, 70, 330, 210, '#64748b', 5, 18);
+            });
+            if (smooth(0, 0.2, p) > 0.05 || isRun()) blab('T', 390, '이산화 탄소 + 물', [380, 26]);
+            blab('T', 60, '메테인 + 산소', [45, 79]);
+            blab('B', 250, '가스레인지 버너');
+            if (on) blab('T', 250, '열', null, '#c2410c');
+        }
+
+        /* ⑧ 이미지판: 철못 표면에 녹 얼룩이 자연스럽게 번진다 (이미지 1000×213) */
+        function drawNailImg(p) {
+            const k = smooth(0.05, 1, p);
+            ctx.fillStyle = 'rgba(239,68,68,0.75)';
+            for (let i = 0; i < 12; i++) {   /* 공기 중의 산소 분자 */
+                const x = 66 + hr(i + 300) * 404 + (isRun() ? Math.sin(simData.time + i) * 4 : 0), y = i % 2 ? 28 + hr(i + 310) * 8 : 126 + hr(i + 320) * 14;
+                [-3.5, 3.5].forEach(dx => { ctx.beginPath(); ctx.arc(x + dx, y, 3.5, 0, Math.PI * 2); ctx.fill(); });
+            }
+            const blobs = [];
+            withImg('iron_nail', 0, 40, 0.5, () => {
+                ctx.save();
+                ctx.beginPath(); ctx.moveTo(80, 72); ctx.lineTo(925, 78); ctx.lineTo(998, 105); ctx.lineTo(925, 136); ctx.lineTo(80, 142); ctx.closePath();
+                ctx.ellipse(43, 106, 41, 104, 0, 0, Math.PI * 2); ctx.clip();
+                for (let i = 0; i < 16; i++) {
+                    const g = clamp((k - hr(i + 7) * 0.6) / 0.4, 0, 1); if (g <= 0) continue;
+                    const cx = 50 + hr(i + 40) * 880, cy = 80 + hr(i + 80) * 55, r = (40 + 80 * hr(i + 120)) * g;
+                    blobs.push([cx, cy, r]);
+                    const rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+                    rg.addColorStop(0, 'rgba(124,45,18,0.95)'); rg.addColorStop(0.5, 'rgba(154,52,18,0.85)'); rg.addColorStop(0.8, 'rgba(180,83,9,0.45)'); rg.addColorStop(1, 'rgba(180,83,9,0)');
+                    ctx.fillStyle = rg; ctx.fillRect(cx - r, cy - r, 2 * r, 2 * r);
+                }
+                for (let j = 0; j < 320; j++) {   /* 광택 없는 녹의 거친 결 */
+                    const x = 20 + hr(j + 500) * 960, y = 66 + hr(j + 900) * 82;
+                    if (!blobs.some(([bx, by, br]) => Math.hypot(x - bx, y - by) < br * 0.65)) continue;
+                    ctx.fillStyle = j % 2 ? 'rgba(92,32,10,0.55)' : 'rgba(217,119,6,0.4)';
+                    ctx.beginPath(); ctx.arc(x, y, 1.5 + hr(j + 1300) * 2, 0, Math.PI * 2); ctx.fill();
+                }
+                ctx.restore();
+            });
+            blab('B', 80, '철못 (철)', [90, 92]);
+            if (blobs.length) { const [bx, by] = blobs[0]; blab('B', bx / 2, '녹 (산화 철(III))', [bx / 2, 40 + by / 2]); }
+            blab('T', 250, '공기 중의 산소');
+        }
+
+        /* 매단 금속(고른 모양)과 그 표면을 따라 자라는 석출물. G = 좌표 배율 (기준 좌표 1, 이미지 좌표는 더 큼) */
+        function drawMetal(pts, zinc, p, G) {
+            const line = () => { ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); };
+            ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+            line(); ctx.strokeStyle = zinc ? '#64748b' : '#7c3a12'; ctx.lineWidth = (zinc ? 10 : 6.5) * G; ctx.stroke();
+            line(); ctx.strokeStyle = zinc ? '#b6c0cc' : '#d0814e'; ctx.lineWidth = (zinc ? 7 : 4) * G; ctx.stroke();
+            const S = sites(pts, 7 * G);
+            if (!zinc) {
+                const path = new Path2D();
+                S.forEach((q, i) => {
+                    const g = smooth(0.02 + 0.25 * hr(i), 1, p); if (g <= 0) return;
+                    [1, -1].forEach(side => {
+                        const ln = (5 + 12 * hr(i * 3 + (side > 0 ? 1 : 2))) * g * G;
+                        const ang = Math.atan2(q.ny * side, q.nx * side) + (hr(i * 7 + side) - 0.5) * 1.1;
+                        const sx = q.x + Math.cos(ang) * 2.5 * G, sy = q.y + Math.sin(ang) * 2.5 * G;
+                        path.moveTo(sx, sy); path.lineTo(sx + Math.cos(ang) * ln, sy + Math.sin(ang) * ln);
+                        const mx = sx + Math.cos(ang) * ln * 0.55, my = sy + Math.sin(ang) * ln * 0.55;
+                        [0.6, -0.6].forEach(b => { path.moveTo(mx, my); path.lineTo(mx + Math.cos(ang + b) * ln * 0.45, my + Math.sin(ang + b) * ln * 0.45); });
+                    });
+                });
+                ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2.6 * G; ctx.stroke(path);
+                ctx.strokeStyle = '#eef2f7'; ctx.lineWidth = 1.3 * G; ctx.stroke(path);
+            } else {
+                S.forEach((q, i) => {
+                    const g = smooth(0.02 + 0.25 * hr(i), 1, p); if (g <= 0) return;
+                    for (let j = 0; j < 3; j++) {
+                        const side = j % 2 ? 1 : -1, off = (4.5 + 2.5 * hr(i * 5 + j)) * side * G, tj = (hr(i * 11 + j) - 0.5) * 4 * G;
+                        ctx.fillStyle = j % 2 ? '#b45309' : '#9a3412';
+                        ctx.beginPath(); ctx.arc(q.x + q.nx * off + q.ny * tj, q.y + q.ny * off - q.nx * tj, (1.6 + 2.4 * hr(i * 13 + j)) * g * G, 0, Math.PI * 2); ctx.fill();
+                    }
+                });
+            }
+        }
+
+        /* ④ 이미지판 비커 (이미지 974×820): 막대에 실로 매단 금속·석출물, 액체 영역에만 용액 색 */
+        function drawBeakerImg(p, zinc) {
+            const K = 0.36, OX = 0, OY = 0;
+            const a = zinc ? 0.5 - 0.38 * smooth(0.05, 1, p) : 0.02 + 0.42 * smooth(0.05, 1, p);
+            const pts = shapePts(simData.shape, 487, 560, 2.5);
+            withImg('beaker_rod', OX, OY, K, () => {
+                const liquid = () => {
+                    /* 안쪽 벽 x 226~756, 두꺼운 유리 바닥 위 y 729까지 (이미지 좌표) */
+                    ctx.beginPath(); ctx.ellipse(491, 293, 265, 25, 0, Math.PI, 0, false);
+                    ctx.lineTo(756, 700); ctx.quadraticCurveTo(756, 728, 724, 729); ctx.lineTo(258, 729); ctx.quadraticCurveTo(226, 728, 226, 700); ctx.closePath();
+                };
+                ctx.save(); liquid(); ctx.clip();
+                const bg = ctx.createLinearGradient(0, 270, 0, 800);
+                bg.addColorStop(0, `rgba(96,165,250,${a * 0.85})`); bg.addColorStop(1, `rgba(37,99,235,${Math.min(1, a * 1.2)})`);
+                ctx.fillStyle = bg; ctx.fillRect(200, 260, 580, 545);
+                ctx.restore();
+                const tp = pts.reduce((b, q) => q[1] < b[1] ? q : b, pts[0]);
+                ctx.strokeStyle = '#475569'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(487, 24); ctx.lineTo(tp[0], tp[1]); ctx.stroke();
+                ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(487, 17, 10, 0.1, Math.PI - 0.1); ctx.stroke();
+                drawMetal(pts, zinc, p, 2.5);
+                ctx.save(); liquid(); ctx.clip();   /* 잠긴 금속 위에 옅은 용액 층 */
+                ctx.fillStyle = `rgba(37,99,235,${a * 0.18})`; ctx.fillRect(200, 260, 580, 545);
+                ctx.restore();
+            });
+            const B = q => [OX + q[0] * K, OY + q[1] * K];
+            const lm = B(pts.reduce((b, q) => q[0] < b[0] ? q : b, pts[0])), rm = B(pts.reduce((b, q) => q[0] > b[0] ? q : b, pts[0]));
+            blab('T', 50, '유리 막대', [50, 6]);
+            blab('T', lm[0] + 30, zinc ? '아연' : '구리줄', [lm[0] + 2, lm[1]]);
+            if (p > 0.3) blab('B', rm[0], zinc ? '석출된 구리' : '석출된 은', [rm[0] + 4, rm[1]]);
+            blab('B', 130, zinc ? '황산 구리(II) 수용액' : '질산 은 수용액');
+        }
+
+        /* ③ 이미지판 용광로 (이미지 603×800): 바닥에 차오르는 녹은 철, 떨어지는 철 방울, 위로 나가는 기체, 열풍 화살표 */
+        function drawFurnaceImg(p) {
+            const on = isRun() && p < 1, t = simData.time, K = 0.36, OX = 60, OY = 44;
+            withImg('blast_furnace', OX, OY, K, () => {
+                if (on) {
+                    const gl = ctx.createRadialGradient(300, 615, 10, 300, 615, 170);
+                    gl.addColorStop(0, 'rgba(253,186,116,0.7)'); gl.addColorStop(1, 'rgba(253,186,116,0)');
+                    ctx.fillStyle = gl; ctx.fillRect(130, 445, 340, 300);
+                }
+                ctx.save(); ctx.beginPath(); ctx.rect(188, 636, 226, 100); ctx.rect(410, 700, 80, 44); ctx.clip();
+                const lv = 736 - (6 + 84 * p);
+                const ig = ctx.createLinearGradient(0, lv, 0, 736);
+                ig.addColorStop(0, '#fde047'); ig.addColorStop(0.25, '#fb923c'); ig.addColorStop(1, '#c2410c');
+                ctx.fillStyle = ig; ctx.fillRect(188, lv, 226, 736 - lv);
+                if (p > 0.05) ctx.fillRect(410, Math.max(lv, 712), 80, 20);
+                ctx.restore();
+                if (on) {
+                    ctx.fillStyle = '#fb923c';
+                    for (let i = 0; i < 7; i++) {
+                        const y = 618 + ((t * 120 + i * 37) % Math.max(10, lv - 618));
+                        ctx.beginPath(); ctx.arc(225 + i * 26, y, 5, 0, Math.PI * 2); ctx.fill();
+                    }
+                }
+                const air = on ? '#ef4444' : '#a8a29e';
+                drawArrow(-60, 560, 110, 560, air, 7, 24); drawArrow(663, 560, 493, 560, air, 7, 24);
+                const gasA = 0.35 + 0.5 * (on ? 1 : smooth(0, 0.2, p));
+                drawArrow(255, 20, 180, -70, `rgba(100,116,139,${gasA})`, 6, 22); drawArrow(345, 20, 420, -70, `rgba(100,116,139,${gasA})`, 6, 22);
+                if (on) for (let i = 0; i < 8; i++) {
+                    const u = (t * 0.6 + i / 8) % 1, side = i % 2 ? 1 : -1;
+                    ctx.fillStyle = `rgba(148,163,184,${0.5 * (1 - u)})`;
+                    ctx.beginPath(); ctx.arc(300 + side * (40 + 70 * u), 10 - 80 * u, 8 + 14 * u, 0, Math.PI * 2); ctx.fill();
+                }
+            });
+            drawArrow(168, 16, 168, 44, '#57534e', 3, 9);
+            blab('T', 168, '철광석·코크스·석회석');
+            lab(112, 24, '기체', 'right');
+            blab('B', 62, '뜨거운 공기', [62, 262]);
+            if (p > 0.05) blab('B', 250, '철', [232, 306]);
+        }
+
+        /* ⑤ 이미지판 마그네슘 (이미지 1000×554): 집게 끝에 물린 리본, 밝은 빛, 흰 연기, 흰 가루, 램프 불꽃 */
+        function drawMgImg(p) {
+            const on = isRun() && p < 1, t = simData.time, K = 0.38, OX = 0, OY = 20;
+            /* 리본: 집게 끝(115,156)에서 램프 불꽃 쪽(150,212)으로 내려온다. u=0 자유 끝, u=1 집게 */
+            const R = u => [150 - 35 * u + 6 * Math.sin(u * 3), 212 - 56 * u];
+            const front = smooth(0, 1, p) * 0.82;   /* 타 들어간 정도 (자유 끝부터) */
+            withImg('tongs_lamp', OX, OY, K, () => {
+                if (on) { ctx.save(); ctx.translate(155, 250); ctx.scale(1.6, 1.6); drawFlame(0, 0, t); ctx.restore(); }
+                /* 남은 리본 */
+                ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 8; ctx.lineCap = 'butt'; ctx.beginPath();
+                for (let u = front; u <= 1.001; u += 0.02) { const [x, y] = R(u); u === front ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+                ctx.stroke();
+                ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 2.5; ctx.stroke();
+                /* 탄 자리에 남는 흰 산화 마그네슘 가루 (반응 뒤에도 남음) */
+                for (let u = 0; u < front; u += 0.03) {
+                    const [x, y] = R(u), k = Math.floor(u * 100);
+                    ctx.beginPath(); ctx.ellipse(x + (hr(k) - 0.5) * 6, y + 3 * hr(k + 9), 7 + 4 * hr(k + 3), 5 + 3 * hr(k + 5), 0, 0, Math.PI * 2);
+                    ctx.fillStyle = '#fafafa'; ctx.fill(); ctx.strokeStyle = '#a1a1aa'; ctx.lineWidth = 1.2; ctx.stroke();
+                }
+                if (on && p > 0.02) {
+                    const [gx, gy] = R(front), r = 120 * (1 + 0.1 * Math.sin(t * 31));
+                    const gl = ctx.createRadialGradient(gx, gy, 4, gx, gy, r);
+                    gl.addColorStop(0, 'rgba(255,255,255,1)'); gl.addColorStop(0.3, 'rgba(254,252,232,0.9)'); gl.addColorStop(1, 'rgba(254,240,138,0)');
+                    ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(gx, gy, r, 0, Math.PI * 2); ctx.fill();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 3;
+                    for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5 + t * 2; ctx.beginPath(); ctx.moveTo(gx + Math.cos(a) * 25, gy + Math.sin(a) * 25); ctx.lineTo(gx + Math.cos(a) * r * 0.9, gy + Math.sin(a) * r * 0.9); ctx.stroke(); }
+                    for (let i = 0; i < 9; i++) {   /* 흰 연기 */
+                        const u = (t * 0.5 + i / 9) % 1;
+                        ctx.fillStyle = `rgba(226,232,240,${0.75 * (1 - u)})`; ctx.strokeStyle = `rgba(148,163,184,${0.5 * (1 - u)})`; ctx.lineWidth = 1.5;
+                        ctx.beginPath(); ctx.arc(gx - 20 * u + Math.sin(u * 8 + i) * 10, gy - 30 - 150 * u, 10 + 22 * u, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                    }
+                }
+            });
+            const B = q => [OX + q[0] * K, OY + q[1] * K];
+            const mid = B(R(Math.min(1, front + (1 - front) * 0.5))), burnt = B(R(front * 0.4));
+            if (p < 0.95) blab('T', mid[0], '마그네슘 리본', mid);
+            blab('T', 300, '집게', [300, OY + 0.38 * 112]);
+            if (p > 0.2) blab('B', burnt[0] + 60, '산화 마그네슘', burnt);
+            blab('B', 0.38 * 160, '알코올램프');
+        }
+
         const APP = {
-            o0: { w: 420, h: 275, f: drawO0 }, o1: { w: 440, h: 226, f: drawO1 }, o2: { w: 320, h: 285, f: drawFurnace },
-            e0: { w: 340, h: 292, f: p => drawBeaker(p, false) }, e1: { w: 360, h: 280, f: drawMg }, e2: { w: 340, h: 292, f: p => drawBeaker(p, true) },
-            l0: { w: 440, h: 278, f: drawCycle }, l1: { w: 360, h: 236, f: drawBurner }, l2: { w: 380, h: 196, f: drawNail }
+            o0: { w: 500, h: 293, img: 'apparatus_tube_heat', f: drawO0Img, fb: { w: 420, h: 275, f: drawO0 } },
+            o1: { w: 500, h: 274, img: 'apparatus_h2_tube', f: drawO1Img, fb: { w: 440, h: 226, f: drawO1 } },
+            o2: { w: 337, h: 333, img: 'blast_furnace', f: drawFurnaceImg, fb: { w: 320, h: 285, f: drawFurnace } },
+            e0: { w: 351, h: 296, img: 'beaker_rod', f: p => drawBeakerImg(p, false), fb: { w: 340, h: 292, f: p => drawBeaker(p, false) } },
+            e1: { w: 380, h: 232, img: 'tongs_lamp', f: drawMgImg, fb: { w: 360, h: 280, f: drawMg } },
+            e2: { w: 351, h: 296, img: 'beaker_rod', f: p => drawBeakerImg(p, true), fb: { w: 340, h: 292, f: p => drawBeaker(p, true) } },
+            l0: { w: 440, h: 278, f: drawCycle }, l1: { w: 440, h: 278, f: drawCycle },
+            l2: { w: 500, h: 314, img: 'gas_burner', f: drawBurnerImg, fb: { w: 360, h: 236, f: drawBurner } },
+            l3: { w: 500, h: 146, img: 'iron_nail', f: drawNailImg, fb: { w: 380, h: 196, f: drawNail } }
         };
 
         function drawApparatus(L) {
-            const k = key(), A = APP[k], r = L.app, ui = L.ui;
-            /* 광합성·세포호흡은 광합성 구간이 끝나면 광합성 관찰, 모두 끝나면 세포호흡 관찰 */
-            const obsKey = k === 'l0' ? (simData.done ? 'l0b' : 'l0a') : k;
-            const showObs = simData.done || (k === 'l0' && simData.progress >= 0.5);
+            const k = key(), A0 = APP[k], A = A0.img && !imgOk(A0.img) ? A0.fb : A0, r = L.app, ui = L.ui;
+            /* 작은 캔버스에서는 관찰 상자를 숨긴다 (장치·라벨을 가리지 않게) */
+            const showObs = !L.compact && simData.done;
             ctx.font = font(13 * ui, 500);
-            const obsW = r.w * 0.96, lines = wrap('관찰: ' + OBS[obsKey], obsW - 20 * ui);
-            const maxLines = k === 'l0' ? Math.max(lines.length, wrap('관찰: ' + OBS.l0b, obsW - 20 * ui).length) : lines.length;
-            const lh = 18 * ui, obsH = maxLines * lh + 14 * ui, gap = 8 * ui;
-            const s = Math.max(0.05, Math.min(r.w / A.w, (r.h - obsH - gap) / A.h));
-            const ox = r.x + (r.w - A.w * s) / 2, oy = r.y + Math.max(0, (r.h - (A.h * s + gap + obsH)) / 2);
+            const obsW = r.w * 0.96, lines = wrap('관찰: ' + OBS[k], obsW - 20 * ui);
+            const maxLines = lines.length;
+            const lh = 18 * ui, obsH = L.compact ? 0 : maxLines * lh + 14 * ui, gap = L.compact ? 0 : 8 * ui;
+            const fsL = Math.max(9, 12.5 * ui), band = A.img ? fsL * 1.7 : 0;   /* 이미지판은 위·아래 라벨 띠를 둔다 */
+            const s = Math.max(0.05, Math.min(r.w / A.w, (r.h - obsH - gap - 2 * band) / A.h));
+            const ox = r.x + (r.w - A.w * s) / 2, oy = r.y + band + Math.max(0, (r.h - 2 * band - (A.h * s + gap + obsH)) / 2);
             labelBuf = [];
             ctx.save(); ctx.translate(ox, oy); ctx.scale(s, s); A.f(lp()); ctx.restore();
-            ctx.font = font(12.5 * ui); ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
-            labelBuf.forEach(l => {
+            ctx.font = font(fsL); ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+            const placed = [];
+            labelBuf.filter(l => !l.band).forEach(l => {
                 const tw = ctx.measureText(l.t).width, x = ox + l.x * s;
                 let left = l.align === 'left' ? x : l.align === 'right' ? x - tw : x - tw / 2;
                 left = clamp(left, r.x + 2, r.x + r.w - tw - 2);
-                haloText(l.t, left, clamp(oy + l.y * s, r.y + 8 * ui, r.y + r.h - 8 * ui), l.c || '#334155', ui);
+                let y = clamp(oy + l.y * s, r.y + fsL * 0.8, r.y + r.h - fsL * 0.8);
+                placed.forEach(q => { if (left < q.x + q.w + 4 && left + tw + 4 > q.x && Math.abs(y - q.y) < fsL * 1.2) y = q.y + fsL * 1.25; });
+                placed.push({ x: left, y, w: tw });
+                haloText(l.t, left, y, l.c || '#334155', ui);
+            });
+            /* 띠 라벨: 같은 띠 안에서 겹치지 않게 좌우로 밀어 놓고, 지시선으로 그림의 대상에 잇는다 */
+            ['T', 'B'].forEach(bd => {
+                const items = labelBuf.filter(l => l.band === bd).map(l => {
+                    const tw = ctx.measureText(l.t).width;
+                    return { l, tw, left: clamp(ox + l.x * s - tw / 2, r.x + 2, r.x + r.w - tw - 2) };
+                }).sort((a, b) => a.left - b.left);
+                for (let i = 1; i < items.length; i++) items[i].left = Math.max(items[i].left, items[i - 1].left + items[i - 1].tw + 8);
+                for (let i = items.length - 1; i >= 0; i--) {
+                    const lim = i === items.length - 1 ? r.x + r.w - 2 : items[i + 1].left - 8;
+                    items[i].left = Math.max(r.x + 2, Math.min(items[i].left, lim - items[i].tw));
+                }
+                const y = bd === 'T' ? oy - band / 2 : oy + A.h * s + band / 2;
+                items.forEach(({ l, tw, left }) => {
+                    if (l.to) leaderLine(left + tw / 2, y + (bd === 'T' ? fsL * 0.55 : -fsL * 0.55), ox + l.to[0] * s, oy + l.to[1] * s);
+                    ctx.font = font(fsL); ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+                    haloText(l.t, left, y, l.c || '#334155', ui);
+                });
             });
             if (showObs) {
-                const bx = r.x + (r.w - obsW) / 2, by = oy + A.h * s + gap;
+                const bx = r.x + (r.w - obsW) / 2, by = oy + A.h * s + band + gap;   /* 아래 라벨 띠 밑에 두어 라벨·그림을 덮지 않음 */
                 rrect(bx, by, obsW, obsH, 8 * ui); ctx.fillStyle = '#fffbeb'; ctx.fill();
                 ctx.strokeStyle = '#fcd34d'; ctx.lineWidth = 1.2 * ui; ctx.stroke();
                 ctx.font = font(13 * ui, 500); ctx.fillStyle = '#78350f'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -2222,29 +2555,32 @@
             g.addColorStop(0, mixHex(E.c, '#ffffff', 0.5)); g.addColorStop(1, E.c);
             ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
             ctx.strokeStyle = mixHex(E.c, '#000000', 0.35); ctx.lineWidth = Math.max(1, R * 0.07); ctx.stroke();
-            ctx.fillStyle = E.t; ctx.font = font(Math.max(7, R * 0.78)); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillStyle = E.t; ctx.font = font(Math.max(9, R * 0.78)); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
             ctx.fillText(el, x, y + R * 0.04);
-            if (charge) { ctx.font = font(fs); ctx.textAlign = 'left'; haloText(charge, x + R * 0.72, y - R * 0.9, '#0f172a', ui); }
+            if (charge) { ctx.font = font(Math.max(9, fs)); ctx.textAlign = 'left'; haloText(charge, x + R * 0.72, y - R * 0.9, '#0f172a', ui); }
         }
         function drawModel(L) {
             const r = L.model, ui = L.ui, M = MODELS[phaseKey()], p = lp(), tm = modelTime();
-            const titleH = 24 * ui;
-            const s = Math.max(0.05, Math.min(r.w / 400, (r.h - titleH) / 240));
+            /* 모형 상자 위쪽에 꼬리표 띠(모든 반응에서 같은 높이) */
+            const titleH = (L.compact ? 16 : 24) * ui, strip = 0;   /* 꼬리표는 물질 묶음 바로 위(M.tags.y)에 놓으므로 띠 없음 */
+            const s = Math.max(0.05, Math.min(r.w / 400, (r.h - titleH - strip) / 240));
             const bw = 400 * s, bh = 240 * s;
-            const ox = r.x + (r.w - bw) / 2, oy = r.y + titleH + Math.max(0, (r.h - titleH - bh) / 2);
+            const ox = r.x + (r.w - bw) / 2, oy = r.y + titleH + strip + Math.max(0, (r.h - titleH - strip - bh) / 2);
+            M.strip = strip;
             const P = (x, y) => [ox + x * s, oy + y * s];
             const rad = el => (M.rs && M.rs[el]) || EL[el].r;
             const hasE = M.electrons && M.electrons.length > 0;
             const title = hasE ? '전자 모형' : '입자 모형';
             ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.font = font(14 * ui); ctx.fillStyle = COL.text;
-            ctx.fillText(title, ox, oy - 8 * ui);
+            const ty = oy - strip - 6 * ui;
+            ctx.fillText(title, ox, ty);
             if (hasE) {
                 const ex = ox + ctx.measureText(title).width + 16 * ui;
-                drawElectron(ex, oy - 13 * ui, 5 * ui);
-                ctx.font = font(12 * ui, 500); ctx.fillStyle = COL.sub; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-                ctx.fillText('전자', ex + 9 * ui, oy - 8 * ui);
+                drawElectron(ex, ty - 5 * ui, 5 * ui);
+                ctx.font = font(Math.max(9, 12 * ui), 500); ctx.fillStyle = COL.sub; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+                ctx.fillText('전자', ex + 9 * ui, ty);
             }
-            rrect(ox, oy, bw, bh, 10 * ui); ctx.fillStyle = '#f8fafc'; ctx.fill(); ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1; ctx.stroke();
+            rrect(ox, oy - strip, bw, bh + strip, 10 * ui); ctx.fillStyle = '#f8fafc'; ctx.fill(); ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1; ctx.stroke();
             if (M.sol) {
                 ctx.save(); rrect(ox, oy, bw, bh, 10 * ui); ctx.clip();
                 const a = M.sol === 'ag' ? 0.03 + 0.16 * smooth(0.1, 1, p) : 0.2 - 0.14 * smooth(0.1, 1, p);
@@ -2252,18 +2588,11 @@
             }
             if (M.mol) { drawMolModel(M, P, s, tm, ui, r); drawModelTags(M, ox, oy, s, bh, r, ui); return; }
             const pos = M.atoms.map(a => atomPos(a, tm));
-            /* 옮겨 가는 원자의 경로 */
-            M.atoms.forEach((a, i) => {
-                const e = pos[i][2]; if (!a.to || a.el !== 'O' || a.ch || e <= 0 || e >= 1) return;
-                ctx.setLineDash([4 * ui, 4 * ui]); ctx.strokeStyle = 'rgba(100,116,139,0.7)'; ctx.lineWidth = 1.5 * ui; ctx.beginPath();
-                for (let j = 0; j <= 20; j++) { const q = atomPos(a, a.t[0] + (a.t[1] - a.t[0]) * j / 20), sp = P(q[0], q[1]); j ? ctx.lineTo(sp[0], sp[1]) : ctx.moveTo(sp[0], sp[1]); }
-                ctx.stroke(); ctx.setLineDash([]);
-            });
             /* 움직이는 원자를 맨 위에 그려 다른 원자 글자가 찍히지 않게 */
             const moving = i => pos[i][2] > 0 && pos[i][2] < 1;
             M.atoms.map((a, i) => i).sort((i, j) => moving(i) - moving(j)).forEach(i => {
                 const a = M.atoms[i], [x, y, e] = pos[i], sp = P(x, y), ch = a.ch ? (tm >= a.ch[2] && tm > 0 ? a.ch[1] : a.ch[0]) : '';
-                drawAtom(sp[0], sp[1], rad(a.el) * s, a.el, ch, 11 * ui, e > 0 && e < 1 && !a.ch && a.el === 'O', ui);
+                drawAtom(sp[0], sp[1], Math.max(7.5, rad(a.el) * s), a.el, ch, 11 * ui, e > 0 && e < 1 && !a.ch && a.el === 'O', ui);
             });
             /* 전자: 출발 전에는 원자 곁에, 이동 중에는 곡선을 따라, 도착하면 사라짐 */
             const cnt = {};
@@ -2294,19 +2623,20 @@
         }
         function drawModelTags(M, ox, oy, s, bh, r, ui) {
             if (!tagOn()) return;
-            const fs = 12 * ui, sub = tagSub(), placed = [];
-            [['red', M.tags.red], ['ox', M.tags.ox]].forEach(([kind, [bx, by]]) => {
+            /* 산화·환원 꼬리표: 각 물질 묶음 바로 위, 두 꼬리표는 같은 높이(M.tags.y, 기준 좌표). 겹치면 옆으로 민다 */
+            const fs = Math.max(9, 12 * ui), sub = tagSub(), th = fs * 1.7;
+            const y = clamp(oy + (M.tags.y || 20) * s - th / 2, oy + 2, oy + bh - th - 2);
+            const items = [['red', M.tags.red[0]], ['ox', M.tags.ox[0]]].map(([kind, bx]) => {
                 const m = measureTag(kind, sub[kind], fs);
-                const x = clamp(ox + bx * s - m.w / 2, r.x, r.x + r.w - m.w);
-                let y = clamp(oy + by * s - m.h / 2, oy + 2, oy + bh - m.h - 2);
-                placed.forEach(q => { if (x < q.x + q.w + 4 && x + m.w + 4 > q.x && y < q.y + q.h + 3 && y + m.h + 3 > q.y) y = q.y + q.h + 4 * ui; });
-                placed.push({ x, y, w: m.w, h: m.h });
-                drawTag(x, y, kind, sub[kind], fs);
-            });
+                return { kind, m, x: clamp(ox + bx * s - m.w / 2, r.x, r.x + r.w - m.w) };
+            }).sort((a, b) => a.x - b.x);
+            if (items[1].x < items[0].x + items[0].m.w + 6) items[1].x = items[0].x + items[0].m.w + 6;
+            if (items[1].x + items[1].m.w > r.x + r.w) { items[1].x = r.x + r.w - items[1].m.w; items[0].x = Math.max(r.x, items[1].x - 6 - items[0].m.w); }
+            items.forEach(it => drawTag(it.x, y, it.kind, sub[it.kind], fs));
         }
         /* 분자 재배열 모형: 반응물 분자가 가운데로 모이며 사라지고, 생성물 분자가 가운데에서 나와 자리를 잡는다 */
         function drawMolModel(M, P, s, tm, ui, r) {
-            const sc = M.mol.big ? 0.75 : 0.5, cen = [200, 120];
+            const sc = M.mol.big ? 0.75 : 0.7, cen = [200, 120];
             const e1 = smooth(0, 0.55, tm), e2 = smooth(0.45, 1, tm);
             const drawMol = (type, x, y, alpha) => {
                 if (alpha <= 0.01) return;
@@ -2319,19 +2649,20 @@
                     ctx.font = font(Math.max(9, 12 * s)); ctx.fillStyle = '#78350f'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     ctx.fillText('C₆H₁₂O₆', cx, cy);
                 } else molShape(type, sc).forEach(([el, dx, dy]) => {
-                    const sp = P(x + dx, y + dy); drawAtom(sp[0], sp[1], EL[el].r * sc * s, el, '', 0, false, ui);
+                    const sp = P(x + dx, y + dy); drawAtom(sp[0], sp[1], Math.max(5.5, EL[el].r * sc * s), el, '', 0, false, ui);
                 });
                 ctx.globalAlpha = 1;
             };
-            M.mol.react.forEach(([type, x, y]) => drawMol(type, lerp(x, cen[0], 0.35 * e1), lerp(y, cen[1], 0.35 * e1), 1 - e1));
+            /* 반응물은 제자리에 남아 옅어지기만 하고(반응물 → 생성물 비교가 보이게), 생성물이 오른쪽에 나타난다 */
+            M.mol.react.forEach(([type, x, y]) => drawMol(type, x, y, 1 - 0.4 * e1));
             if (tm > 0 && tm < 1) {
-                const a0 = P(186, 120), a1 = P(214, 120);
+                const A = M.mol.arrow || [200, 120, 226, 120], a0 = P(A[0], A[1]), a1 = P(A[2], A[3]);
                 drawArrow(a0[0], a0[1], a1[0], a1[1], 'rgba(100,116,139,0.8)', 2.5 * ui, 9 * ui);
             }
             M.mol.prod.forEach(([type, x, y]) => drawMol(type, lerp(x, cen[0], 0.35 * (1 - e2)), lerp(y, cen[1], 0.35 * (1 - e2)), e2));
             ctx.font = font(12.5 * ui); ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
             M.labels.forEach(lb => {
-                const alpha = lb.side === 'r' ? 1 - e1 : e2; if (alpha <= 0.05) return;
+                const alpha = lb.side === 'r' ? 1 - 0.5 * e1 : e2; if (alpha <= 0.05) return;
                 const sp = P(lb.x, lb.y), tw = ctx.measureText(lb.t).width;
                 ctx.globalAlpha = alpha; haloText(lb.t, clamp(sp[0] - tw / 2, r.x + 2, r.x + r.w - tw - 2), sp[1], COL.text, ui); ctx.globalAlpha = 1;
             });
@@ -2340,6 +2671,28 @@
         /* ── 반응식 띠: 산화(위)·환원(아래) 꺾쇠가 같은 순간에 켜진다 ── */
         function drawEquation(L) {
             const toks = EQ[phaseKey()], ui = L.ui, on = tagOn(), sub = tagSub();
+            if (L.compact) {
+                /* 작은 캔버스: 반응식 한 줄 + 오른쪽에 '산화'·'환원' 꼬리표를 함께 (물질은 같은 색으로 표시) */
+                const tfs = 9, pw = measureTag('ox', '', tfs).w + measureTag('red', '', tfs).w + 14;
+                let f = 15; ctx.font = font(f);
+                let tw = toks.reduce((a, t) => a + ctx.measureText(t[0]).width, 0);
+                const avail = L.eq.right - 16 - pw;
+                if (tw > avail) { f = Math.max(9, f * avail / tw); ctx.font = font(f); tw = toks.reduce((a, t) => a + ctx.measureText(t[0]).width, 0); }
+                let x = Math.max(8, Math.min(L.w / 2 - (tw + pw) / 2, L.eq.right - tw - pw));
+                const cy = L.eq.y + L.eq.h / 2;
+                ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+                toks.forEach(t => {
+                    const role = t[1] || '';
+                    ctx.font = font(f); ctx.fillStyle = on && role.startsWith('ox') ? COL.ox : on && role.startsWith('red') ? COL.red : COL.text;
+                    ctx.fillText(t[0], x, cy); x += ctx.measureText(t[0]).width;
+                });
+                if (on) {
+                    const mo = measureTag('ox', '', tfs);
+                    drawTag(x + 8, cy - mo.h / 2, 'ox', '', tfs);
+                    drawTag(x + 14 + mo.w, cy - mo.h / 2, 'red', '', tfs);
+                }
+                return;
+            }
             let fs = 22 * ui; ctx.font = font(fs);
             let total = toks.reduce((a, t) => a + ctx.measureText(t[0]).width, 0);
             const avail = L.eq.right - 16;
@@ -2407,7 +2760,7 @@
         function selfCheck() {
             Object.entries(EQ).forEach(([k, t]) => ['ox', 'red', 'oxP', 'redP'].forEach(r => console.assert(t.some(x => hasRole(x[1], r)), '반응식 역할 없음', k, r)));
             Object.keys(EQ).forEach(k => console.assert(MODELS[k] && OBS[k] && APP[k.slice(0, 2)], '반응 데이터 없음', k));
-            ['oxygen', 'electron', 'life'].forEach(m => console.assert(SIM_CONFIG.rxnNames[m].length === 3, '반응 목록', m));
+            ['oxygen', 'electron', 'life'].forEach(m => SIM_CONFIG.rxnNames[m].forEach((n, i) => console.assert(EQ[m[0] + i], '반응 데이터 없음', m, n)));
             /* 석출 비율: Cu 1 : Ag 2, Zn 1 : Cu 1 */
             [['e0', 'Cu', 'Ag', 2], ['e2', 'Zn', 'Cu', 1]].forEach(([k, metal, ion, n]) => {
                 const A = MODELS[k].atoms, ox = A.filter(a => a.el === metal && a.to).length, dep = A.filter(a => a.el === ion && a.to).length;
@@ -2449,10 +2802,11 @@
             if (key() === 'o0') {
                 if (simData.progress > 0.08 && simData.progress < 1) {
                     simData.spawn += dt * 14;
-                    while (simData.spawn > 1) { simData.spawn--; simData.bubbles.push({ x: 334 + (Math.random() - 0.5) * 5, y: 242, r: 1.8 + Math.random() * 1.8 }); }
+                    /* 기포는 그림 이미지 좌표(고무관 끝 → 석회수 수면) */
+                    while (simData.spawn > 1) { simData.spawn--; simData.bubbles.push({ x: 898 + (Math.random() - 0.5) * 10, y: 512, r: 3.5 + Math.random() * 3.5 }); }
                 }
-                simData.bubbles.forEach(b => { b.y -= dt * 45; b.x += Math.sin(b.y * 0.3) * 0.15; });
-                simData.bubbles = simData.bubbles.filter(b => b.y > 188);
+                simData.bubbles.forEach(b => { b.y -= dt * 90; b.x += Math.sin(b.y * 0.15) * 0.3; });
+                simData.bubbles = simData.bubbles.filter(b => b.y > 408);
             }
             if (simData.progress >= 1) {
                 simData.done = true; simData.lastTs = 0; simData.bubbles = [];
