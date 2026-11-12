@@ -1,0 +1,15 @@
+{
+  "policy": "참고 그림은 페이지에 넣지 않는다. 모양·비율·선 스타일만 참고해 캔버스 코드로 직접 그린다 (2026-10-18 사용자 결정: 이미지 합성이 어색함).",
+  "ref_dir": "inbox/refs/m2_density_separation",
+  "style_notes": [
+    "연한 회색 가는 선(1.5~2px), 유리는 거의 투명한 흰색 + 옅은 하이라이트, 금속은 연회색 면 + 진회색 테두리",
+    "분별 깔때기: 서양배 모양 몸통, 위쪽 좁은 목에 둥근 마개, 아래 가는 관 중간에 T자 꼭지(손잡이 가로/세로로 열림·닫힘)",
+    "스탠드: 넓은 직사각 받침(원근감 있는 사다리꼴), 세로 막대, 십자 고정 나사 + 깔때기를 잡는 클램프(링)",
+    "비커: 위가 살짝 벌어진 원통, 왼쪽 위 부리, 바닥은 납작한 타원, 눈금 몇 줄"
+  ],
+  "items": [
+    { "title": "분별 깔대기", "content_id": "50859", "source_url": "https://www.clarchive.co.kr/content/detail?content_id=50859", "file": "inbox/refs/m2_density_separation/separatory_funnel.jpg", "notes": "몸통·목·마개·꼭지 비율 참고" },
+    { "title": "스탠드1", "content_id": "37770", "source_url": "https://www.clarchive.co.kr/content/detail?content_id=37770", "file": "inbox/refs/m2_density_separation/stand.png", "notes": "받침 원근, 고정 나사, 클램프 모양 참고" },
+    { "title": "비커", "content_id": "50878", "source_url": "https://www.clarchive.co.kr/content/detail?content_id=50878", "file": "inbox/refs/m2_density_separation/beaker.jpg", "notes": "부리·테두리·바닥 타원 참고" }
+  ]
+}

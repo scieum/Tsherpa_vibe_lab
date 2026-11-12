@@ -1,0 +1,3180 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>생태계평형</title><!-- JS의 CONTENT_CONFIG.title로 자동 변경됩니다 -->
+
+    <!-- ════════════════════════════════════════════════════════
+         🚫 [수정 금지] 핵심 라이브러리 — KaTeX · Tailwind CSS
+         ════════════════════════════════════════════════════════ -->
+    <link rel="icon" href="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_short.png"
+        type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ════════════════════════════════════════════════════════
+         ⚙️  [선택 수정] Tailwind 테마 — 브랜드 색상·폰트만 변경
+         ════════════════════════════════════════════════════════ -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: { 'desktop-only': { 'raw': '(hover: hover) and (pointer: fine)' } },
+                    colors: { primary: '#4f46e5' },   /* ✏️ 브랜드 색상 */
+                    fontFamily: { sans: ['Noto Sans KR', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script>
+        /* 모바일에서 생략되는 number 스피너만 보완하고 PC 네이티브 UI는 유지 */
+        const isIPadDevice =
+            /iPad/i.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isMobileNumberUI =
+            navigator.userAgentData?.mobile === true ||
+            /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+            isIPadDevice;
+        if (isMobileNumberUI) document.documentElement.classList.add('mobile-number-controls');
+    </script>
+
+    <style>
+        html,
+        body,
+        button,
+        input,
+        select,
+        textarea {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        body { word-break: keep-all; overflow-wrap: break-word; }
+
+        /* ════════════════════════════════════════════════════════
+           ⚙️  [선택 수정] CSS 변수 — 전체 색상·폰트 크기 일괄 조정
+           ════════════════════════════════════════════════════════ */
+        :root {
+            /* 폰트 크기 */
+            --font-size-title: 1.275rem;
+            --font-size-modal: 1.15rem;
+            --font-size-guide: 1.025rem;
+            --font-size-desc: 1rem;
+            --font-size-small: 0.9rem;
+            --font-size-tiny: 0.75rem;
+
+            /* 텍스트 색상 */
+            --color-text-main: #334155;
+            --color-text-sub: #475569;
+            --color-text-light: #64748b;
+
+            /* 테마 포인트 색상 */
+            --color-primary: #4f46e5;
+            /* ✏️ 메인 포인트 색상 */
+            --color-primary-bg: #e0e7ff;
+            --color-tab-bg: #d8e0ff80;
+            --color-action: #059669;
+            --color-action-hover: #047857;
+            --color-pause: #e11d48;
+            --color-pause-bg: #fff1f2;
+            --color-pause-border: #fecdd3;
+            --color-obs1: #ea580c;
+        }
+
+        /* ════════════════════════════════════════════════════════
+           ⚙️  [선택 수정] 디자인 클래스 매핑 — CSS 변수를 UI 요소에 적용
+           ════════════════════════════════════════════════════════ */
+        .sim-title {
+            font-size: var(--font-size-title);
+            font-weight: 700;
+            color: var(--color-text-main);
+            line-height: 1.25;
+        }
+
+        .guide-on-off {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: var(--color-text-light);
+        }
+
+        .guide-title {
+            font-size: var(--font-size-guide);
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .guide-desc {
+            font-size: var(--font-size-desc);
+            color: var(--color-text-sub);
+        }
+
+        .env-text {
+            font-weight: 700;
+            color: var(--color-text-light);
+            font-size: var(--font-size-tiny);
+        }
+
+        .tab-btn {
+            font-weight: 700;
+            color: var(--color-text-light);
+            font-size: var(--font-size-small);
+        }
+
+        @media (min-width: 768px) {
+            .env-text {
+                font-size: var(--font-size-small);
+            }
+        }
+
+        .helper-text-default {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .helper-text-running {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-pause);
+        }
+
+        .helper-text-paused {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: #d97706;
+        }
+
+        .var-label-control {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-main);
+        }
+
+        .var-label-obs1 {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-obs1);
+        }
+
+        .var-label-obs2 {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-action);
+        }
+
+        .var-label-var {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: var(--color-text-main);
+        }
+
+        .slider-limit-label {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .var-unit-display {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-primary);
+            background-color: var(--color-primary-bg);
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .select-option-text {
+            font-size: var(--font-size-tiny);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .header-button {
+            background-color: #fff;
+            color: var(--color-text-sub);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .header-button:hover {
+                background-color: #f1f5f9;
+            }
+        }
+
+        .btn-action-start {
+            background-color: var(--color-action);
+            color: #fff;
+            border-color: var(--color-action-hover);
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-action-start:hover {
+                background-color: var(--color-action-hover);
+            }
+        }
+
+        .btn-action-pause {
+            background-color: var(--color-pause-bg);
+            color: var(--color-pause);
+            border-color: var(--color-pause-border);
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        .btn-sub {
+            background-color: #fff;
+            color: var(--color-text-main);
+            border-color: #cbd5e1;
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-sub:hover {
+                background-color: #f1f5f9;
+            }
+        }
+
+        .btn-reset-custom {
+            color: var(--color-text-main);
+            border-color: #cbd5e1;
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-reset-custom:hover {
+                color: var(--color-pause);
+                border-color: #fda4af;
+                background-color: var(--color-pause-bg);
+            }
+        }
+
+        .modal-title {
+            font-size: var(--font-size-modal);
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .modal-close-btn {
+            color: #94a3b8;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .modal-close-btn:hover {
+                color: #f43f5e;
+            }
+        }
+
+        .concept-title-1 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #c2410c;
+        }
+
+        .concept-title-2 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #047857;
+        }
+
+        .concept-title-3 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #4338ca;
+        }
+
+        .concept-title-4 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #6e0478;
+        }
+
+        .concept-desc {
+            font-size: var(--font-size-desc);
+            color: var(--color-text-main);
+        }
+
+        .quiz-step {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: #4338ca;
+            background-color: var(--color-primary-bg);
+        }
+
+        .quiz-question {
+            font-size: var(--font-size-modal);
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .quiz-btn-check {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #fff;
+            background-color: #f97316;
+            border: 1px solid #f97316;
+            line-height: 1.5rem;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .quiz-btn-check:hover {
+                background-color: #ea580c;
+                border-color: #ea580c;
+            }
+        }
+
+        .quiz-answer-box {
+            font-size: var(--font-size-guide);
+            font-weight: 700;
+            line-height: 1.5rem;
+            color: var(--color-text-main);
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+        }
+
+        .header-button:is(.is-tap-feedback, .is-pen-hover),
+        .btn-sub:is(.is-tap-feedback, .is-pen-hover),
+        .zoom-btn:is(.is-tap-feedback, .is-pen-hover),
+        .nav-btn:is(.is-tap-feedback, .is-pen-hover),
+        #customSelectTrigger:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #f1f5f9;
+        }
+
+        .btn-action-start:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: var(--color-action-hover);
+        }
+
+        .btn-reset-custom:is(.is-tap-feedback, .is-pen-hover) {
+            color: var(--color-pause);
+            border-color: #fda4af;
+            background-color: var(--color-pause-bg);
+        }
+
+        .modal-close-btn:is(.is-tap-feedback, .is-pen-hover) {
+            color: #f43f5e;
+        }
+
+        .quiz-btn-check:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #ea580c;
+        }
+
+        .tab-btn:not(.border-indigo-600):is(.is-tap-feedback, .is-pen-hover) {
+            background-color: rgb(226 232 240 / 0.5);
+        }
+
+        .radio-label:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #f8fafc;
+        }
+
+        #customSelectList [role="option"]:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #eef2ff;
+        }
+
+        /* PC·모바일에서 동일한 숫자 입력 스피너를 고정 노출 */
+        .ratio-number-field {
+            display: flex;
+            flex: 1 1 0%;
+            min-width: 0;
+            position: relative;
+        }
+
+        .ratio-number-stepper {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            width: 2.5rem;
+            justify-content: center;
+            gap: 0;
+        }
+
+        .ratio-step-btn {
+            display: flex;
+            flex: 1 1 50%;
+            min-height: 0;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 0.15rem;
+            background-color: transparent;
+            color: #737373;
+            line-height: 1;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ratio-step-icon {
+            width: 0.66rem;
+            height: 0.48rem;
+            fill: currentColor;
+        }
+
+        .ratio-step-btn[data-step-direction="up"] .ratio-step-icon {
+            transform: translateY(0.1875rem);
+        }
+
+        .ratio-step-btn[data-step-direction="down"] .ratio-step-icon {
+            transform: translateY(-0.1875rem);
+        }
+
+        .ratio-step-btn:active {
+            background-color: transparent;
+            color: #475569;
+        }
+
+        .ratio-step-btn:focus {
+            background-color: transparent;
+        }
+
+        .ratio-step-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .ratio-number-field>.input-text {
+            appearance: textfield;
+            -moz-appearance: textfield;
+            padding-right: 2.75rem;
+            background-color: transparent;
+            transition: border-color 150ms ease;
+        }
+
+        .ratio-number-field>.input-text::-webkit-inner-spin-button,
+        .ratio-number-field>.input-text::-webkit-outer-spin-button {
+            margin: 0;
+            -webkit-appearance: none;
+        }
+
+        .ratio-number-field:has(>.ratio-number-stepper>.ratio-step-btn:active)>.input-text,
+        .ratio-number-field:has(>.ratio-number-stepper>.ratio-step-btn.is-tap-feedback)>.input-text {
+            border-color: #6366f1;
+        }
+
+        /* iOS Safari는 16px 미만 입력창에 포커스할 때 화면을 자동 확대한다. */
+        @supports (-webkit-touch-callout: none) {
+            html.mobile-number-controls input[type="number"] {
+                font-size: 16px !important;
+            }
+
+            .radio-label>.select-option-text {
+                white-space: nowrap;
+            }
+        }
+
+        /* ════════════════════════════════════════════════════════
+           🚫 [수정 금지] 코어 레이아웃 구조 — 전체화면·캔버스·스크롤
+           ════════════════════════════════════════════════════════ */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        html,
+        body {
+            overscroll-behavior: none;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            font-size: 16px !important;
+        }
+
+        .ui-box {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+        }
+
+        .shutter-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .shutter-wrapper.is-open {
+            grid-template-rows: 1fr;
+        }
+
+        .shutter-inner {
+            overflow: hidden;
+        }
+
+        @media (hover: none), (pointer: coarse) {
+
+            input,
+            textarea,
+            select,
+            button,
+            [role="button"],
+            [contenteditable="true"] {
+                touch-action: manipulation;
+            }
+
+            .zoom-btn,
+            .nav-btn,
+            .header-button,
+            .btn-sub,
+            .btn-reset-custom,
+            .modal-close-btn,
+            #btnScrollLeft,
+            #btnScrollRight {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+
+            .zoom-btn:active,
+            .zoom-btn.is-tap-feedback,
+            .nav-btn:active,
+            .nav-btn.is-tap-feedback,
+            .header-button:active,
+            .header-button.is-tap-feedback,
+            .btn-sub:active,
+            .btn-sub.is-tap-feedback {
+                background-color: #f1f5f9;
+            }
+
+            .btn-reset-custom:active,
+            .btn-reset-custom.is-tap-feedback {
+                color: var(--color-pause);
+                border-color: #fda4af;
+                background-color: var(--color-pause-bg);
+            }
+
+            .modal-close-btn:active,
+            .modal-close-btn.is-tap-feedback {
+                color: #f43f5e;
+            }
+
+            #btnScrollLeft:active,
+            #btnScrollLeft.is-tap-feedback,
+            #btnScrollRight:active,
+            #btnScrollRight.is-tap-feedback {
+                color: #4f46e5;
+            }
+
+            #fullscreen-btn:is(:active, .is-tap-feedback),
+            #fullscreen-btn-mobile:is(:active, .is-tap-feedback) {
+                background-color: #f1f5f9;
+            }
+        }
+
+        canvas {
+            touch-action: none;
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .bar-track {
+            width: 100%;
+            height: 16px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .popup-overlay {
+            background-color: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(2px);
+        }
+
+        #workspace:fullscreen {
+            background-color: #f8fafc;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        @media (orientation: landscape) {
+            #workspace:fullscreen {
+                padding: 1rem;
+                overflow-y: hidden;
+            }
+        }
+    </style>
+
+    <!-- 🚫 [수정 금지] Tailwind 컴포넌트 추출 -->
+    <style type="text/tailwindcss">
+        @layer components {
+            .panel-block      { @apply flex flex-col gap-2 p-3 border border-slate-200 rounded-lg bg-white; }
+            .modal-container  { @apply bg-white border border-slate-300 rounded-2xl w-full flex flex-col relative shadow-2xl max-h-[70dvh]; }
+            .modal-header     { @apply h-14 lg:h-16 px-6 border-b border-slate-100 flex items-center justify-between flex-none; }
+            .modal-body       { @apply flex-1 overflow-y-auto p-4 lg:p-6 flex flex-col gap-4; }
+            .guide-block      { @apply p-4 bg-slate-50 border border-slate-200 rounded-xl; }
+            .zoom-btn         { @apply w-10 h-10 flex items-center justify-center bg-white border border-slate-300 rounded-full shadow-sm text-slate-600 font-bold desktop-only:hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed desktop-only:disabled:hover:bg-slate-50; }
+            .nav-btn          { @apply w-12 h-12 flex items-center justify-center bg-white border border-slate-300 text-slate-600 rounded-full desktop-only:hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed desktop-only:disabled:hover:bg-slate-50; }
+            .radio-label      { @apply flex items-start gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer desktop-only:hover:bg-slate-50 transition-colors has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed; }
+            .input-text       { @apply w-full p-2 border border-slate-200 rounded text-center focus:outline-none focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50; }
+        }
+    </style>
+</head>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     🚫 [수정 금지] BODY — 레이아웃 클래스 수정 금지
+     ════════════════════════════════════════════════════════════════════ -->
+
+<body
+    class="bg-slate-100 text-slate-800 font-sans w-full m-0 p-0 box-border select-none overflow-x-hidden md:overflow-hidden landscape:overflow-hidden flex flex-col justify-center md:h-[100dvh] landscape:h-[100dvh]">
+
+    <div
+        class="flex flex-col w-full max-w-[1680px] mx-auto p-2 gap-2 box-border md:h-[100dvh] md:overflow-hidden landscape:h-[100dvh] landscape:overflow-hidden relative">
+
+        <!-- ═══════════════════════════════════════════════════════════════
+         🚫 [수정 금지] 헤더 — 제목은 JS CONTENT_CONFIG.title로 자동 주입
+         ═══════════════════════════════════════════════════════════════ -->
+        <header class="ui-box flex-none px-4 py-2 flex items-center justify-between z-10 bg-white relative">
+            <div class="flex items-center gap-4">
+                <a href="https://www.tsherpa.co.kr" target="_blank"
+                    class="flex items-center flex-none desktop-only:hover:opacity-80 transition-opacity">
+                    <img src="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_black.png"
+                        alt="T셀파"
+                        class="h-7 md:h-8 object-contain draggable-false flex-none hidden [@media(min-width:768px)]:block">
+                    <img src="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_short.png"
+                        alt="T셀파"
+                        class="h-7 md:h-8 object-contain draggable-false flex-none block [@media(min-width:768px)]:hidden">
+                </a>
+                <div class="border-l border-slate-300 pl-4">
+                    <h1 class="sim-title" id="sim-title-el">로딩 중...</h1><!-- CONTENT_CONFIG.title 자동 주입 -->
+                </div>
+            </div>
+            <div class="flex items-center relative">
+                <button id="moreMenuBtn"
+                    class="header-button flex landscape:hidden desktop-only:hidden transition-colors ml-2"
+                    title="메뉴 더보기">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                    </svg>
+                </button>
+                <div class="hidden landscape:flex desktop-only:flex items-center">
+                    <!-- SOUND MANAGER -->
+                    <div id="volume-popup"
+                        class="flex items-center overflow-hidden transition-all duration-300 w-0 opacity-0">
+                        <div
+                            class="flex items-center gap-2 w-48 px-3 bg-white border border-slate-200 rounded-xl h-[36px] ml-2">
+                            <button id="popup-mute-btn"
+                                class="flex-none text-slate-500 desktop-only:hover:text-indigo-600 transition-colors">
+                                <svg id="sound-icon-popup" class="w-5 h-5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2l5 5V3l-5 5H7a2 2 0 00-2 2z" />
+                                </svg>
+                            </button>
+                            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5"
+                                class="w-full accent-indigo-600 cursor-pointer">
+                        </div>
+                    </div>
+                    <button id="sound-toggle-btn" class="header-button hidden desktop-only:flex ml-2">
+                        <svg id="sound-icon-main" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2l5 5V3l-5 5H7a2 2 0 00-2 2z" />
+                        </svg>
+                    </button>
+                    <!-- 학습 가이드 -->
+                    <button id="helpBtn" class="header-button desktop-only:md:hidden font-bold text-lg ml-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <!-- 전체화면 | fullscreen -->
+                    <button id="fullscreen-btn" class="header-button flex ml-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="mobileMenuPanel"
+                    class="absolute top-1/2 -translate-y-1/2 right-full z-50 flex items-center gap-2 overflow-hidden transition-all duration-300 w-0 opacity-0">
+                    <button id="help-Btn" class="header-button flex-none flex font-bold text-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <button id="fullscreen-btn-mobile" class="header-button flex-none flex transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ════════════════════════════════════════════════════════
+         🚫 [수정 금지] 메인 워크스페이스 래퍼
+         ════════════════════════════════════════════════════════ -->
+        <main id="workspace"
+            class="flex flex-col md:flex-row landscape:flex-row flex-1 min-h-0 gap-3 relative bg-slate-100 md:bg-transparent">
+
+            <!-- 🚫 [수정 금지] 캔버스 영역 -->
+            <section id="content-area"
+                class="ui-box flex-none h-[50vh] md:h-auto landscape:h-auto md:flex-[3] landscape:flex-[3] flex flex-col min-h-[250px] md:min-h-[400px] landscape:min-h-0 overflow-hidden relative bg-white">
+                <!-- 캔버스 상단 환경변수 및 인디케이터 -->
+                <div
+                    class="h-10 pr-4 border-b border-slate-200 flex items-center justify-between flex-none bg-slate-50 z-50 relative gap-4">
+                    <div class="env-text flex items-center gap-4 flex-none pl-4" id="environment-info">
+                        <span id="env-label-canvas">로딩 중...</span><!-- CONTENT_CONFIG.envLabel 자동 주입 -->
+                    </div>
+                    <div id="statusIndicator"
+                        class="w-3 h-3 rounded-full bg-emerald-500 border border-slate-300 transition-colors duration-200 translate-y-[1px]">
+                    </div>
+                </div>
+
+                <div class="flex-1 w-full relative bg-white overflow-hidden" id="canvas-container">
+                    <!-- 콘텐츠 상태 -->
+                    <div
+                        class="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full border border-slate-200 shadow-sm pointer-events-none">
+                        <p id="helperText" class="helper-text-default whitespace-nowrap transition-colors">로딩 중...</p>
+                    </div>
+                    <canvas id="simCanvas" class="w-full h-full block relative z-0">컨텐츠 영역</canvas>
+                </div>
+                <!-- 초기화 -->
+                <button id="resetBtn"
+                    class="btn-reset-custom flex absolute bottom-4 right-4 z-40 bg-white/95 backdrop-blur border rounded-full px-4 h-10 items-center gap-2 transition-colors shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    초기화
+                </button>
+            </section>
+
+
+            <!-- ╔══════════════════════════════════════════════════════════╗
+             ║  ✏️  EDIT ZONE — 제어 패널 (우측 사이드바)                ║
+             ║  이 <aside> 안의 입력 폼을 자유롭게 추가/수정/삭제하세요.   ║
+             ╚══════════════════════════════════════════════════════════╝ -->
+            <aside id="settings-area"
+                class="ui-box flex-none landscape:max-w-[300px] md:flex-[1] landscape:flex-[1] md:min-w-[250px] landscape:min-w-[250px] flex flex-col min-h-[300px] landscape:min-h-0 overflow-hidden relative">
+                <div class="flex-1 overflow-y-auto relative" id="controlsWrapper">
+                    <div class="p-3 md:p-4 min-h-full flex flex-col justify-between gap-4">
+                        <div class="flex flex-col gap-4">
+
+                        <!-- ─────────────────────────────────────────────
+                         ✏️  입력 폼 영역 시작 — 아래부터 자유롭게 수정
+                         ───────────────────────────────────────────── -->
+
+                        <!-- 폼 1: 드롭다운 — 시나리오 -->
+                        <div class="panel-block">
+                            <label class="var-label-control">시나리오</label>
+                            <div class="relative w-full" id="customSelectContainer">
+                                <button id="customSelectTrigger" aria-haspopup="listbox" aria-expanded="false"
+                                    aria-controls="customSelectList"
+                                    class="select-option-text w-full h-10 flex justify-between items-center p-2 border rounded bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-shadow disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                                    <span class="truncate" id="customSelectValue">자유 탐구</span>
+                                    <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <ul id="customSelectList" role="listbox" tabindex="-1"
+                                    class="select-option-text hidden absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-md shadow-lg max-h-48 overflow-y-auto outline-none">
+                                    <li role="option" tabindex="0"
+                                        class="p-2 desktop-only:hover:bg-indigo-50 focus:bg-indigo-50 focus:outline-none cursor-pointer truncate"
+                                        data-value="free">자유 탐구</li>
+                                    <li role="option" tabindex="0"
+                                        class="p-2 desktop-only:hover:bg-indigo-50 focus:bg-indigo-50 focus:outline-none cursor-pointer truncate"
+                                        data-value="gorongosa">고롱고사 국립공원</li>
+                                    <li role="option" tabindex="0"
+                                        class="p-2 desktop-only:hover:bg-indigo-50 focus:bg-indigo-50 focus:outline-none cursor-pointer truncate"
+                                        data-value="limit">복원 한계</li>
+                                </ul>
+                            </div>
+                            <p id="scenarioDesc" class="var-label-var leading-relaxed"></p>
+                            <button id="dogBtn" type="button"
+                                class="btn-sub hidden min-h-[44px] py-2 border rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">아프리카들개
+                                도입</button>
+                        </div>
+
+                        <!-- 교란 버튼 (2열 × 3행) -->
+                        <div class="panel-block">
+                            <label class="var-label-control">① 교란 고르기</label>
+                            <p class="var-label-var leading-relaxed">바꿀 개체군 하나를 고릅니다. 시작을 누르면 적용됩니다.</p>
+                            <div class="grid grid-cols-2 gap-2" id="perturbGrid">
+                                <button type="button" id="perturb0up" data-level="0" data-dir="up"
+                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">생산자
+                                    증가</button>
+                                <button type="button" id="perturb0down" data-level="0" data-dir="down"
+                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">생산자
+                                    감소</button>
+                                <button type="button" id="perturb1up" data-level="1" data-dir="up"
+                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">1차
+                                    소비자 증가</button>
+                                <button type="button" id="perturb1down" data-level="1" data-dir="down"
+                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">1차
+                                    소비자 감소</button>
+                                <button type="button" id="perturb2up" data-level="2" data-dir="up"
+                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">2차
+                                    소비자 증가</button>
+                                <button type="button" id="perturb2down" data-level="2" data-dir="down"
+                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">2차
+                                    소비자 감소</button>
+                            </div>
+                        </div>
+
+                        <!-- 폼 2: 라디오 버튼 — 예측 -->
+                        <div class="panel-block">
+                            <label class="var-label-control">② 예측하기 (시작 전에)</label>
+                            <p class="var-label-var leading-relaxed" id="predictHint">먼저 교란을 고르세요.</p>
+                            <div class="flex flex-col gap-2 w-full" id="predictContainer">
+                                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                    <span class="var-label-var w-[4.5rem] flex-none" id="predLbl0">생산자</span>
+                                    <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2 flex-1 min-w-[8.5rem]">
+                                        <label class="radio-label min-w-0">
+                                            <input type="radio" name="pred0" value="up" id="pred0up"
+                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                            <span class="select-option-text whitespace-nowrap">증가</span>
+                                        </label>
+                                        <label class="radio-label min-w-0">
+                                            <input type="radio" name="pred0" value="down" id="pred0down"
+                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                            <span class="select-option-text whitespace-nowrap">감소</span>
+                                        </label>
+                                    </div>
+                                    <p id="predRes0" class="hidden basis-full text-sm font-bold leading-snug"></p>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                    <span class="var-label-var w-[4.5rem] flex-none" id="predLbl1">1차 소비자</span>
+                                    <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2 flex-1 min-w-[8.5rem]">
+                                        <label class="radio-label min-w-0">
+                                            <input type="radio" name="pred1" value="up" id="pred1up"
+                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                            <span class="select-option-text whitespace-nowrap">증가</span>
+                                        </label>
+                                        <label class="radio-label min-w-0">
+                                            <input type="radio" name="pred1" value="down" id="pred1down"
+                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                            <span class="select-option-text whitespace-nowrap">감소</span>
+                                        </label>
+                                    </div>
+                                    <p id="predRes1" class="hidden basis-full text-sm font-bold leading-snug"></p>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                    <span class="var-label-var w-[4.5rem] flex-none" id="predLbl2">2차 소비자</span>
+                                    <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2 flex-1 min-w-[8.5rem]">
+                                        <label class="radio-label min-w-0">
+                                            <input type="radio" name="pred2" value="up" id="pred2up"
+                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                            <span class="select-option-text whitespace-nowrap">증가</span>
+                                        </label>
+                                        <label class="radio-label min-w-0">
+                                            <input type="radio" name="pred2" value="down" id="pred2down"
+                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                            <span class="select-option-text whitespace-nowrap">감소</span>
+                                        </label>
+                                    </div>
+                                    <p id="predRes2" class="hidden basis-full text-sm font-bold leading-snug"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 폼 2: 라디오 버튼 — 속도 (실행 중에도 바꿀 수 있게 simOption이 아닌 name) -->
+                        <div class="panel-block">
+                            <label class="var-label-control">속도</label>
+                            <div class="grid grid-cols-3 gap-2 w-full" id="speedContainer">
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="simSpeed" value="slow" id="speedSlow"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                    <span class="select-option-text whitespace-nowrap">느림</span>
+                                </label>
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="simSpeed" value="normal" id="speedNormal"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0" checked>
+                                    <span class="select-option-text whitespace-nowrap">보통</span>
+                                </label>
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="simSpeed" value="fast" id="speedFast"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                    <span class="select-option-text whitespace-nowrap">빠름</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- ─────────────────────────────────────────────
+                         ✏️  입력 폼 영역 끝
+                         ───────────────────────────────────────────── -->
+                        </div>
+
+                        <!-- 🚫 [수정 금지] 하단 동작 버튼 (텍스트만 변경 가능) -->
+                        <div class="flex flex-col gap-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button id="pauseBtn"
+                                    class="btn-action-start col-span-2 py-2 border rounded-lg transition-colors"><span class="inline-flex items-center gap-1.5 align-middle"><svg aria-hidden="true" class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.53.85l10.4-6.5a1 1 0 0 0 0-1.7L9.53 4.65A1 1 0 0 0 8 5.5z"/></svg>시작</span></button>
+                                <button id="conceptBtn" class="btn-sub py-2 border rounded-lg transition-colors">개념
+                                    정리</button>
+                                <button id="quizBtn" class="btn-sub py-2 border rounded-lg transition-colors">확인
+                                    퀴즈</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </aside>
+            <!-- ╚══════EDIT ZONE 끝═════════════════════════════════════════╝ -->
+
+
+            <!-- ═════════════════════════════════════════════════════════════
+             🚫 [수정 금지] 팝업 모달 — 내용은 JS CONTENT_CONFIG로 자동 주입
+             ═════════════════════════════════════════════════════════════ -->
+
+            <!-- 학습 가이드 모달 (모바일/태블릿) -->
+            <div id="helpBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-left">
+                <div class="modal-container max-w-4xl min-h-[200px]">
+                    <div class="modal-header">
+                        <h3 class="modal-title flex items-center gap-2"><svg class="w-6 h-6 text-indigo-600" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg> 학습 가이드</h3>
+                        <button id="closeHelpBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="guide-block">
+                            <h4 class="guide-title mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg> 콘텐츠 소개</h4>
+                            <p class="guide-desc" id="guide-intro-modal">로딩 중...</p>
+                        </div>
+                        <div class="guide-block">
+                            <h4 class="guide-title mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg> 사용 방법</h4>
+                            <ol class="guide-desc list-decimal pl-5 space-y-1.5 marker:text-slate-400 marker:font-bold"
+                                id="guide-steps-modal"><!-- JS 자동 주입 --></ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 개념 정리 모달 -->
+            <div id="conceptBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-left">
+                <div class="modal-container max-w-2xl min-h-[200px]">
+                    <div class="modal-header">
+                        <h3 class="modal-title">개념 정리</h3>
+                        <button id="closeConceptBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="modal-body" id="conceptContent"><!-- JS CONTENT_CONFIG.concept 자동 주입 --></div>
+                </div>
+            </div>
+
+            <!-- 확인 퀴즈 모달 -->
+            <div id="quizBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-center">
+                <div class="modal-container max-w-2xl min-h-[200px] lg:min-h-[480px] max-h-[70dvh] overflow-hidden">
+                    <div class="modal-header">
+                        <div class="flex items-center gap-3">
+                            <h3 class="modal-title">확인 퀴즈</h3>
+                            <span id="quizStep" class="quiz-step px-3 py-1 rounded-full">질문 1 / N</span>
+                        </div>
+                        <button id="closeQuizBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                                        <div class="flex-1 flex flex-col min-h-0">
+                        <!-- 👻 Sizer Wrapper Start -->
+                        <div class="relative flex-1 min-h-0">
+                            <!-- 투명 뼈대 (Sizer) : 화면에 보이지 않지만 최대 크기를 버텨줌 -->
+                            <div class="invisible px-5 pt-5 flex flex-col gap-2 pointer-events-none">
+                                <p id="sizerQ" class="quiz-question flex-none"></p>
+                                <div class="flex-1 flex flex-col justify-center py-4">
+                                    <div id="sizerA" class="quiz-answer-box py-3 px-4 rounded-xl border w-full text-center"></div>
+                                </div>
+                            </div>
+                            <!-- 실제 퀴즈 내용 : 뼈대 위를 덮어씌움 -->
+                            <div class="absolute inset-0 px-5 pt-5 flex flex-col gap-2 overflow-y-auto">
+                                <p id="questionText" class="quiz-question flex-none"></p>
+                                <div id="answerArea" class="flex-1 flex flex-col justify-center py-4">
+                                    <button id="showAnswerBtn"
+                                        class="quiz-btn-check w-full max-w-sm mx-auto py-3 rounded-xl transition-colors">정답
+                                        확인하기</button>
+                                    <div id="answerText"
+                                        class="quiz-answer-box hidden py-3 px-4 rounded-xl border w-full text-center">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 👻 Sizer Wrapper End -->
+                        <div id="quizNav" class="flex justify-center gap-4 flex-none pt-2 pb-4 px-5 mt-0">
+                            <button id="prevQuizBtn" class="nav-btn">←</button>
+                            <button id="nextQuizBtn" class="nav-btn">→</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🚫 [수정 금지] 전체화면 딤처리 UI -->
+            <div id="fullscreen-exit-ui"
+                class="hidden fixed top-0 left-0 w-full h-12 z-[60] transition-opacity duration-300 opacity-0 pointer-events-none">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent"></div>
+            </div>
+        </main>
+
+        <!-- 🚫 [수정 금지] 푸터 -->
+        <footer class="flex-none flex justify-center p-1">
+            <p class="text-[10px] text-slate-400 font-medium">copyright© 2026 by chunjae co.ltd all rights reserved.</p>
+        </footer>
+    </div>
+
+
+    <script>
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE A — CONTENT CONFIG (텍스트/콘텐츠 설정)              ████
+           ████   이 블록의 값만 수정하면 제목·가이드·개념·퀴즈가 모두 반영됩니다.  ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        const CONTENT_CONFIG = {
+
+            /** 브라우저 탭 제목 + 헤더 제목 */
+            title: "생태계평형",
+
+            /** 캔버스·패널 환경 변수 레이블 */
+            envLabel: "생태계평형 시뮬레이터",
+            envLabelpanel: "",
+
+            /** 학습 가이드 */
+            guide: {
+                intro: "해달이 성게를 잡아먹어 해초가 유지되듯(교과서 80쪽), 생산자·초식동물(1차 소비자)·육식동물(2차 소비자)의 먹이 관계로 개체수가 연쇄적으로 조절되어 생태계평형이 유지되는 과정을 확인할 수 있다.",
+                steps: [
+                    "시나리오에서 자유 탐구, 고롱고사 국립공원, 복원 한계 중 하나를 고른다.",
+                    "① 교란에서 바꿀 개체군 하나를 고른다(예: 1차 소비자 증가). 고롱고사 국립공원에서는 아프리카들개 도입을 고른다.",
+                    "② 나머지 두 개체군이 처음에 증가할지 감소할지 예측한 뒤 시작 버튼을 누른다. 속도는 느림·보통·빠름 중에서 고른다.",
+                    "예측이 맞았는지 화면의 판정(맞음/틀림)을 확인하고, 개체수피라미드와 시간–개체수 그래프에서 세 개체군이 연쇄적으로 증감하는 모습을 관찰한다. 그래프의 시간은 상대적인 값으로, 실제 기간(일·월·년)을 나타내지 않는다.",
+                    "상태 표시가 생태계평형 상태 → 생태계평형 깨짐 → 회복 중 → 생태계평형 회복으로 바뀌는지 읽는다(회복되면 자동으로 멈춘다). 복원 한계 시나리오에서는 사라진 영양단계를 다시 들여올 때와 비교한다."
+                ]
+            },
+
+            /** 개념 정리 카드 목록 — color: 'orange' | 'green' | 'blue' | 'purple' */
+            concept: [
+                {
+                    color: "orange",
+                    title: "먹이사슬·먹이그물과 영양단계",
+                    desc: "생산자에서부터 최종소비자까지 먹고 먹히는 사슬 형태의 먹이 관계를 먹이사슬(예: 식물의 열매 → 들쥐 → 너구리)이라 하고, 여러 먹이사슬이 그물처럼 얽힌 것이 먹이그물입니다. 먹이사슬의 각 단계에서 생물이 차지하는 위치를 영양단계라 하며, 생산자 → 1차 소비자(초식동물) → 2차 소비자(육식동물) 순으로 이어집니다. (교과서 80쪽, 지도서 137쪽)"
+                },
+                {
+                    color: "green",
+                    title: "생태피라미드",
+                    desc: "생산자가 광합성으로 만든 양분의 일부는 세포호흡에 쓰이고, 적은 양만 다음 영양단계로 전달됩니다. 에너지는 순환하지 않고 한 방향으로 흐르며 상위 영양단계로 갈수록 에너지양이 줄어듭니다. 영양단계별 개체수, 생물량(일정한 크기의 지역에 서식하는 생물의 총중량), 에너지양을 하위 영양단계부터 쌓으면 위로 갈수록 줄어드는 피라미드 모양이 되는데, 이를 생태피라미드라고 합니다. (교과서 81쪽, 지도서 137~138쪽)"
+                },
+                {
+                    color: "blue",
+                    title: "생태계평형과 유지 원리",
+                    desc: "생태계평형은 생물의 종류, 개체수와 물질의 양 등이 안정적으로 유지되어 균형을 이루는 상태입니다. 한 개체군의 수가 일시적으로 변해도 먹이 관계로 연결된 다른 개체군이 연쇄적으로 조절되어 다시 안정 상태를 회복합니다. 예를 들어 1차 소비자가 증가하면 생산자는 감소하고 2차 소비자는 증가하며, 이어서 1차 소비자가 감소하고 생산자는 증가, 2차 소비자는 감소하여 평형이 회복됩니다. (교과서 83쪽, 지도서 140쪽)"
+                },
+                {
+                    color: "purple",
+                    title: "환경 변화와 복원 한계",
+                    desc: "먹이 관계에 따른 회복은 각 영양단계의 생물이 사라지지 않고 유지될 때 일어납니다. 복원 한계를 넘는 환경 변화가 일어나면 생태계평형은 먹이 관계만으로는 회복되지 않고, 많은 생물종이 사라질 수 있으며 다시 회복되기까지 매우 긴 시간이 필요합니다. 고롱고사 국립공원은 오랜 전쟁 뒤 대형 육식동물이 돌아오지 못해 아프리카들개를 도입하였고, 그 결과 초식동물이 줄고 생산자가 늘어 안정되었습니다. (교과서 82~83쪽, 85쪽, 지도서 281쪽)"
+                }
+            ],
+
+            /** 확인 퀴즈 목록 */
+            quizzes: [
+                {
+                    q: "평형 상태의 생태계에서 육식동물(2차 소비자)이 일시적으로 감소하면 나머지 두 개체군은 처음에 어떻게 변하는가?\n\n① 생산자 감소, 1차 소비자 증가\n② 생산자 증가, 1차 소비자 감소\n③ 생산자 증가, 1차 소비자 증가\n④ 생산자 감소, 1차 소비자 감소",
+                    a: "정답: ① 해설: 육식동물에게 덜 먹히므로 초식동물(1차 소비자)이 증가하고, 늘어난 초식동물이 생산자를 많이 먹어 생산자는 감소합니다. (지도서 139쪽)"
+                },
+                {
+                    q: "평형 상태의 생태계에서 한 개체군이 변할 때 다른 개체군의 처음 변화로 옳은 것만을 고른 것은?\n\nㄱ. 생산자가 증가하면 1차 소비자와 2차 소비자가 증가한다.\nㄴ. 1차 소비자가 감소하면 생산자와 2차 소비자가 감소한다.\nㄷ. 2차 소비자가 증가하면 생산자는 증가하고 1차 소비자는 감소한다.\n\n① ㄱ   ② ㄷ   ③ ㄱ, ㄴ   ④ ㄱ, ㄷ",
+                    a: "정답: ④ ㄱ, ㄷ. 해설: 1차 소비자가 감소하면 생산자는 덜 먹혀 증가하고, 먹이가 줄어든 2차 소비자는 감소합니다. 따라서 ㄴ은 틀립니다. (지도서 139쪽)"
+                },
+                {
+                    q: "생태피라미드에 대한 설명으로 옳은 것만을 고른 것은?\n\nㄱ. 상위 영양단계로 갈수록 에너지양이 줄어든다.\nㄴ. 안정된 생태계에서 개체수는 소비자가 생산자보다 많다.\nㄷ. 개체수, 생물량, 에너지양으로 생태피라미드를 나타낼 수 있다.\n\n① ㄱ   ② ㄴ   ③ ㄱ, ㄷ   ④ ㄴ, ㄷ",
+                    a: "정답: ③ ㄱ, ㄷ. 해설: 한 영양단계의 에너지 중 적은 양만 다음 영양단계로 전달되므로 위로 갈수록 에너지양이 줄어듭니다. 안정된 생태계에서는 생산자의 개체수가 가장 많으므로 ㄴ은 틀립니다. (교과서 81쪽, 지도서 161쪽)"
+                },
+                {
+                    q: "생태계평형에 대한 설명으로 옳지 않은 것은?\n\n① 생물의 종류, 개체수와 물질의 양 등이 안정적으로 유지되어 균형을 이루는 상태이다.\n② 생태계평형은 환경 변화에 영향을 받지 않는다.\n③ 평형 상태에서 생산자가 증가하면 일시적으로 1차 소비자가 증가한다.\n④ 개체수 변화는 원래의 안정된 생태계로 회복되는 방향으로 진행된다.",
+                    a: "정답: ② 해설: 자연적 또는 인간에 의한 환경 변화는 생태계평형을 깨뜨리는 원인이 됩니다. (교과서 83쪽, 지도서 161쪽)"
+                },
+                {
+                    q: "환경 변화와 생태계평형에 대한 설명으로 옳은 것은?\n\n① 한 영양단계가 모두 사라져도 먹이 관계만으로 곧 원래대로 돌아온다.\n② 피나투보 화산 분화 뒤 식물의 광합성량이 늘었다.\n③ 해양 플라스틱은 최상위 포식자에게는 영향을 주지 않는다.\n④ 복원 한계를 넘는 환경 변화가 일어나면 회복에 매우 긴 시간이 필요하다.",
+                    a: "정답: ④ 해설: 한 영양단계가 사라지면 먹이 관계만으로는 회복되지 않습니다. 화산 분화 뒤 광합성량은 줄었고, 플라스틱은 최상위 포식자까지 영향을 줍니다. (교과서 83·85쪽)"
+                }
+            ]
+        };
+        /* ████ ZONE A 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE B — SIM CONFIG (시뮬레이션 파라미터 설정)             ████
+           ████   슬라이더 범위, 초기 객체 크기 등 수치 설정을 여기서 변경하세요.   ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        const SIM_CONFIG = {
+            /* 정성적 감쇠 모형 계수 (시뮬레이션 설정, 화면·개념·퀴즈에 표시하지 않음).
+               세 영양단계 모두 진동이 같은 빠르기로 줄어들어 평형으로 돌아오도록 맞춘 값 */
+            model: { s: 0.15, a: 1 / 3, b: 1.5, g: 1.0, d: 0.5 },
+            base: [100, 40, 10],        /* 평형 상태 상대 개체수: 생산자 > 1차 소비자 > 2차 소비자 */
+            upFactor: 1.6,              /* 증가 교란: 1.6배 */
+            downFactor: 0.5,            /* 감소 교란: 절반 (복원 한계 시나리오는 0) */
+            reintroduce: 0.3,           /* 사라진 영양단계를 다시 들여올 때 (평형값 대비) */
+            extinct: 0.01,              /* 이보다 작아지면 사라짐(0) */
+            maxU: 5,
+            speed: { slow: 1, normal: 2, fast: 4 },   /* 실제 1초당 모형 시간 */
+            dt: 0.02,
+            sampleEvery: 0.1,
+            graphWindow: 40,            /* 그래프에 보이는 모형 시간 폭 */
+            firstThreshold: 0.02,       /* 첫 반응으로 보는 변화 크기 */
+            firstTimeout: 8,
+            revealAfter: 6,             /* 교란 뒤 이만큼 지나 변화가 충분히 보인 뒤 예측 판정을 보여 준다 (첫 변화가 가장 커지는 때 1~4 이후) */
+            eqThreshold: 0.03,          /* 평형으로 보는 차이 */
+            breakTime: 1.0,             /* 교란 뒤 '깨짐'으로 표시하는 시간 */
+            holdTime: 1.5               /* 이 시간 동안 평형 근처면 '회복' */
+        };
+        /* ████ ZONE B 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE C — SIM STATE (동적 상태 변수)                       ████
+           ████   시뮬레이션 진행 중 변하는 값들을 여기에 추가·수정하세요.         ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        let simData = {
+            x: 0,
+            y: 0,
+            radius: 0,
+            scenario: 'free',           /* free | gorongosa | limit */
+            speed: 'normal',
+            u: [1, 1, 1],               /* 평형값 대비 개체수 (생산자, 1차 소비자, 2차 소비자) */
+            t: 0,
+            anim: 0,
+            lastNow: 0,
+            hist: [],
+            lastSample: 0,
+            events: [],
+            phase: 'eq',                /* eq | broken | recovering | recovered */
+            pertT: 0,
+            holdAcc: 0,
+            pert: null,
+            feedback: null,
+            view: 'scene',              /* 휴대폰 가로: scene | graph */
+            layout: null
+        };
+
+        /* 탭별 상태 저장소 (이 단원은 탭 없음) */
+        const tabStates = {};
+        /* ████ ZONE C 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE D — CORE ENGINE (수정 금지)
+           캔버스·상태·사운드·DOM캐시 등 엔진 코어 초기화
+           ════════════════════════════════════════════════════════════════════════ */
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        const container = document.getElementById('canvas-container');
+
+        const varSlider1 = document.getElementById('varSlider1');
+        const varDisplay1 = document.getElementById('varDisplay1');
+
+        const sysState = {
+            isStarted: false, isPaused: false, isDragging: false, isLooping: false,
+            zoomLevel: 1.0, offsetX: 0, offsetY: 0, lastX: 0, lastY: 0,
+            currentQuizIndex: 0, canvasLogicalWidth: 0, canvasLogicalHeight: 0
+        };
+
+        const ZOOM_MIN = 0.5;
+        const ZOOM_MAX = 1.5;
+        const ZOOM_EPSILON = 0.0001;
+
+        function updateZoomButtons() {
+            const zoomOutBtn = document.getElementById('zoomOutBtn');
+            const zoomInBtn = document.getElementById('zoomInBtn');
+            if (zoomOutBtn) zoomOutBtn.disabled = sysState.zoomLevel <= ZOOM_MIN + ZOOM_EPSILON;
+            if (zoomInBtn) zoomInBtn.disabled = sysState.zoomLevel >= ZOOM_MAX - ZOOM_EPSILON;
+        }
+
+        const DOM = {}; /* DOM 요소 캐시 */
+
+        const debounce = (func, delay) => {
+            let id;
+            return (...args) => { clearTimeout(id); id = setTimeout(() => func.apply(this, args), delay); };
+        };
+
+        const bindEvent = (id, type, handler) => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener(type, handler);
+        };
+
+        /* CONTENT_CONFIG → DOM 주입 */
+        function renderContent() {
+            const C = CONTENT_CONFIG;
+
+            /* 제목 */
+            document.title = C.title;
+            const titleEl = document.getElementById('sim-title-el');
+            if (titleEl) titleEl.textContent = C.title;
+
+            /* 환경 변수 레이블 */
+            ['env-label-canvas', 'env-label-panel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.envLabel;
+            });
+
+            /* 제어패널 환경 변수 레이블 */
+            ['env-label-panel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.envLabelpanel;
+            });
+
+            /* 가이드 — 소개 */
+            ['guide-intro-desktop', 'guide-intro-modal'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.guide.intro;
+            });
+
+            /* 가이드 — 단계 (모달: 단순 주입) */
+            const stepsHTML = CONTENT_CONFIG.guide.steps.map(s => `<li>${s}</li>`).join('');
+            const modalSteps = document.getElementById('guide-steps-modal');
+            if (modalSteps) modalSteps.innerHTML = stepsHTML;
+
+            /* 가이드 — 단계 (데스크톱 셔터: 개수에 따라 비율·컬럼 분기) */
+            const steps = CONTENT_CONFIG.guide.steps;
+            const introCol = document.getElementById('guide-intro-col');
+            const stepsCol = document.getElementById('guide-steps-col');
+            const stepsWrap = document.getElementById('guide-steps-wrapper-desktop');
+
+            if (steps.length >= 4) {
+                /* 1:2 비율 적용 */
+                if (introCol) introCol.className = 'flex-1';
+                if (stepsCol) stepsCol.className = 'flex-[2]';
+
+                /* 컬럼 분할: ceil(n/2)개가 왼쪽 */
+                const split = Math.ceil(steps.length / 2);
+                const col1 = steps.slice(0, split);
+                const col2 = steps.slice(split);
+
+                if (stepsWrap) {
+                    stepsWrap.innerHTML = `
+                <div class="flex flex-col lg:flex-row gap-x-8 gap-y-1">
+                    <ol class="guide-desc flex-1 list-decimal pl-5 space-y-1">
+                        ${col1.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                    <ol class="guide-desc flex-1 list-decimal pl-5 space-y-1" start="${split + 1}">
+                        ${col2.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                </div>`;
+                }
+            } else {
+                /* 1:1 비율, 단일 리스트 */
+                if (introCol) introCol.className = 'flex-1';
+                if (stepsCol) stepsCol.className = 'flex-1';
+
+                if (stepsWrap) {
+                    stepsWrap.innerHTML = `
+                <ol class="guide-desc list-decimal pl-5 space-y-1">
+                    ${steps.map(s => `<li>${s}</li>`).join('')}
+                </ol>`;
+                }
+            }
+
+            /* 개념 정리 카드 */
+            const colorMap = {
+                orange: { bg: 'bg-orange-50', border: 'border-orange-500', titleClass: 'concept-title-1', descClass: 'concept-desc' },
+                green: { bg: 'bg-emerald-50', border: 'border-emerald-500', titleClass: 'concept-title-2', descClass: 'concept-desc' },
+                blue: { bg: 'bg-blue-50', border: 'border-blue-500', titleClass: 'concept-title-3', descClass: 'concept-desc' },
+                purple: { bg: 'bg-purple-50', border: 'border-purple-500', titleClass: 'concept-title-4', descClass: 'concept-desc' }
+            };
+            const conceptContent = document.getElementById('conceptContent');
+            if (conceptContent) {
+                conceptContent.innerHTML = C.concept.map(item => {
+                    const col = colorMap[item.color] || colorMap.orange;
+                    return `<div class="p-4 ${col.bg} border-l-4 ${col.border} rounded-r-xl">
+                        <p class="${col.titleClass} mb-1">${item.title}</p>
+                        <p class="${col.descClass}">${item.desc}</p>
+                    </div>`;
+                }).join('');
+            }
+
+            /* KaTeX 수식 렌더링 (콘텐츠 주입 후 실행) */
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '\\[', right: '\\]', display: true }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            /* DOM 캐싱 */
+            DOM.statusIndicator = document.getElementById('statusIndicator');
+            DOM.pauseBtn = document.getElementById('pauseBtn');
+            DOM.helperText = document.getElementById('helperText');
+            DOM.varSlider1 = document.getElementById('varSlider1');
+            DOM.directInputSingle = document.getElementById('directInputSingle');
+            DOM.ratioInputA = document.getElementById('ratioInputA');
+            DOM.ratioInputB = document.getElementById('ratioInputB');
+            DOM.customSelectTrigger = document.getElementById('customSelectTrigger');
+            DOM.customSelectList = document.getElementById('customSelectList');
+            DOM.radioOptions = document.querySelectorAll('input[name="simOption"]');
+
+            /* 콘텐츠 주입 */
+            renderContent();
+
+            /* 슬라이더 초기값 세팅 */
+            if (varSlider1) {
+                varSlider1.min = SIM_CONFIG.slider.min;
+                varSlider1.max = SIM_CONFIG.slider.max;
+                varSlider1.step = SIM_CONFIG.slider.step;
+                varSlider1.value = SIM_CONFIG.slider.initialValue;
+            }
+            if (varDisplay1) varDisplay1.textContent = `${SIM_CONFIG.slider.initialValue} ${SIM_CONFIG.slider.unit}`;
+
+            checkLandscape();
+        });
+
+        const checkLandscape = () => {
+            if (window.matchMedia("(orientation: landscape)").matches && window.innerWidth < 1024) {
+                const sc = document.getElementById('shutter-content');
+                if (sc && sc.classList.contains('is-open')) document.getElementById('shutter-toggle')?.click();
+            }
+        };
+        window.addEventListener('orientationchange', () => setTimeout(checkLandscape, 100));
+
+        if (!document.getElementById('shutter-toggle')) {
+            const helpBtn = document.getElementById('helpBtn');
+            if (helpBtn) helpBtn.classList.remove('desktop-only:md:hidden');
+        }
+        /* ════ ZONE D 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE E — SOUND MANAGER (수정 금지) (삭제시 uiSound 관련 코드 모두 삭제)
+           ════════════════════════════════════════════════════════════════════════ */
+        const uiSound = (function () {
+            let audioCtx = null, volume = 0.5, previousVolume = 0.5;
+            let iconMain, iconPopup, sliderEl;
+
+            function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+
+            function playTone(freq, type, duration, volOffset = 0) {
+                if (volume === 0) return;
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                const v = Math.max(0, Math.min(1, volume + volOffset));
+                gain.gain.setValueAtTime(v, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + duration);
+            }
+
+            function updateUI() {
+                const on = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2l5 5V3l-5 5H7a2 2 0 00-2 2z"/>`;
+                const off = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>`;
+                const svg = volume === 0 ? off : on;
+                if (iconMain) iconMain.innerHTML = svg;
+                if (iconPopup) iconPopup.innerHTML = svg;
+                if (sliderEl) sliderEl.value = volume;
+            }
+
+            return {
+                playClick: () => playTone(600, 'sine', 0.1),
+                playTick: () => playTone(800, 'triangle', 0.05, -0.3),
+                playCorrect: () => { playTone(660, 'sine', 0.12); setTimeout(() => playTone(990, 'sine', 0.22), 110); },
+                playWrong: () => { playTone(260, 'triangle', 0.16); setTimeout(() => playTone(196, 'triangle', 0.28), 150); },
+                playDone: () => [523, 659, 784].forEach((f, i) => setTimeout(() => playTone(f, 'sine', 0.22, -0.1), i * 120)),
+                setDOM: (mIcon, pIcon, slider) => { iconMain = mIcon; iconPopup = pIcon; sliderEl = slider; updateUI(); },
+                setVolume: (val) => { volume = parseFloat(val); if (volume > 0) previousVolume = volume; updateUI(); },
+                toggleMute: () => { volume = volume > 0 ? (previousVolume = volume, 0) : (previousVolume > 0 ? previousVolume : 0.5); updateUI(); }
+            };
+        })();
+        /* ════ ZONE E 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ███████████████████████████████████████████████████████████████████████
+           ████                                                               ████
+           ████   ✏️  ZONE F — SIMULATION LOGIC (시뮬레이션 핵심 로직)         ████
+           ████   draw()와 updatePhysics()에 시뮬레이션 코드를 작성하세요.       ████
+           ████                                                               ████
+           ███████████████████████████████████████████████████████████████████████ */
+
+        /* ── 화면 이름·색 (교과서 표기. 동물 종 이름은 화면 글자에 쓰지 않음) ── */
+        const LV_NAMES = ['생산자', '초식동물(1차 소비자)', '육식동물(2차 소비자)'];
+        const LV_SHORT = ['생산자', '1차 소비자', '2차 소비자'];
+        const LV_COLORS = ['#16a34a', '#ea580c', '#7c3aed'];
+        const STATUS_TEXT = { eq: '생태계평형 상태', broken: '생태계평형 깨짐', recovering: '회복 중', recovered: '생태계평형 회복' };
+        const STATUS_COLORS = { eq: '#059669', broken: '#e11d48', recovering: '#d97706', recovered: '#4f46e5' };
+        const SCENARIOS = {
+            free: { name: '자유 탐구', desc: '생태계평형 상태에서 시작합니다. 바꿀 개체군을 고르고, 다른 개체군이 처음에 어떻게 변할지 예측한 뒤 시작을 눌러 확인합니다.' },
+            gorongosa: { name: '고롱고사 국립공원', desc: '오랜 전쟁으로 대형 육식동물이 돌아오지 못해 육식동물(2차 소비자)이 사라지고, 생산자에 비해 초식동물(1차 소비자)이 많은 상태입니다. 아프리카들개 도입을 고르고, 예측한 뒤 시작을 누릅니다. 도입한 뒤에는 교란 버튼도 쓸 수 있습니다.' },
+            limit: { name: '복원 한계', desc: '처음에는 감소만 고를 수 있습니다. 감소를 고르고 시작하면 그 영양단계의 생물이 모두 사라집니다(개체수 0). 그다음에는 사라진 영양단계의 증가만 고를 수 있고, 고르고 시작하면 다시 들여옵니다.' }
+        };
+        const LIMIT_MSG = '먹이 관계만으로는 회복되지 않음 / 회복에 매우 긴 시간';
+        const GORONGOSA_END = '아프리카들개 도입 뒤, 깨진 상태보다 초식동물(1차 소비자)은 줄고 육식동물(2차 소비자)과 생산자는 늘어 안정된 개체수피라미드가 되었습니다.';
+
+        /* 지도서 p.139 표 — 교란 직후 나머지 두 개체군의 첫 반응 (1 증가, -1 감소). 예측 판정의 정답 */
+        const FIRST_RESPONSE = {
+            '0up': { 1: 1, 2: 1 },
+            '1up': { 0: -1, 2: 1 },
+            '2up': { 0: 1, 1: -1 },
+            '0down': { 1: -1, 2: -1 },
+            '1down': { 0: 1, 2: -1 },
+            '2down': { 0: -1, 1: 1 }
+        };
+
+        /* ── 그림: ./contents/ 상대 경로. 불러오지 못하면 도형으로 대신 그린다 ── */
+        const SPRITE_KEYS = ['grass', 'herb', 'dog'];
+        const SPRITE_ASPECT = [512 / 338, 409 / 512, 512 / 421];
+        const IMG = {};
+        [
+            ['bg', './contents/bg_savanna.webp'],
+            ['grass', './contents/producer_grass.webp'],
+            ['herb', './contents/herbivore_impala.webp'],
+            ['dog', './contents/carnivore_wild_dog.webp']
+        ].forEach(([key, src]) => {
+            const im = new Image();
+            im.onload = () => { IMG[key] = im; draw(); };
+            im.onerror = () => { IMG[key] = null; };
+            im.src = src;
+        });
+
+        let selfChecked = false;
+        const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
+        const font = (px, wt) => `${wt} ${px.toFixed(1)}px "Noto Sans KR", sans-serif`;
+        /* 캔버스 글자 크기 = 기준 × ui, 폰에서도 읽히고 큰 화면에서 넘치지 않게 최소·최대 */
+        const textPx = (base, ui, min = 11, max = 20) => clampN(base * ui, min, max);
+
+        /* ── 모형: 세 개체군이 먹이 관계로 서로의 증가 빠르기를 바꾼다 (0이면 0으로 남음) ── */
+        function modelRates(u) {
+            const m = SIM_CONFIG.model;
+            const rP = m.s + m.a, rH = m.s + m.g - m.b, rC = m.s - m.d;
+            return [
+                u[0] * (rP - m.s * u[0] - m.a * u[1]),
+                u[1] * (rH + m.b * u[0] - m.s * u[1] - m.g * u[2]),
+                u[2] * (rC + m.d * u[1] - m.s * u[2])
+            ];
+        }
+
+        function stepModel(u, h) {
+            const add = (a, k, f) => a.map((v, i) => v + k[i] * f);
+            const k1 = modelRates(u);
+            const k2 = modelRates(add(u, k1, h / 2));
+            const k3 = modelRates(add(u, k2, h / 2));
+            const k4 = modelRates(add(u, k3, h));
+            return u.map((v, i) => {
+                let n = v + h / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
+                if (!(n >= SIM_CONFIG.extinct)) n = 0;
+                return Math.min(SIM_CONFIG.maxU, n);
+            });
+        }
+
+        /* 고롱고사 시작: 육식동물이 없을 때 생산자·초식동물이 머무는 상태 (정지 상태) */
+        function gorongosaStart() {
+            const m = SIM_CONFIG.model;
+            const rP = m.s + m.a, rH = m.s + m.g - m.b;
+            const det = -m.s * m.s - m.a * m.b;
+            return [(-m.s * rP + m.a * rH) / det, (-m.s * rH - m.b * rP) / det, 0];
+        }
+
+        function scenarioStart(name) {
+            return name === 'gorongosa' ? gorongosaStart() : [1, 1, 1];
+        }
+
+        function applyPerturb(u, level, dir, scenario) {
+            const v = u.slice();
+            if (dir === 'up') v[level] = v[level] > 0 ? Math.min(SIM_CONFIG.maxU, v[level] * SIM_CONFIG.upFactor) : SIM_CONFIG.reintroduce;
+            else v[level] = scenario === 'limit' ? 0 : v[level] * SIM_CONFIG.downFactor;
+            if (v[level] < SIM_CONFIG.extinct) v[level] = 0;
+            return v;
+        }
+
+        /* 교란한 궤적과 교란하지 않은 궤적의 차이로 첫 반응 방향을 구한다 */
+        function firstResponse(before, level, dir, scenario) {
+            let u = applyPerturb(before, level, dir, scenario);
+            let sh = before.slice();
+            const got = {}, h = SIM_CONFIG.dt;
+            for (let t = 0; t < SIM_CONFIG.firstTimeout; t += h) {
+                u = stepModel(u, h);
+                sh = stepModel(sh, h);
+                [0, 1, 2].forEach(i => {
+                    if (i === level || got[i] !== undefined) return;
+                    const d = u[i] - sh[i];
+                    if (Math.abs(d) > SIM_CONFIG.firstThreshold) got[i] = Math.sign(d);
+                });
+                if (Object.keys(got).length === 2) break;
+            }
+            return got;
+        }
+
+        /* 자체 점검: 모형의 첫 반응이 지도서 p.139 표와 같은가 (실패해도 멈추지 않고 경고만) */
+        function selfCheckModel() {
+            const bad = [];
+            const compare = (label, key, got) => {
+                Object.keys(FIRST_RESPONSE[key]).forEach(i => {
+                    if (got[i] !== FIRST_RESPONSE[key][i]) bad.push(`${label} ${key}: ${LV_SHORT[i]} 표 ${FIRST_RESPONSE[key][i]}, 모형 ${got[i]}`);
+                });
+            };
+            Object.keys(FIRST_RESPONSE).forEach(key => {
+                const level = Number(key[0]), dir = key.slice(1);
+                compare('자유 탐구', key, firstResponse([1, 1, 1], level, dir, 'free'));
+                if (dir === 'down') compare('복원 한계', key, firstResponse([1, 1, 1], level, dir, 'limit'));
+            });
+            const gs = gorongosaStart();
+            if (Math.max(...modelRates(gs).map(Math.abs)) > 1e-6) bad.push('고롱고사 시작이 정지 상태가 아님');
+            compare('고롱고사', '2up', firstResponse(gs, 2, 'up', 'gorongosa'));
+            let u = applyPerturb(gs, 2, 'up', 'gorongosa');
+            for (let t = 0; t < 150; t += 0.05) u = stepModel(u, 0.05);
+            if (!(u[1] < gs[1] && u[2] > 0 && u[0] > gs[0])) bad.push('고롱고사 끝 상태 방향');
+            if (Math.max(...u.map(v => Math.abs(v - 1))) > SIM_CONFIG.eqThreshold) bad.push('고롱고사 안정되지 않음');
+            let z = [1, 0, 1];
+            for (let t = 0; t < 150; t += 0.05) z = stepModel(z, 0.05);
+            if (z[1] !== 0 || z[2] !== 0) bad.push('사라진 영양단계가 저절로 회복됨');
+            if (bad.length) console.warn('[자체 점검] 모형 첫 반응이 지도서 p.139 표와 다름:', bad.join(' | '));
+            else console.info('[자체 점검] 교란 10가지의 첫 반응이 지도서 p.139 표와 같음 · 고롱고사 안정 · 사라진 영양단계는 저절로 회복되지 않음');
+            return bad.length === 0;
+        }
+
+        function currentStatus() {
+            if (simData.u.some(v => v === 0)) return 'broken';
+            return simData.phase;
+        }
+
+        function clearPredictions() {
+            [0, 1, 2].forEach(i => document.querySelectorAll(`input[name="pred${i}"]`).forEach(r => { r.checked = false; }));
+        }
+
+        function setScenarioLabel() {
+            const csvEl = document.getElementById('customSelectValue');
+            if (csvEl) csvEl.textContent = SCENARIOS[simData.scenario].name;
+            if (DOM.customSelectTrigger) DOM.customSelectTrigger.setAttribute('data-selected-value', simData.scenario);
+            if (DOM.customSelectList) DOM.customSelectList.classList.add('hidden');
+        }
+
+        function pushSample() {
+            simData.hist.push({ t: simData.t, u: simData.u.slice() });
+            simData.lastSample = simData.t;
+            const tMin = simData.t - SIM_CONFIG.graphWindow - 1;
+            while (simData.hist.length > 2 && simData.hist[1].t < tMin) simData.hist.shift();
+        }
+
+        function resetState() {
+            simData.u = scenarioStart(simData.scenario);
+            simData.t = 0; simData.anim = 0; simData.lastNow = 0;
+            simData.hist = [{ t: 0, u: simData.u.slice() }];
+            simData.lastSample = 0;
+            simData.events = [];
+            simData.phase = 'eq'; simData.pertT = 0; simData.holdAcc = 0;
+            simData.pert = null; simData.feedback = null;
+            simData.pending = null; simData.autoStopped = false; simData.popup = false;
+            clearPredictions();
+        }
+
+        /* 교란 고르기: 바로 바꾸지 않고, 시작(계속하기)을 누를 때 적용한다 (교과서 82쪽 탐구 2·3: 교란을 정하고 예상) */
+        function selectDisturbance(level, dir) {
+            const same = simData.pending && simData.pending.level === level && simData.pending.dir === dir;
+            simData.pending = same ? null : { level, dir };
+            simData.feedback = null;
+            simData.autoStopped = false;
+            simData.popup = false;
+            clearPredictions();
+            draw();
+        }
+
+        function loadScenario(name) {
+            if (!SCENARIOS[name]) return;
+            simData.scenario = name;
+            initSimulation();
+        }
+
+        /* 교란 버튼: 그 개체군만 한 번 바꾸고, 예측을 읽어 둔다 */
+        function applyDisturbance(level, dir) {
+            const before = simData.u.slice();
+            const after = applyPerturb(before, level, dir, simData.scenario);
+            if (after[level] === before[level]) return;
+            pushSample();
+            simData.u = after;
+            const others = [0, 1, 2].filter(i => i !== level);
+            const preds = {};
+            others.forEach(i => {
+                const r = document.querySelector(`input[name="pred${i}"]:checked`);
+                if (r) preds[i] = r.value === 'up' ? 1 : -1;
+            });
+            let judge = Object.keys(preds).length === 2 ? 'ok' : 'nopred';
+            if (others.some(i => after[i] === 0)) judge = 'zero';
+            simData.pert = { key: level + dir, level, dir, t0: simData.t, shadow: before, others, got: {}, preds, judge, done: false };
+            simData.feedback = null;
+            simData.phase = 'broken'; simData.pertT = simData.t; simData.holdAcc = 0;
+            simData.events.push(simData.t);
+            pushSample();
+            draw();
+        }
+
+        function finishPert(p) {
+            p.done = true;
+            const table = FIRST_RESPONSE[p.key];
+            const word = s => (s > 0 ? '증가' : s < 0 ? '감소' : '변화 없음');
+            if (p.judge !== 'zero') {
+                const off = p.others.filter(i => p.got[i] !== table[i]);
+                if (off.length) console.warn('[자체 점검] 첫 반응이 지도서 p.139 표와 다름:', p.key, off.map(i => LV_SHORT[i]).join(', '));
+            }
+            simData.feedback = {
+                title: `${LV_SHORT[p.level]} ${p.dir === 'up' ? '증가' : '감소'}`,
+                judge: p.judge,
+                lines: p.others.map(i => ({ level: i, name: LV_NAMES[i], obs: word(p.got[i]), pred: p.preds[i] ? word(p.preds[i]) : '', ok: p.preds[i] === table[i] }))
+            };
+            simData.feedback.right = simData.feedback.lines.filter(l => l.ok).length;
+            if (p.judge === 'ok') (simData.feedback.right === simData.feedback.lines.length ? uiSound.playCorrect : uiSound.playWrong)();
+        }
+
+        function advance(h) {
+            simData.u = stepModel(simData.u, h);
+            simData.t += h;
+            const p = simData.pert;
+            if (p && !p.done) {
+                p.shadow = stepModel(p.shadow, h);
+                p.others.forEach(i => {
+                    if (p.got[i] !== undefined) return;
+                    const d = simData.u[i] - p.shadow[i];
+                    if (Math.abs(d) > SIM_CONFIG.firstThreshold) p.got[i] = Math.sign(d);
+                });
+                const elapsed = simData.t - p.t0;
+                if ((p.others.every(i => p.got[i] !== undefined) && elapsed >= SIM_CONFIG.revealAfter) || elapsed > SIM_CONFIG.firstTimeout) finishPert(p);
+            }
+            if (simData.phase === 'broken' && simData.t - simData.pertT >= SIM_CONFIG.breakTime) simData.phase = 'recovering';
+            if (simData.phase === 'recovering') {
+                const dev = Math.max(...simData.u.map(v => Math.abs(v - 1)));
+                simData.holdAcc = dev < SIM_CONFIG.eqThreshold ? simData.holdAcc + h : 0;
+                if (simData.holdAcc >= SIM_CONFIG.holdTime) simData.phase = 'recovered';
+            }
+            if (simData.t - simData.lastSample >= SIM_CONFIG.sampleEvery - 1e-9) pushSample();
+        }
+
+        /* 띄어쓰기 단위로 줄을 나눈다 (캔버스 글자, 어절 중간에서 끊지 않음) */
+        function wrapWords(text, maxW) {
+            const out = [];
+            let line = '';
+            text.split(' ').forEach(w => {
+                const t = line ? line + ' ' + w : w;
+                if (line && ctx.measureText(t).width > maxW) { out.push(line); line = w; } else line = t;
+            });
+            if (line) out.push(line);
+            return out;
+        }
+
+        const RECOVER_MSG = '한 개체군의 수가 변해도 먹이 관계로 연결된 다른 개체군의 수가 연쇄적으로 변하면서 다시 안정적인 상태를 회복했습니다. (교과서 83쪽)';
+
+        /* 평형 회복 팝업: 자동으로 멈출 때 캔버스 가운데에 뜨고 '확인'으로 닫는다 */
+        function drawPopup(L) {
+            simData.popupBtn = null;
+            if (!simData.popup) return;
+            const ui = L.ui, W = L.w, H = L.h;
+            ctx.fillStyle = 'rgba(15,23,42,0.45)';
+            ctx.fillRect(0, 0, W, H);
+            const f = simData.feedback;
+            const rows = [];
+            if (f) rows.push({ t: `교란: ${f.title}`, c: '#334155', w: 700 });
+            if (f && f.judge === 'ok') rows.push({ t: `예측 ${f.lines.length}개 중 ${f.right}개 맞음`, c: f.right === f.lines.length ? '#047857' : '#be123c', w: 700 });
+            /* 캔버스 위 HTML(위쪽 실행 상태 안내, 오른쪽 아래 초기화 버튼)과 겹치지 않는 세로 구간 */
+            const top = 56, bottom = H - 60;
+            const cw = Math.min(W - 24, Math.max(280, 460 * ui));
+            let fsT, fs, pad, inner, body, lh, btnH, titleH, ch;
+            for (let k = 1; k >= 0.6; k -= 0.05) {   /* 자리가 모자라면 글자·여백을 줄인다 */
+                fsT = textPx(20, ui, 16, 26) * k; fs = Math.max(11, textPx(15, ui, 12.5, 20) * k);
+                pad = Math.max(10, 22 * ui * k);
+                inner = cw - pad * 2;
+                ctx.font = font(fs, 500);
+                body = wrapWords(simData.scenario === 'gorongosa' ? GORONGOSA_END : RECOVER_MSG, inner);
+                lh = fs * 1.5; btnH = Math.max(34, 44 * ui * k); titleH = fsT * 1.5;
+                ch = pad + titleH + 6 * ui + (rows.length + body.length) * lh + 10 * ui + btnH + pad;
+                if (ch <= bottom - top - 8) break;
+            }
+            /* 그래도 넘치면(휴대폰 가로) 설명 문장을 빼고 제목·교란·예측·확인만 */
+            if (ch > bottom - top - 8) { ch -= body.length * lh; body = []; }
+            const cx = (W - cw) / 2;
+            const cy = ch <= bottom - top - 8 ? top + (bottom - top - ch) / 2 : Math.max(4, (H - ch) / 2);
+            ctx.save();
+            ctx.shadowColor = 'rgba(15,23,42,0.25)';
+            ctx.shadowBlur = 24;
+            rrect(cx, cy, cw, ch, 14 * ui);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.restore();
+            /* 제목 + 원 안 체크 (선으로 그림) */
+            let y = cy + pad + titleH / 2;
+            const r0 = fsT * 0.55;
+            ctx.beginPath();
+            ctx.arc(cx + pad + r0, y, r0, 0, Math.PI * 2);
+            ctx.fillStyle = '#4f46e5';
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2.4 * ui;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(cx + pad + r0 * 0.5, y + r0 * 0.02);
+            ctx.lineTo(cx + pad + r0 * 0.88, y + r0 * 0.38);
+            ctx.lineTo(cx + pad + r0 * 1.5, y - r0 * 0.36);
+            ctx.stroke();
+            ctx.lineCap = 'butt';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.font = font(fsT, 800);
+            ctx.fillStyle = '#312e81';
+            ctx.fillText('생태계평형 회복', cx + pad + r0 * 2 + 10 * ui, y + 0.5);
+            y += titleH / 2 + 6 * ui;
+            rows.forEach(row => {
+                ctx.font = font(fs, row.w);
+                ctx.fillStyle = row.c;
+                ctx.fillText(row.t, cx + pad, y + lh / 2);
+                y += lh;
+            });
+            ctx.font = font(fs, 500);
+            ctx.fillStyle = '#475569';
+            body.forEach(t => { ctx.fillText(t, cx + pad, y + lh / 2); y += lh; });
+            /* 확인 버튼 */
+            const bw = Math.min(inner, 160 * ui), bx = cx + (cw - bw) / 2, by = cy + ch - pad - btnH;
+            rrect(bx, by, bw, btnH, 10 * ui);
+            ctx.fillStyle = '#4f46e5';
+            ctx.fill();
+            ctx.font = font(fs, 700);
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.fillText('확인', bx + bw / 2, by + btnH / 2 + 0.5);
+            simData.popupBtn = { x: bx, y: by, w: bw, h: btnH };
+        }
+
+        function setHTMLOnce(el, html) {
+            if (el && el._shown !== html) { el._shown = html; el.innerHTML = html; }
+        }
+
+        /* 시나리오마다 의미 있는 교란만 고를 수 있다
+           - 복원 한계: 사라진 영양단계가 없으면 감소만, 있으면 그 영양단계 '증가'(다시 들여오기)만
+           - 고롱고사: 육식동물이 없는 동안은 아프리카들개 도입만 (교란 버튼 잠금)
+           - 공통: 이미 0인 개체군의 감소는 바뀌는 것이 없어 잠금 */
+        function perturbAllowed(lv, dir) {
+            const u = simData.u;
+            if (dir === 'down' && u[lv] === 0) return false;
+            if (simData.scenario === 'gorongosa' && u[2] === 0) return false;
+            if (simData.scenario === 'limit') {
+                const gone = [0, 1, 2].filter(i => u[i] === 0);
+                return gone.length ? dir === 'up' && gone.includes(lv) : dir === 'down';
+            }
+            return true;
+        }
+
+        function syncControls() {
+            const running = sysState.isStarted && !sysState.isPaused;
+            const status = currentStatus();
+            const pd = simData.pending;
+            const isSel = (lv, dir) => !!pd && pd.level === lv && pd.dir === dir;
+            const SEL = ['ring-2', 'ring-indigo-500', 'bg-indigo-50', 'text-indigo-700', 'border-indigo-400'];
+            const grid = document.getElementById('perturbGrid');
+            if (grid) grid.querySelectorAll('button').forEach(b => {
+                const lv = Number(b.dataset.level), dir = b.dataset.dir;
+                const allowed = perturbAllowed(lv, dir);
+                b.disabled = running || !allowed;
+                /* 이 시나리오에서 고를 수 없는 버튼: 실행 중 잠금(흐림)과 달리 점선·회색 바탕·취소선 */
+                ['border-dashed', 'bg-slate-100', 'line-through', 'text-slate-400'].forEach(c => b.classList.toggle(c, !allowed));
+                b.title = allowed ? '' : '이 시나리오에서는 고를 수 없습니다';
+                const on = !b.disabled && isSel(lv, dir);
+                SEL.forEach(c => b.classList.toggle(c, on));
+                b.setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
+            const dog = document.getElementById('dogBtn');
+            if (dog) {
+                dog.classList.toggle('hidden', simData.scenario !== 'gorongosa');
+                dog.disabled = running || simData.u[2] > 0;
+                SEL.forEach(c => dog.classList.toggle(c, isSel(2, 'up')));
+            }
+            /* 예측: 교란을 고른 뒤에 나머지 두 개체군만 고른다. 판정이 나면 줄마다 맞음/틀림 */
+            const f = simData.feedback;
+            const shownLevel = pd ? pd.level : (simData.pert ? simData.pert.level : -1);
+            const ICON_OK = '<svg aria-hidden="true" class="inline w-4 h-4 mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+            const ICON_NO = '<svg aria-hidden="true" class="inline w-4 h-4 mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+            [0, 1, 2].forEach(i => {
+                const isPert = i === shownLevel;
+                document.querySelectorAll(`input[name="pred${i}"]`).forEach(r => {
+                    r.disabled = running || !pd || isPert;
+                });
+                /* 교란한 개체군 줄은 버튼 칸을 숨기고 이름 옆에 '교란한 개체군'만 */
+                document.getElementById(`pred${i}up`)?.closest('.grid')?.classList.toggle('hidden', isPert);
+                const lbl = document.getElementById(`predLbl${i}`);
+                if (lbl) lbl.classList.toggle('text-indigo-600', isPert);
+                const res = document.getElementById(`predRes${i}`);
+                if (!res) return;
+                let html = '';
+                if (isPert) html = '<span class="text-indigo-600">교란한 개체군</span>';
+                else if (f && f.judge === 'ok' && !pd) {
+                    const l = f.lines.find(x => x.level === i);
+                    if (l) html = l.ok ? `<span class="text-emerald-700">${ICON_OK}맞음 (실제 처음 ${l.obs})</span>`
+                                      : `<span class="text-rose-600">${ICON_NO}틀림 (실제 처음 ${l.obs})</span>`;
+                }
+                if (res._shown !== html) { res._shown = html; res.innerHTML = html; }
+                res.classList.toggle('hidden', !html);
+                res.classList.toggle('basis-full', !isPert);
+            });
+            setHTMLOnce(document.getElementById('predictHint'), !pd && !(f && f.judge === 'ok')
+                ? '먼저 ① 교란을 고르세요.'
+                : pd ? '고른 교란 때문에 나머지 두 개체군이 처음에 증가할지 감소할지 고릅니다.'
+                     : '예측과 실제 첫 반응을 비교합니다.');
+            const envEl = document.getElementById('env-label-canvas');
+            if (envEl) {
+                const narrow = (container ? container.clientWidth : 0) < 520;
+                const html = (narrow ? '' : `${CONTENT_CONFIG.envLabel}<span class="mx-2 text-slate-300">|</span>`) + `상태: <span class="text-indigo-600">${STATUS_TEXT[status]}</span>`;
+                if (envEl.innerHTML !== html) envEl.innerHTML = html;
+            }
+            setHTMLOnce(document.getElementById('scenarioDesc'), SCENARIOS[simData.scenario].desc);
+        }
+
+        /* ── 배치: 화면 모양마다 레이아웃만 다시 계산 (시뮬레이션 상태는 그대로) ── */
+        function computeLayout(w, h) {
+            const ui = clampN(Math.min(w / 1080, h / 700), 0.75, 1.5);
+            const pad = 10 * ui, gap = 10 * ui;
+            const TOP_SAFE = 56;        /* 위쪽 안내 문구(helperText) 자리 */
+            const RESET_SAFE = 60;      /* 오른쪽 아래 초기화 버튼 자리 */
+            const vw = window.innerWidth, vh = window.innerHeight;
+            const L = { ui, pad, gap, w, h, mode: 'wide', tabs: null };
+            if (vh < 500 && vw > vh) {
+                /* 휴대폰 가로: 장면(또는 그래프) | 피라미드, 그래프는 탭으로 */
+                L.mode = 'land';
+                const leftW = Math.round(w * 0.58);
+                const tabH = 40, tabW = 72;
+                L.scene = { x: 0, y: 0, w: leftW, h };
+                L.tabs = [
+                    { id: 'scene', label: '장면', x: pad, y: h - pad - tabH, w: tabW, h: tabH },
+                    { id: 'graph', label: '그래프', x: pad + tabW + 6, y: h - pad - tabH, w: tabW, h: tabH }
+                ];
+                L.graph = { x: pad, y: TOP_SAFE, w: leftW - 2 * pad, h: h - TOP_SAFE - tabH - 2 * pad - 4 };
+                L.pyr = { x: leftW + gap, y: TOP_SAFE, w: w - leftW - gap - pad, h: h - TOP_SAFE - RESET_SAFE };
+            } else if (vw < 768) {
+                /* 휴대폰 세로: 장면 → 피라미드 → 그래프 */
+                L.mode = 'tall';
+                /* 피라미드는 세 행이 겹치지 않을 높이(제목 + 3×18px 이상)를 먼저 확보, 그래프는 약 32% 이상 */
+                const ph = Math.max(Math.round(h * 0.19), 82);
+                const sh = Math.round(clampN(h - ph - 2 * gap - pad - h * 0.32, h * 0.34, h * 0.40));
+                L.scene = { x: 0, y: 0, w, h: sh };
+                L.pyr = { x: pad, y: sh + gap, w: w - 2 * pad, h: ph };
+                L.graph = { x: pad, y: sh + ph + 2 * gap, w: w - 2 * pad, h: h - sh - ph - 2 * gap - pad };
+            } else {
+                /* PC·태블릿: 장면 위, 아래에 피라미드 | 그래프 */
+                const sh = Math.round(h * 0.52);
+                const by = sh + gap, bh = h - by - pad;
+                const pw = clampN(w * 0.38, 190, 560 * ui);
+                L.scene = { x: 0, y: 0, w, h: sh };
+                L.pyr = { x: pad, y: by, w: pw, h: bh };
+                L.graph = { x: pad + pw + gap, y: by, w: w - pw - gap - 2 * pad, h: bh };
+            }
+            return L;
+        }
+
+        /* 초기화 버튼과 겹치면 그래프를 좁히거나 낮춘다 (잃는 넓이가 적은 쪽) */
+        function avoidReset(b, L) {
+            const rx = L.w - 128, ry = L.h - 64;
+            if (b.x + b.w <= rx || b.y + b.h <= ry) return b;
+            const narrow = { x: b.x, y: b.y, w: rx - b.x, h: b.h };
+            const short = { x: b.x, y: b.y, w: b.w, h: ry - b.y };
+            return narrow.w * narrow.h >= short.w * short.h ? narrow : short;
+        }
+
+        function rrect(x, y, w, h, r) {
+            r = Math.min(r, w / 2, h / 2);
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+
+        function drawCard(r, ui) {
+            rrect(r.x, r.y, r.w, r.h, 10 * ui);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1 * ui;
+            ctx.stroke();
+        }
+
+        function drawCreature(it) {
+            const img = IMG[SPRITE_KEYS[it.s]];
+            if (img) { ctx.drawImage(img, it.x, it.y, it.w, it.h); return; }
+            const { x, y, w, h } = it;
+            ctx.fillStyle = it.s === 0 ? '#4d7c0f' : it.s === 1 ? '#b45309' : '#3f3f46';
+            if (it.s === 0) {
+                ctx.beginPath();
+                for (let k = 0; k < 3; k++) {
+                    const bx = x + w * (0.12 + 0.28 * k);
+                    ctx.moveTo(bx, y + h);
+                    ctx.lineTo(bx + w * 0.14, y + h * 0.1);
+                    ctx.lineTo(bx + w * 0.28, y + h);
+                }
+                ctx.fill();
+                return;
+            }
+            ctx.beginPath();
+            ctx.ellipse(x + w * 0.5, y + h * 0.55, w * 0.36, h * 0.18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillRect(x + w * 0.22, y + h * 0.6, w * 0.06, h * 0.4);
+            ctx.fillRect(x + w * 0.7, y + h * 0.6, w * 0.06, h * 0.4);
+            const hx = it.s === 1 ? x + w * 0.84 : x + w * 0.16;
+            ctx.beginPath();
+            ctx.arc(hx, y + h * 0.38, Math.min(w, h) * 0.13, 0, Math.PI * 2);
+            ctx.fill();
+            if (it.s === 2) {
+                ctx.fillStyle = '#facc15';
+                [[0.4, 0.52], [0.55, 0.6], [0.62, 0.5]].forEach(([fx, fy]) => {
+                    ctx.beginPath();
+                    ctx.arc(x + w * fx, y + h * fy, w * 0.05, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+        }
+
+        /* ① 서식지 장면: 배경(cover, 땅 기준) + 개체수에 비례하는 그림 개수 */
+        function drawScene(r, L) {
+            const ui = L.ui;
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(r.x, r.y, r.w, r.h);
+            ctx.clip();
+            let groundTop;
+            const bg = IMG.bg;
+            if (bg) {
+                const sc = Math.max(r.w / bg.naturalWidth, r.h / bg.naturalHeight);
+                const dw = bg.naturalWidth * sc, dh = bg.naturalHeight * sc;
+                let dy = r.y + r.h - dh;
+                /* 아주 가로로 긴 장면: 아래 기준이면 지평선(이미지 약 50%)이 잘리므로 장면 위쪽 22% 근처에 둔다 */
+                if (L.mode !== 'tall' && dy + dh * 0.5 < r.y + r.h * 0.2) dy = r.y + r.h * 0.22 - dh * 0.5;
+                ctx.drawImage(bg, r.x + (r.w - dw) / 2, dy, dw, dh);
+                groundTop = Math.max(r.y, dy + dh * 0.54);
+            } else {
+                groundTop = r.y + r.h * 0.5;
+                ctx.fillStyle = '#7dd3fc';
+                ctx.fillRect(r.x, r.y, r.w, groundTop - r.y);
+                ctx.fillStyle = '#a3b545';
+                ctx.fillRect(r.x, groundTop, r.w, r.y + r.h - groundTop);
+            }
+
+            /* 그림 1개가 나타내는 개체수는 화면 넓이에 따라 바뀐다 (실제 값은 피라미드·그래프 숫자) */
+            const k = clampN(r.h * 0.16, 34, 140);
+            const widths = [1.35 * k, 1.0 * k, 1.3 * k];
+            const cap = clampN(Math.round(r.w * r.h / 11000), 15, 40);
+            const eqCount = [Math.max(3, Math.round(cap * 0.3)), Math.max(3, Math.round(cap * 0.15)), Math.max(2, Math.round(cap * 0.07))];
+            const yTop = groundTop + (r.y + r.h - groundTop) * 0.12;
+            const yBot = r.y + r.h - r.h * 0.03;
+            const running = sysState.isStarted && !sysState.isPaused;
+            const items = [];
+            for (let s = 0; s < 3; s++) {
+                const u = simData.u[s];
+                const n = u > 0 ? clampN(Math.round(u * eqCount[s]), 1, Math.round(eqCount[s] * 1.8)) : 0;
+                const img = IMG[SPRITE_KEYS[s]];
+                const aspect = img ? img.naturalWidth / img.naturalHeight : SPRITE_ASPECT[s];
+                for (let j = 0; j < n; j++) {
+                    /* 고정된 저불일치 수열 → 매 프레임 같은 자리, 개수가 늘어도 고르게 퍼짐 */
+                    const fx = (0.5 + 0.7548776662 * (j + 1) + s * 0.31) % 1;
+                    const fd = (0.5 + 0.5698402910 * (j + 1) + s * 0.17) % 1;
+                    const iw = widths[s] * (0.72 + 0.28 * fd);
+                    const ih = iw / aspect;
+                    const feet = yTop + (yBot - yTop) * fd;
+                    const bob = running && s > 0 ? Math.abs(Math.sin(simData.anim * 6 + j * 1.7 + s)) * 2.5 * ui : 0;
+                    items.push({ s, x: r.x + r.w * 0.02 + (r.w * 0.96 - iw) * fx, y: feet - ih - bob, w: iw, h: ih, feet });
+                }
+            }
+            items.sort((a, b) => a.feet - b.feet);
+            items.forEach(drawCreature);
+
+            /* 상태 표시 (장면이 충분히 클 때) */
+            const st = currentStatus();
+            if (r.h >= 160) {
+                ctx.font = font(textPx(14, ui, 11.5, 20), 700);
+                const txt = STATUS_TEXT[st];
+                const cw = ctx.measureText(txt).width + 30 * ui, ch = 28 * ui;
+                const cx = r.x + 12 * ui;
+                const cy = cx + cw > L.w / 2 - 170 ? r.y + 58 : r.y + 12 * ui;
+                rrect(cx, cy, cw, ch, ch / 2);
+                ctx.fillStyle = 'rgba(255,255,255,0.94)';
+                ctx.fill();
+                ctx.strokeStyle = STATUS_COLORS[st];
+                ctx.lineWidth = 1.5 * ui;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(cx + 12 * ui, cy + ch / 2, 4 * ui, 0, Math.PI * 2);
+                ctx.fillStyle = STATUS_COLORS[st];
+                ctx.fill();
+                ctx.fillStyle = '#334155';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(txt, cx + 21 * ui, cy + ch / 2 + 0.5);
+            }
+
+            /* 아래쪽 안내 상자들이 쌓이는 기준선 */
+            let stackBottom = L.tabs ? L.tabs[0].y - 6 : r.y + r.h - 8 * ui;
+
+            /* 예측 판정: 장면 아래쪽에 크게 (맞음 초록 ✓ / 틀림 빨강 ✕, 글자 아이콘이 아니라 선으로 그림) */
+            const f = simData.feedback;
+            if (f && f.judge === 'ok' && !simData.pending) {
+                const allOk = f.right === f.lines.length;
+                const fs = textPx(14.5, ui, 11.5, 20);
+                const lh = fs * 1.55;
+                const iconS = fs * 0.95;
+                const rows = [{ text: `예측 ${f.lines.length}개 중 ${f.right}개 맞음`, ok: allOk, bold: true }];
+                if (r.h >= 200) f.lines.forEach(l => rows.push({ text: `${l.name}: 예측 ${l.pred} → 실제 처음 ${l.obs}`, ok: l.ok }));
+                ctx.font = font(fs, 700);
+                const padX = 14 * ui, gapI = 8 * ui;
+                const bw = Math.min(r.w - 16 * ui, Math.max(...rows.map(t => ctx.measureText(t.text).width)) + iconS + gapI + padX * 2);
+                const bh = rows.length * lh + 12 * ui;
+                const bx = r.x + (r.w - bw) / 2, by = stackBottom - bh;
+                rrect(bx, by, bw, bh, 10 * ui);
+                ctx.fillStyle = 'rgba(255,255,255,0.96)';
+                ctx.fill();
+                ctx.strokeStyle = allOk ? '#059669' : '#e11d48';
+                ctx.lineWidth = 2 * ui;
+                ctx.stroke();
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                rows.forEach((row, i) => {
+                    const cy = by + 6 * ui + lh * (i + 0.5);
+                    const ix = bx + padX;
+                    ctx.strokeStyle = row.ok ? '#059669' : '#e11d48';
+                    ctx.lineWidth = 2.6 * ui;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    if (row.ok) {
+                        ctx.moveTo(ix, cy);
+                        ctx.lineTo(ix + iconS * 0.38, cy + iconS * 0.36);
+                        ctx.lineTo(ix + iconS, cy - iconS * 0.4);
+                    } else {
+                        const d = iconS * 0.38;
+                        ctx.moveTo(ix + iconS / 2 - d, cy - d); ctx.lineTo(ix + iconS / 2 + d, cy + d);
+                        ctx.moveTo(ix + iconS / 2 + d, cy - d); ctx.lineTo(ix + iconS / 2 - d, cy + d);
+                    }
+                    ctx.stroke();
+                    ctx.lineCap = 'butt';
+                    ctx.font = font(row.bold ? fs : fs * 0.92, row.bold ? 700 : 600);
+                    ctx.fillStyle = row.bold ? (row.ok ? '#047857' : '#be123c') : '#334155';
+                    ctx.fillText(row.text, ix + iconS + gapI, cy + 0.5);
+                });
+                stackBottom = by - 6 * ui;
+            }
+
+            /* 한 영양단계가 사라졌을 때 안내 */
+            if (simData.u.some(v => v === 0)) {
+                const fs = textPx(14, ui);
+                ctx.font = font(fs, 700);
+                const maxW = r.w - 24 * ui;
+                let lines = [LIMIT_MSG];
+                if (ctx.measureText(LIMIT_MSG).width + 24 * ui > maxW) lines = LIMIT_MSG.split(' / ');
+                const lh = fs * 1.4;
+                const bw = Math.min(maxW, Math.max(...lines.map(t => ctx.measureText(t).width)) + 24 * ui);
+                const bh = lines.length * lh + 10 * ui;
+                const bx = r.x + (r.w - bw) / 2, by = stackBottom - bh;
+                rrect(bx, by, bw, bh, 8 * ui);
+                ctx.fillStyle = 'rgba(15,23,42,0.74)';
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                lines.forEach((t, i) => ctx.fillText(t, r.x + r.w / 2, by + 5 * ui + lh * (i + 0.5)));
+            }
+            ctx.restore();
+        }
+
+        /* ② 개체수피라미드: 아래부터 생산자 · 1차 소비자 · 2차 소비자 */
+        function drawPyramid(r, L) {
+            const ui = L.ui;
+            drawCard(r, ui);
+            const compact = r.h < 100;   /* 휴대폰 세로: 여백을 줄인다 */
+            const m = compact ? 5 : Math.max(8, 10 * ui);
+            const fsT = compact ? textPx(13, ui, 11.5, 14) : textPx(15.5, ui, 12, 22);
+            const fsBase = textPx(13.5, ui);
+            const padX = Math.max(10, 12 * ui), labelGap = Math.max(12, 16 * ui), valGap = Math.max(8, 10 * ui);
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.font = font(fsT, 700);
+            ctx.fillStyle = '#334155';
+            const titleY = r.y + m + fsT / 2;
+            ctx.fillText('개체수피라미드', r.x + r.w / 2, titleY);
+            const top = titleY + fsT / 2 + (compact ? 4 : Math.max(10, 12 * ui)), bottom = r.y + r.h - m;
+            const rowH = (bottom - top) / 3;
+            if (rowH < 8) return;
+            /* 라벨끼리 겹치지 않게: 행 높이 ≥ 글자 × 1.5 (최소 10px) */
+            const fs = Math.max(10, Math.min(fsBase, rowH / 1.5));
+            const barH = Math.max(6, Math.min(rowH * 0.7, 46 * ui));
+            ctx.font = font(fs, 600);
+            const lh = fs * 1.35;
+            const twoLine = !compact && (Math.max(...LV_NAMES.map(t => ctx.measureText(t).width)) + labelGap > r.w * 0.42) && rowH >= lh * 2;
+            const labels = LV_NAMES.map(t => (twoLine ? t.replace('(', '\n(').split('\n') : [t]));
+            const labelW = Math.max(...labels.flat().map(t => ctx.measureText(t).width)) + labelGap;
+            ctx.font = font(fs, 700);
+            const valW = ctx.measureText('000').width + valGap;
+            const x0 = r.x + padX + labelW, x1 = r.x + r.w - padX;
+            const cx = (x0 + x1) / 2, maxBar = Math.max(10, x1 - x0 - 2 * valW);
+            const vals = simData.u.map((v, i) => Math.round(v * SIM_CONFIG.base[i]));
+            const scale = Math.max(150, ...vals);
+            for (let i = 0; i < 3; i++) {
+                const y = bottom - (i + 1) * rowH + (rowH - barH) / 2;
+                const bw = vals[i] > 0 ? Math.max(3 * ui, vals[i] / scale * maxBar) : 0;
+                if (bw > 0) {
+                    rrect(cx - bw / 2, y, bw, barH, 3 * ui);
+                    ctx.fillStyle = LV_COLORS[i];
+                    ctx.fill();
+                } else {
+                    ctx.setLineDash([3 * ui, 3 * ui]);
+                    ctx.strokeStyle = LV_COLORS[i];
+                    ctx.lineWidth = 1.2 * ui;
+                    ctx.strokeRect(cx - 10 * ui, y, 20 * ui, barH);
+                    ctx.setLineDash([]);
+                }
+                ctx.font = font(fs, 600);
+                ctx.fillStyle = '#334155';
+                ctx.textAlign = 'left';
+                labels[i].forEach((t, k) => ctx.fillText(t, r.x + padX, y + barH / 2 + (k - (labels[i].length - 1) / 2) * lh));
+                ctx.font = font(fs, 700);
+                ctx.fillStyle = LV_COLORS[i];
+                ctx.fillText(String(vals[i]), cx + Math.max(bw / 2, 10 * ui) + valGap, y + barH / 2);
+            }
+        }
+
+        function graphMax(tStart) {
+            let m = 0;
+            simData.hist.forEach(s => { if (s.t >= tStart - 0.2) s.u.forEach((v, i) => { m = Math.max(m, v * SIM_CONFIG.base[i]); }); });
+            simData.u.forEach((v, i) => { m = Math.max(m, v * SIM_CONFIG.base[i]); });
+            return Math.max(150, Math.ceil(m * 1.1 / 50) * 50);
+        }
+
+        /* ③ 시간–개체수 그래프 */
+        function drawGraph(r, L) {
+            const ui = L.ui;
+            drawCard(r, ui);
+            const small = r.h < 120;     /* 아이폰SE 세로 등: 세로축 제목 생략, 범례·여백 축소 */
+            const fs = small ? 10 : textPx(13.5, ui), fsT = textPx(15.5, ui, 12, 22), p = small ? 7 : Math.max(10, 12 * ui);
+            const right = r.x + r.w - p;
+            const rowH = (r.h >= 150 ? Math.max(fsT, fs) : fs) * 1.6;
+            const swW = small ? 12 : 18 * ui, swGap = small ? 5 : Math.max(7, 8 * ui), itemGap = small ? 12 : Math.max(16, 18 * ui), titleGap = Math.max(16, 22 * ui);
+            let x = r.x + p, y = r.y + p * 0.6;
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'left';
+            const showTitle = r.h >= 150;
+            if (showTitle) {
+                ctx.font = font(fsT, 700);
+                ctx.fillStyle = '#334155';
+                ctx.fillText('시간–개체수 그래프', x, y + rowH / 2);
+                x += ctx.measureText('시간–개체수 그래프').width + titleGap;
+            }
+            ctx.font = font(fs, 600);
+            const itemW = LV_NAMES.map(name => swW + swGap + ctx.measureText(name).width);
+            /* 제목 옆에 범례가 다 들어가지 않으면 범례 전체를 제목 아래 줄로 */
+            if (showTitle && x + itemW.reduce((a, b) => a + b, 0) + itemGap * 2 > right) { x = r.x + p; y += rowH; }
+            LV_NAMES.forEach((name, i) => {
+                if (x + itemW[i] > right && x > r.x + p) { x = r.x + p; y += rowH; }
+                ctx.strokeStyle = LV_COLORS[i];
+                ctx.lineWidth = 3 * ui;
+                ctx.beginPath();
+                ctx.moveTo(x, y + rowH / 2);
+                ctx.lineTo(x + swW, y + rowH / 2);
+                ctx.stroke();
+                ctx.fillStyle = '#334155';
+                ctx.fillText(name, x + swW + swGap, y + rowH / 2);
+                x += itemW[i] + itemGap;
+            });
+            y += rowH + 4 * ui;
+
+            const W = SIM_CONFIG.graphWindow;
+            const tEnd = Math.max(simData.t, W), tStart = tEnd - W;
+            const yMax = graphMax(tStart);
+            ctx.font = font(fs, 500);
+            const tickGap = Math.max(6, 8 * ui);
+            const tickW = ctx.measureText(String(yMax)).width + tickGap;
+            const noYLab = small || L.mode === 'land';   /* 작은 그래프·휴대폰 가로 탭: 세로축 제목 생략 */
+            const yLabW = noYLab ? 0 : fs * 1.4 + Math.max(6, 8 * ui);
+            const xLabH = small ? fs * 1.5 : fs * 1.8;   /* '시간 →'은 항상 플롯 아래(선과 겹치지 않게) */
+            let box = { x: r.x + p + yLabW + tickW, y: y + fs * 0.6 + (small ? 2 : 6 * ui), w: 0, h: 0 };
+            box.w = right - 8 * ui - box.x;
+            box.h = r.y + r.h - p * 0.6 - box.y;
+            box = avoidReset(box, L);
+            const plot = { x: box.x, y: box.y, w: box.w, h: box.h - xLabH };
+            if (plot.h < 16 || plot.w < 40) return;
+            const X = t => plot.x + (t - tStart) / W * plot.w;
+            const Y = v => plot.y + plot.h - v / yMax * plot.h;
+
+            /* 눈금 */
+            /* 겹치지 않는 간격(글자 × 1.3)이 될 때까지 눈금 간격을 넓히되, 눈금은 최소 3개 */
+            let step = yMax <= 200 ? 50 : yMax <= 400 ? 100 : 200;
+            while (plot.h / (yMax / step) < fs * 1.3 && yMax / (step * 2) >= 2) step *= 2;
+            ctx.textAlign = 'right';
+            ctx.lineWidth = 1 * ui;
+            for (let v = 0; v <= yMax + 1e-6; v += step) {
+                const yy = Y(v);
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.beginPath();
+                ctx.moveTo(plot.x, yy);
+                ctx.lineTo(plot.x + plot.w, yy);
+                ctx.stroke();
+                ctx.fillStyle = '#64748b';
+                ctx.fillText(String(v), plot.x - tickGap, yy);
+            }
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.5 * ui;
+            ctx.beginPath();
+            ctx.moveTo(plot.x, plot.y);
+            ctx.lineTo(plot.x, plot.y + plot.h);
+            ctx.lineTo(plot.x + plot.w, plot.y + plot.h);
+            ctx.stroke();
+
+            /* 축 이름 */
+            ctx.fillStyle = '#475569';
+            ctx.font = font(fs, 600);
+            const yLab = '상대 개체수';
+            /* 세로축 제목은 플롯 바깥(눈금 숫자 왼쪽)에 세로로만. 자리가 없으면 그리지 않는다 */
+            if (!noYLab && ctx.measureText(yLab).width <= plot.h + 8 * ui) {
+                ctx.save();
+                ctx.translate(r.x + p + fs * 0.7, plot.y + plot.h / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.textAlign = 'center';
+                ctx.fillText(yLab, 0, 0);
+                ctx.restore();
+            }
+            ctx.textAlign = 'right';
+            ctx.fillText('시간 (상대적) →', plot.x + plot.w, plot.y + plot.h + xLabH * 0.55);
+
+            /* 교란한 때 */
+            ctx.setLineDash([4 * ui, 4 * ui]);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1 * ui;
+            simData.events.forEach(t => {
+                if (t < tStart) return;
+                ctx.beginPath();
+                ctx.moveTo(X(t), plot.y);
+                ctx.lineTo(X(t), plot.y + plot.h);
+                ctx.stroke();
+            });
+            ctx.setLineDash([]);
+
+            /* 세 개체군 선 */
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(plot.x, plot.y - 4 * ui, plot.w + 4 * ui, plot.h + 6 * ui);
+            ctx.clip();
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            for (let i = 0; i < 3; i++) {
+                ctx.strokeStyle = LV_COLORS[i];
+                ctx.lineWidth = 2.5 * ui;
+                ctx.beginPath();
+                let started = false;
+                simData.hist.forEach(s => {
+                    if (s.t < tStart - 0.2) return;
+                    const px = X(s.t), py = Y(s.u[i] * SIM_CONFIG.base[i]);
+                    if (started) ctx.lineTo(px, py); else { ctx.moveTo(px, py); started = true; }
+                });
+                ctx.lineTo(X(simData.t), Y(simData.u[i] * SIM_CONFIG.base[i]));
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(X(simData.t), Y(simData.u[i] * SIM_CONFIG.base[i]), 3.5 * ui, 0, Math.PI * 2);
+                ctx.fillStyle = LV_COLORS[i];
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        function drawTabs(L) {
+            ctx.font = font(Math.max(12, 14 * L.ui), 700);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            L.tabs.forEach(t => {
+                const on = simData.view === t.id;
+                rrect(t.x, t.y, t.w, t.h, 8);
+                ctx.fillStyle = on ? '#4f46e5' : 'rgba(255,255,255,0.95)';
+                ctx.fill();
+                ctx.strokeStyle = on ? '#4f46e5' : '#cbd5e1';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.fillStyle = on ? '#ffffff' : '#334155';
+                ctx.fillText(t.label, t.x + t.w / 2, t.y + t.h / 2 + 0.5);
+            });
+        }
+
+        /** 시뮬레이션 초기화 — 리셋 버튼·시나리오 변경 시 호출 (시나리오·속도는 유지) */
+        function initSimulation() {
+            resetState();
+            setScenarioLabel();
+
+            /* 엔진 상태 초기화 */
+            sysState.isStarted = false; sysState.isPaused = false;
+            sysState.zoomLevel = 1.0; sysState.offsetX = 0; sysState.offsetY = 0;
+
+            if (!selfChecked) { selfChecked = true; selfCheckModel(); }
+
+            stopLoop();
+            updateUIState();
+            draw();
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           ✏️  draw() — 매 프레임 캔버스를 그리는 함수
+           ───────────────────────────────────────────────────────────── */
+        function draw() {
+            if (!ctx || !canvas) return;
+            syncControls();
+            const w = sysState.canvasLogicalWidth;
+            const h = sysState.canvasLogicalHeight;
+            if (!w || !h) return;
+            const L = computeLayout(w, h);
+            simData.layout = L;
+
+            ctx.clearRect(0, 0, w, h);
+            ctx.save();
+            ctx.imageSmoothingEnabled = false;   /* 도트 그림을 선명하게 */
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, w, h);
+            if (L.mode === 'land') {
+                if (simData.view === 'graph') drawGraph(L.graph, L);
+                else drawScene(L.scene, L);
+                drawPyramid(L.pyr, L);
+                drawTabs(L);
+            } else {
+                drawScene(L.scene, L);
+                drawPyramid(L.pyr, L);
+                drawGraph(L.graph, L);
+            }
+            drawPopup(L);
+            ctx.restore();
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           ✏️  updatePhysics() — 매 프레임 계산 (실행 중에만)
+           ───────────────────────────────────────────────────────────── */
+        function updatePhysics() {
+            if (!sysState.isStarted || sysState.isPaused || sysState.isDragging) return;
+            const now = performance.now();
+            let real = simData.lastNow ? (now - simData.lastNow) / 1000 : 1 / 60;
+            simData.lastNow = now;
+            real = clampN(real, 0, 0.05);
+            simData.anim += real;
+            simData.popup = false;   /* 팝업을 닫지 않고 계속하기를 눌러도 닫힌다 */
+            /* 시작(계속하기)을 누른 첫 프레임에 고른 교란을 적용 (예측도 이때 읽는다) */
+            if (simData.pending) {
+                const pd = simData.pending;
+                simData.pending = null;
+                simData.autoStopped = false;
+                applyDisturbance(pd.level, pd.dir);
+            }
+            let remain = real * (SIM_CONFIG.speed[simData.speed] || SIM_CONFIG.speed.normal);
+            const wasRecovered = simData.phase === 'recovered';
+            while (remain > 1e-9) {
+                const h = Math.min(SIM_CONFIG.dt, remain);
+                advance(h);
+                remain -= h;
+            }
+            /* 평형으로 돌아오면 자동으로 멈춘다 (사라진 영양단계가 있으면 회복되지 않으므로 멈추지 않음) */
+            if (!wasRecovered && simData.phase === 'recovered') {
+                simData.autoStopped = true;
+                simData.popup = true;
+                uiSound.playDone();
+                simData.lastNow = 0;
+                sysState.isPaused = true;
+                stopLoop();
+                updateUIState();
+            }
+        }
+        /* ████ ZONE F 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE G — LOOP & TAB STATE MANAGER (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        function startLoop() { if (!sysState.isLooping) { sysState.isLooping = true; updateLoop(); } }
+        function stopLoop() { sysState.isLooping = false; }
+        function updateLoop() {
+            if (!sysState.isLooping) return;
+            updatePhysics(); draw();
+            requestAnimationFrame(updateLoop);
+        }
+
+        function saveTabState(shape) {
+            const selectedRadio = document.querySelector('input[name="simOption"]:checked')?.value;
+            const selectedVal = DOM.customSelectTrigger?.getAttribute('data-selected-value') || null;
+            tabStates[shape] = {
+                ...simData,
+                isStarted: sysState.isStarted, isPaused: sysState.isPaused,
+                zoomLevel: sysState.zoomLevel, offsetX: sysState.offsetX, offsetY: sysState.offsetY,
+                selectVal: selectedVal, radioVal: selectedRadio
+            };
+        }
+
+        function loadTabState(shape) {
+            const state = tabStates[shape];
+            if (state) {
+                Object.assign(simData, state);
+                sysState.isStarted = state.isStarted; sysState.isPaused = state.isPaused;
+                sysState.zoomLevel = state.zoomLevel || 1.0;
+                sysState.offsetX = state.offsetX || 0;
+                sysState.offsetY = state.offsetY || 0;
+
+                const csvEl = document.getElementById('customSelectValue');
+                if (state.selectVal) {
+                    const li = document.querySelector(`#customSelectList li[data-value="${state.selectVal}"]`);
+                    if (li && csvEl) { csvEl.innerHTML = li.innerHTML; DOM.customSelectTrigger?.setAttribute('data-selected-value', state.selectVal); }
+                } else {
+                    if (csvEl) csvEl.textContent = '학습 내용을 선택하세요';
+                    DOM.customSelectTrigger?.removeAttribute('data-selected-value');
+                }
+                const radio = document.querySelector(`input[name="simOption"][value="${state.radioVal}"]`);
+                if (radio) radio.checked = true;
+            } else {
+                simData.value1 = SIM_CONFIG.slider.initialValue;
+                simData.diameter = SIM_CONFIG.object.radius * 2;
+                simData.radius = SIM_CONFIG.object.radius;
+                simData.ratioA = 1; simData.ratioB = 1;
+                sysState.isStarted = false; sysState.isPaused = false;
+                sysState.zoomLevel = 1.0; sysState.offsetX = 0; sysState.offsetY = 0;
+                if (canvas) { simData.x = sysState.canvasLogicalWidth / 2; simData.y = sysState.canvasLogicalHeight / 2; }
+                const csvEl = document.getElementById('customSelectValue');
+                if (csvEl) csvEl.textContent = '학습 내용을 선택하세요';
+                DOM.customSelectTrigger?.removeAttribute('data-selected-value');
+                const dr = document.querySelector('input[name="simOption"][value="parallel"]');
+                if (dr) dr.checked = true;
+            }
+
+            if (varSlider1) varSlider1.value = simData.value1;
+            if (varDisplay1) varDisplay1.textContent = `${simData.value1} ${SIM_CONFIG.slider.unit}`;
+            if (DOM.directInputSingle) DOM.directInputSingle.value = simData.diameter;
+            if (DOM.ratioInputA) DOM.ratioInputA.value = simData.ratioA;
+            if (DOM.ratioInputB) DOM.ratioInputB.value = simData.ratioB;
+
+            sysState.isStarted && !sysState.isPaused ? startLoop() : stopLoop();
+            updateUIState(); draw();
+        }
+
+        function updateUIState() {
+            updateZoomButtons();
+            const { statusIndicator, pauseBtn, helperText } = DOM;
+            if (!statusIndicator || !pauseBtn || !helperText) return;
+
+            const isRunning = sysState.isStarted && !sysState.isPaused;
+            const isPaused = sysState.isPaused;
+            const lock = isRunning; /* 동작 중 입력 잠금 */
+
+            if (DOM.varSlider1) DOM.varSlider1.disabled = lock;
+            if (DOM.directInputSingle) DOM.directInputSingle.disabled = lock;
+            if (DOM.ratioInputA) DOM.ratioInputA.disabled = lock;
+            if (DOM.ratioInputB) DOM.ratioInputB.disabled = lock;
+            document.querySelectorAll('.ratio-step-btn').forEach(button => {
+                button.disabled = lock;
+            });
+            if (DOM.customSelectTrigger) {
+                DOM.customSelectTrigger.disabled = lock;
+                if (lock && DOM.customSelectList && !DOM.customSelectList.classList.contains('hidden')) {
+                    DOM.customSelectList.classList.add('hidden');
+                    DOM.customSelectTrigger.setAttribute('aria-expanded', 'false');
+                }
+            }
+            if (DOM.radioOptions) DOM.radioOptions.forEach(r => r.disabled = lock);
+
+            if (isRunning) {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-rose-500 border border-rose-300 animate-pulse translate-y-[1px]";
+                pauseBtn.className = "btn-action-pause col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = '<span class="inline-flex items-center gap-1.5 align-middle"><svg aria-hidden="true" class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>일시정지</span>';
+                helperText.innerHTML = sysState.isDragging ? '<span class="inline-flex items-center gap-1.5 align-middle"><svg aria-hidden="true" class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg>위치 이동 중</span>' : '<span class="inline-flex items-center gap-1.5 align-middle"><svg aria-hidden="true" class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.53.85l10.4-6.5a1 1 0 0 0 0-1.7L9.53 4.65A1 1 0 0 0 8 5.5z"/></svg>시뮬레이션 실행 중</span>';
+                helperText.className = "helper-text-running whitespace-nowrap transition-colors";
+            } else if (isPaused) {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-amber-400 border border-amber-300 translate-y-[1px]";
+                pauseBtn.className = "btn-action-start col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = '<span class="inline-flex items-center gap-1.5 align-middle"><svg aria-hidden="true" class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.53.85l10.4-6.5a1 1 0 0 0 0-1.7L9.53 4.65A1 1 0 0 0 8 5.5z"/></svg>계속하기</span>';
+                helperText.innerHTML = sysState.isDragging ? '<span class="inline-flex items-center gap-1.5 align-middle"><svg aria-hidden="true" class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg>위치 이동 중</span>' : '<span class="inline-flex items-center gap-1.5 align-middle"><svg aria-hidden="true" class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>일시정지 중</span>';
+                helperText.className = "helper-text-paused whitespace-nowrap transition-colors";
+            } else {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-emerald-500 border border-emerald-300 translate-y-[1px]";
+                pauseBtn.className = "btn-action-start col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = '<span class="inline-flex items-center gap-1.5 align-middle"><svg aria-hidden="true" class="w-4 h-4 flex-none" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.53.85l10.4-6.5a1 1 0 0 0 0-1.7L9.53 4.65A1 1 0 0 0 8 5.5z"/></svg>시작</span>';
+                helperText.textContent = "초기 상태를 설정하고 시작을 누르세요.";
+                helperText.className = "helper-text-default whitespace-nowrap transition-colors";
+            }
+        }
+        /* ════ ZONE G 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE H — CANVAS RESIZE (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        function limitOffset() {
+            if (!canvas) return;
+            if (sysState.zoomLevel <= 1.0) {
+                if (sysState.offsetX !== 0 || sysState.offsetY !== 0) {
+                    simData.x = Math.max(simData.radius, Math.min(sysState.canvasLogicalWidth - simData.radius, simData.x + sysState.offsetX));
+                    simData.y = Math.max(simData.radius, Math.min(sysState.canvasLogicalHeight - simData.radius, simData.y + sysState.offsetY));
+                    sysState.offsetX = 0; sysState.offsetY = 0;
+                }
+                return;
+            }
+            const R = simData.radius * sysState.zoomLevel;
+            sysState.offsetX = Math.max(R - simData.x, Math.min((sysState.canvasLogicalWidth - R) - simData.x, sysState.offsetX));
+            sysState.offsetY = Math.max(R - simData.y, Math.min((sysState.canvasLogicalHeight - R) - simData.y, sysState.offsetY));
+        }
+
+        function resizeCanvas() {
+            if (!container || !canvas || !ctx) return;
+            const dpr = window.devicePixelRatio || 1;
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+            canvas.style.width = `${rect.width}px`; canvas.style.height = `${rect.height}px`;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            sysState.canvasLogicalWidth = rect.width;
+            sysState.canvasLogicalHeight = rect.height;
+            simData.x = rect.width / 2; simData.y = rect.height / 2;
+            for (const k in tabStates) { if (tabStates[k]) { tabStates[k].x = rect.width / 2; tabStates[k].y = rect.height / 2; } }
+            limitOffset(); draw();
+        }
+
+        const isFullscreenActive = () =>
+            !!(document.fullscreenElement || document.webkitFullscreenElement);
+        const FULLSCREEN_HISTORY_KEY = '__templateFullscreen';
+        const FULLSCREEN_HISTORY_CLEANUP_DELAY = 400;
+        const isNaverInAppBrowser = () => /NAVER\s*\((?:inapp|higgs);/i.test(navigator.userAgent);
+        let fullscreenHistoryToken = null;
+        let fullscreenExitFromHistory = false;
+        let fullscreenHistoryCleanup = false;
+        let fullscreenHistoryCleanupTimer = null;
+        let previousScrollRestoration = null;
+
+        const addFullscreenHistoryToken = stateValue => {
+            if (!fullscreenHistoryToken) return stateValue;
+            return { ...stateValue, [FULLSCREEN_HISTORY_KEY]: fullscreenHistoryToken };
+        };
+
+        const clearFullscreenHistoryTracking = () => {
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = null;
+            if (previousScrollRestoration !== null && 'scrollRestoration' in history) {
+                history.scrollRestoration = previousScrollRestoration;
+            }
+            previousScrollRestoration = null;
+            fullscreenHistoryToken = null;
+            fullscreenExitFromHistory = false;
+            fullscreenHistoryCleanup = false;
+        };
+
+        const pushFullscreenHistoryEntry = () => {
+            if (!isNaverInAppBrowser() || fullscreenHistoryToken) return;
+            const token = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+            try {
+                if ('scrollRestoration' in history && previousScrollRestoration === null) {
+                    previousScrollRestoration = history.scrollRestoration;
+                    history.scrollRestoration = 'manual';
+                }
+                history.pushState({ [FULLSCREEN_HISTORY_KEY]: token }, '');
+                fullscreenHistoryToken = token;
+            } catch (_) {
+                clearFullscreenHistoryTracking();
+            }
+        };
+
+        const restoreFullscreenHistoryEntry = () => {
+            const shouldRestore = isFullscreenActive();
+            clearFullscreenHistoryTracking();
+            if (shouldRestore) pushFullscreenHistoryEntry();
+        };
+
+        const exitFullscreenFromHistory = () => {
+            const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+            if (!exitFullscreen) {
+                restoreFullscreenHistoryEntry();
+                return;
+            }
+            const token = fullscreenHistoryToken;
+            const restoreEntry = () => {
+                if (fullscreenHistoryToken === token) restoreFullscreenHistoryEntry();
+            };
+            fullscreenExitFromHistory = true;
+            try {
+                const result = exitFullscreen.call(document);
+                if (result && typeof result.catch === 'function') result.catch(restoreEntry);
+            } catch (_) {
+                restoreEntry();
+            }
+        };
+
+        const cleanupFullscreenHistoryEntry = () => {
+            const token = fullscreenHistoryToken;
+            if (!token || !history.state || history.state[FULLSCREEN_HISTORY_KEY] !== token) {
+                clearFullscreenHistoryTracking();
+                return;
+            }
+            fullscreenHistoryCleanup = true;
+            history.back();
+        };
+
+        const scheduleFullscreenHistoryCleanup = () => {
+            const token = fullscreenHistoryToken;
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = setTimeout(() => {
+                if (fullscreenHistoryToken !== token || isFullscreenActive()) return;
+                const state = history.state;
+                if (!state || state[FULLSCREEN_HISTORY_KEY] !== token) {
+                    clearFullscreenHistoryTracking();
+                    return;
+                }
+                /* 전체화면 종료와 history 이동을 분리해 iPad WebKit의 뷰포트 복원 충돌을 막는다.
+                   모달·메뉴 항목이 위에 있으면 해당 항목이 닫힌 뒤 다시 정리한다. */
+                if (Object.keys(state).length === 1) cleanupFullscreenHistoryEntry();
+            }, FULLSCREEN_HISTORY_CLEANUP_DELAY);
+        };
+
+        window.addEventListener('popstate', event => {
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = null;
+            const token = fullscreenHistoryToken;
+            if (!token) return;
+            const sameFullscreenEntry = !!(
+                event.state && event.state[FULLSCREEN_HISTORY_KEY] === token
+            );
+            if (fullscreenHistoryCleanup) {
+                if (sameFullscreenEntry) history.back();
+                else clearFullscreenHistoryTracking();
+                return;
+            }
+            if (sameFullscreenEntry) {
+                if (!isFullscreenActive()) scheduleFullscreenHistoryCleanup();
+                return;
+            }
+            if (isFullscreenActive()) exitFullscreenFromHistory();
+            else clearFullscreenHistoryTracking();
+        });
+
+        function toggleFullScreen() {
+            uiSound.playClick();
+            const workspace = document.getElementById('workspace');
+            if (!workspace) return;
+
+            if (!isFullscreenActive()) {
+                if (workspace.requestFullscreen) workspace.requestFullscreen().catch(e => console.error(e));
+                else if (workspace.webkitRequestFullscreen) workspace.webkitRequestFullscreen();
+                else alert("현재 브라우저는 전체화면을 지원하지 않습니다.");
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            }
+        }
+
+        const resetFullscreenButtonFeedback = () => {
+            ['fullscreen-btn', 'fullscreen-btn-mobile'].forEach(id => {
+                const button = document.getElementById(id);
+                if (!button) return;
+                clearTimeout(button._tapFeedbackTimer);
+                button.classList.remove('is-tap-feedback', 'is-pen-hover');
+                button.blur();
+            });
+        };
+
+        const showSimulationToast = message => {
+            document.getElementById('sim-toast')?.remove();
+            const toast = document.createElement('div');
+            toast.id = 'sim-toast';
+            toast.setAttribute('role', 'status');
+            toast.className = 'fixed top-30 left-1/2 transform -translate-x-1/2 bg-slate-800/90 backdrop-blur-sm text-white px-6 py-3 rounded-full shadow-lg z-[9999] font-bold text-[0.95rem] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-2';
+            toast.innerHTML = '<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
+            toast.appendChild(document.createTextNode(message));
+            (document.getElementById('workspace') || document.body).appendChild(toast);
+            setTimeout(() => toast.classList.remove('opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 1500);
+        };
+
+        let fullscreenExitForNumberInput = false;
+        let fullscreenNumberExitResetTimer = null;
+
+        const resetFullscreenNumberExitTracking = () => {
+            clearTimeout(fullscreenNumberExitResetTimer);
+            fullscreenNumberExitResetTimer = null;
+            fullscreenExitForNumberInput = false;
+        };
+
+        const markFullscreenNumberInputPress = event => {
+            if (!isIPadDevice || !isFullscreenActive()) return;
+            const input = event.target.closest?.('#workspace input[type="number"]');
+            if (!input || input.disabled) return;
+
+            fullscreenExitForNumberInput = true;
+            clearTimeout(fullscreenNumberExitResetTimer);
+            fullscreenNumberExitResetTimer = setTimeout(
+                resetFullscreenNumberExitTracking,
+                2000
+            );
+        };
+
+        const fullscreenNumberPressEvent = window.PointerEvent ? 'pointerdown' : 'touchstart';
+        document.addEventListener(fullscreenNumberPressEvent, markFullscreenNumberInputPress, {
+            capture: true,
+            passive: true
+        });
+
+        const handleFullscreenChange = () => {
+            if (!isFullscreenActive() && fullscreenExitForNumberInput) {
+                resetFullscreenNumberExitTracking();
+                showSimulationToast('숫자 입력을 위해 전체화면이 종료되었습니다.');
+            }
+            if (isFullscreenActive()) {
+                pushFullscreenHistoryEntry();
+            } else if (fullscreenHistoryToken) {
+                if (fullscreenExitFromHistory) {
+                    clearFullscreenHistoryTracking();
+                } else {
+                    scheduleFullscreenHistoryCleanup();
+                }
+            }
+            if (!isFullscreenActive()) resetFullscreenButtonFeedback();
+            requestAnimationFrame(() => {
+                if (!isFullscreenActive()) resetFullscreenButtonFeedback();
+                resizeCanvas();
+            });
+
+            const exitUI = document.getElementById('fullscreen-exit-ui');
+            if (!exitUI) return;
+            if (isFullscreenActive()) { exitUI.classList.remove('hidden', 'opacity-100'); exitUI.classList.add('opacity-0'); }
+            else { exitUI.classList.add('hidden', 'opacity-0'); exitUI.classList.remove('opacity-100'); }
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        /* ════ ZONE H 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                               ████
+           ████   ✏️  ZONE I — INPUT EVENT HANDLERS (입력 이벤트 핸들러)       ████
+           ████   폼 변경 시 simData를 어떻게 업데이트할지 여기서 작성하세요.     ████
+           ████                                                               ████
+           ████████████████████████████████████████████████████████████████████████ */
+        function bindInputEvents() {
+            /* 실행 중(일시정지 아님)에는 설정 입력을 무시한다 */
+            const isRunning = () => sysState.isStarted && !sysState.isPaused;
+
+            /* 시나리오 — 드롭다운 커스텀 셀렉트 (실행 중에는 코어가 잠금) */
+            const trigger = DOM.customSelectTrigger;
+            const list = DOM.customSelectList;
+            if (trigger && list) {
+                const items = list.querySelectorAll('li');
+                const toggleDropdown = (show) => {
+                    show = show !== undefined ? show : list.classList.contains('hidden');
+                    if (show) { list.classList.remove('hidden'); trigger.setAttribute('aria-expanded', 'true'); }
+                    else { list.classList.add('hidden'); trigger.setAttribute('aria-expanded', 'false'); }
+                };
+                trigger.addEventListener('click', (e) => { e.stopPropagation(); toggleDropdown(); });
+                trigger.addEventListener('keydown', (e) => {
+                    if (['Enter', ' ', 'ArrowDown'].includes(e.key)) { e.preventDefault(); toggleDropdown(true); items[0]?.focus(); }
+                });
+                list.addEventListener('click', (e) => {
+                    const item = e.target.closest('li'); if (!item) return;
+                    e.stopPropagation();
+                    toggleDropdown(false);
+                    if (isRunning()) return;
+                    uiSound.playClick();
+                    loadScenario(item.getAttribute('data-value'));
+                });
+                items.forEach((item, i) => {
+                    item.addEventListener('keydown', (e) => {
+                        if (['Enter', ' '].includes(e.key)) { e.preventDefault(); item.click(); trigger.focus(); }
+                        else if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length]?.focus(); }
+                        else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length]?.focus(); }
+                        else if (e.key === 'Escape') { e.preventDefault(); toggleDropdown(false); trigger.focus(); }
+                    });
+                });
+                document.addEventListener('click', () => { if (!list.classList.contains('hidden')) toggleDropdown(false); });
+            }
+
+            /* 교란 버튼 6개 */
+            const grid = document.getElementById('perturbGrid');
+            if (grid) {
+                grid.querySelectorAll('button').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (isRunning()) return;
+                        uiSound.playClick();
+                        selectDisturbance(parseInt(btn.dataset.level, 10), btn.dataset.dir);
+                    });
+                });
+            }
+
+            /* 고롱고사: 아프리카들개 도입 = 2차 소비자 증가 */
+            bindEvent('dogBtn', 'click', () => {
+                if (isRunning()) return;
+                uiSound.playClick();
+                selectDisturbance(2, 'up');
+            });
+
+            /* 예측 */
+            const predictBox = document.getElementById('predictContainer');
+            if (predictBox) {
+                predictBox.addEventListener('change', () => {
+                    if (isRunning()) return;
+                    uiSound.playTick();
+                    draw();
+                });
+            }
+
+            /* 속도 — 실행 중에도 바꿀 수 있음 */
+            const speedBox = document.getElementById('speedContainer');
+            if (speedBox) {
+                speedBox.addEventListener('change', (e) => {
+                    if (e.target.name !== 'simSpeed') return;
+                    simData.speed = e.target.value;
+                    uiSound.playTick();
+                });
+            }
+
+            /* 휴대폰 가로: 캔버스 안 장면/그래프 탭 */
+            if (canvas) {
+                canvas.style.cursor = 'default';
+                const tabAt = (e) => {
+                    const tabs = simData.layout && simData.layout.tabs;
+                    if (!tabs) return null;
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                    const t = tabs.find(b => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
+                    return t ? t.id : null;
+                };
+                /* 키보드로도 닫기 */
+                document.addEventListener('keydown', (e) => {
+                    if (simData.popup && (e.key === 'Escape' || e.key === 'Enter')) { simData.popup = false; draw(); }
+                });
+                const inPopupBtn = (e) => {
+                    const b = simData.popupBtn;
+                    if (!b) return false;
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                    return x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h;
+                };
+                canvas.addEventListener('pointerdown', (e) => {
+                    /* 평형 회복 팝업이 떠 있으면 '확인'만 받는다 */
+                    if (simData.popup) {
+                        if (inPopupBtn(e)) { simData.popup = false; uiSound.playClick(); draw(); }
+                        return;
+                    }
+                    const id = tabAt(e);
+                    if (!id || id === simData.view) return;
+                    simData.view = id;
+                    uiSound.playClick();
+                    draw();
+                });
+                canvas.addEventListener('pointermove', (e) => {
+                    canvas.style.cursor = (simData.popup ? inPopupBtn(e) : tabAt(e)) ? 'pointer' : 'default';
+                });
+            }
+        }
+        /* ████ ZONE I 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE J — CORE EVENT BINDING (수정 금지)
+           전체화면·모달·셔터·캔버스 드래그·줌·탭·토스트 이벤트 처리
+           ════════════════════════════════════════════════════════════════════════ */
+        function bindCoreEvents() {
+
+            /* 동작 중 입력 차단 토스트 */
+            const showDisabledToast = (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                showSimulationToast('일시정지 후 설정을 변경해 주세요.');
+            };
+
+            const interceptInteraction = (e) => {
+                if (!(sysState.isStarted && !sysState.isPaused)) return;
+                const disabledControl = e.target.closest?.(':disabled, [aria-disabled="true"], .tab-btn');
+                const disabledLabel = e.target.closest?.('label');
+                if (!disabledControl && !disabledLabel?.querySelector(':disabled')) return;
+                showDisabledToast(e);
+            };
+
+            ['controlsWrapper', 'shapeTabs'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('pointerdown', interceptInteraction, true);
+                    el.addEventListener('click', interceptInteraction, true);
+                    el.addEventListener('keydown', interceptInteraction, true);
+                }
+            });
+
+            /* 손가락·펜 입력 피드백 — 모바일 펜의 hover/press 상태도 버튼과 옵션에 동일 적용 */
+            const TAP_FEEDBACK_SELECTOR = 'button, [role="button"], .radio-label, #customSelectList [role="option"]';
+            const isFeedbackDisabled = (control) =>
+                control.matches(':disabled, [aria-disabled="true"]') || !!control.querySelector(':disabled');
+            document.addEventListener('pointerdown', (e) => {
+                if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || isFeedbackDisabled(control)) return;
+                control.classList.add('is-tap-feedback');
+                clearTimeout(control._tapFeedbackTimer);
+                const feedbackDuration = control.matches('.ratio-step-btn') ? 500 : 250;
+                control._tapFeedbackTimer = setTimeout(() => {
+                    control.classList.remove('is-tap-feedback');
+                    control.blur();
+                }, feedbackDuration);
+            });
+            document.addEventListener('pointerover', (e) => {
+                if (e.pointerType !== 'pen' || e.buttons !== 0) return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || isFeedbackDisabled(control)) return;
+                control.classList.add('is-pen-hover');
+            });
+            document.addEventListener('pointerout', (e) => {
+                if (e.pointerType !== 'pen') return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || control.contains(e.relatedTarget)) return;
+                control.classList.remove('is-pen-hover');
+            });
+            document.addEventListener('pointerup', (e) => {
+                if (e.pointerType !== 'pen' || matchMedia('(any-hover: hover)').matches) return;
+                e.target.closest?.(TAP_FEEDBACK_SELECTOR)?.classList.remove('is-pen-hover');
+            });
+
+            /* 사운드 */
+            const soundBtn = document.getElementById('sound-toggle-btn');
+            const popup = document.getElementById('volume-popup');
+            const muteBtn = document.getElementById('popup-mute-btn');
+            const slider = document.getElementById('volume-slider');
+            if (soundBtn && popup && muteBtn && slider) {
+                uiSound.setDOM(document.getElementById('sound-icon-main'), document.getElementById('sound-icon-popup'), slider);
+                soundBtn.addEventListener('click', (e) => { e.stopPropagation(); popup.classList.toggle('w-48'); popup.classList.toggle('w-0'); popup.classList.toggle('opacity-0'); popup.classList.toggle('opacity-100'); });
+                muteBtn.addEventListener('click', (e) => { e.stopPropagation(); uiSound.toggleMute(); if (parseFloat(slider.value) === 0) { popup.classList.remove('w-48', 'opacity-100'); popup.classList.add('w-0', 'opacity-0'); } });
+                slider.addEventListener('input', (e) => uiSound.setVolume(e.target.value));
+                window.addEventListener('click', (e) => { if (!soundBtn.contains(e.target) && !popup.contains(e.target) && popup.classList.contains('w-48')) { popup.classList.remove('w-48', 'opacity-100'); popup.classList.add('w-0', 'opacity-0'); } });
+            }
+
+            /* 모바일 메뉴 */
+            const moreMenuBtn = document.getElementById('moreMenuBtn');
+            const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+            if (moreMenuBtn && mobileMenuPanel) {
+                const close = () => { mobileMenuPanel.classList.remove('w-[84px]', 'opacity-100'); mobileMenuPanel.classList.add('w-0', 'opacity-0'); };
+                const toggle = () => {
+                    uiSound.playClick();
+                    const isOpen = mobileMenuPanel.classList.contains('w-[84px]');
+                    if (!isOpen) { mobileMenuPanel.classList.remove('w-0', 'opacity-0'); mobileMenuPanel.classList.add('w-[84px]', 'opacity-100'); }
+                    else { close(); }
+                };
+                moreMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+                window.addEventListener('resize', () => { if (isFullscreenActive()) return; if (getComputedStyle(moreMenuBtn).display === 'none' && mobileMenuPanel.classList.contains('w-[84px]')) { close(); } });
+                window.addEventListener('click', (e) => { if (!moreMenuBtn.contains(e.target) && !mobileMenuPanel.contains(e.target) && mobileMenuPanel.classList.contains('w-[84px]')) { close(); } });
+            }
+
+            /* 전체화면 */
+            bindEvent('fullscreen-btn', 'click', toggleFullScreen);
+            bindEvent('fullscreen-btn-mobile', 'click', toggleFullScreen);
+
+            /* 모달 */
+            const toggleModal = (id, show) => {
+                uiSound.playClick();
+                const modal = document.getElementById(id); if (!modal) return;
+                if (show) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; history.pushState(addFullscreenHistoryToken({ modalOpen: id }), ''); }
+                else { modal.classList.add('hidden'); document.body.style.overflow = ''; if (history.state?.modalOpen === id) history.back(); }
+            };
+            window.addEventListener('popstate', () => {
+                ['helpBox', 'conceptBox', 'quizBox'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+                document.body.style.overflow = '';
+            });
+            document.addEventListener('keydown', (event) => {
+                if (event.key !== 'Escape') return;
+                const openModalId = ['helpBox', 'conceptBox', 'quizBox'].find(id => {
+                    const modal = document.getElementById(id);
+                    return modal && !modal.classList.contains('hidden');
+                });
+                if (!openModalId) return;
+                event.preventDefault();
+                toggleModal(openModalId, false);
+            });
+            bindEvent('helpBtn', 'click', () => toggleModal('helpBox', true));
+            bindEvent('help-Btn', 'click', () => toggleModal('helpBox', true));
+            bindEvent('closeHelpBtn', 'click', () => toggleModal('helpBox', false));
+            bindEvent('conceptBtn', 'click', () => toggleModal('conceptBox', true));
+            bindEvent('closeConceptBtn', 'click', () => toggleModal('conceptBox', false));
+            bindEvent('closeQuizBtn', 'click', () => toggleModal('quizBox', false));
+
+            /* 셔터 */
+            const shutterToggle = document.getElementById('shutter-toggle');
+            const shutterContent = document.getElementById('shutter-content');
+            const shutterIcon = document.getElementById('shutter-icon');
+            if (shutterToggle && shutterContent) {
+                const shutterText = shutterToggle.querySelector('span');
+                shutterToggle.addEventListener('click', () => {
+                    uiSound.playClick();
+                    const isOpen = shutterContent.classList.toggle('is-open');
+                    shutterToggle.classList.toggle('is-open', isOpen);
+                    if (shutterIcon) shutterIcon.classList.toggle('rotate-180', isOpen);
+                    if (shutterText) shutterText.textContent = isOpen ? '학습 가이드 닫기' : '학습 가이드 보기';
+                });
+            }
+
+            /* 시작/일시정지 */
+            bindEvent('pauseBtn', 'click', () => {
+                uiSound.playClick();
+                if (!sysState.isStarted) { sysState.isStarted = true; sysState.isPaused = false; startLoop(); }
+                else { sysState.isPaused = !sysState.isPaused; sysState.isPaused ? stopLoop() : startLoop(); }
+                updateUIState(); draw();
+            });
+
+            /* 리셋 */
+            bindEvent('resetBtn', 'click', () => { uiSound.playClick(); initSimulation(); });
+
+            /* 퀴즈 */
+            function stabilizeQuizLayout() {
+                if (!CONTENT_CONFIG.quizzes?.length) return;
+                const sizerQ = document.getElementById('sizerQ');
+                const sizerA = document.getElementById('sizerA');
+                if (!sizerQ || !sizerA) return; // 뼈대가 없으면 작동 안 함
+
+                let longestQ = '', longestA = '';
+
+                // 1) 전체 퀴즈를 순회하면서 가장 긴 질문과 정답을 찾습니다.
+                CONTENT_CONFIG.quizzes.forEach(({ q, a }) => {
+                    if (q.length > longestQ.length) longestQ = q;
+                    if (a.length > longestA.length) longestA = a;
+                });
+
+                // 2) 찾아낸 가장 긴 텍스트를 투명 뼈대(Sizer)에 꽂아 넣습니다. (끝!)
+                sizerQ.textContent = longestQ;
+                sizerA.textContent = longestA;
+            }
+
+            function updateQuizUI() {
+                if (!CONTENT_CONFIG.quizzes?.length) return;
+                const q = CONTENT_CONFIG.quizzes[sysState.currentQuizIndex];
+                const stepEl = document.getElementById('quizStep');
+                const qEl = document.getElementById('questionText');
+                const aEl = document.getElementById('answerText');
+                const showBtn = document.getElementById('showAnswerBtn');
+                const prevBtn = document.getElementById('prevQuizBtn');
+                const nextBtn = document.getElementById('nextQuizBtn');
+                if (stepEl) stepEl.textContent = `질문 ${sysState.currentQuizIndex + 1} / ${CONTENT_CONFIG.quizzes.length}`;
+                if (qEl) qEl.innerText = q.q;
+                if (aEl) { aEl.textContent = q.a; aEl.classList.add('hidden'); }
+                if (showBtn) showBtn.classList.remove('hidden');
+                if (prevBtn) prevBtn.disabled = sysState.currentQuizIndex === 0;
+                if (nextBtn) nextBtn.disabled = sysState.currentQuizIndex === CONTENT_CONFIG.quizzes.length - 1;
+            }
+            bindEvent('quizBtn', 'click', () => { sysState.currentQuizIndex = 0; updateQuizUI(); toggleModal('quizBox', true); requestAnimationFrame(stabilizeQuizLayout); });
+            bindEvent('showAnswerBtn', 'click', () => { uiSound.playClick(); document.getElementById('answerText')?.classList.remove('hidden'); document.getElementById('showAnswerBtn')?.classList.add('hidden'); });
+            bindEvent('nextQuizBtn', 'click', () => { if (sysState.currentQuizIndex < CONTENT_CONFIG.quizzes.length - 1) { uiSound.playClick(); sysState.currentQuizIndex++; updateQuizUI(); } });
+            bindEvent('prevQuizBtn', 'click', () => { if (sysState.currentQuizIndex > 0) { uiSound.playClick(); sysState.currentQuizIndex--; updateQuizUI(); } });
+            window.addEventListener('resize', debounce(stabilizeQuizLayout, 100));
+
+            /* 캔버스 상단 탭 */
+            const shapeTabsDOM = document.getElementById('shapeTabs');
+            if (shapeTabsDOM) {
+                const updateTabScrollIndicators = () => {
+                    const leftInd = document.getElementById('tabScrollLeft');
+                    const rightInd = document.getElementById('tabScrollRight');
+                    if (!leftInd || !rightInd) return;
+                    const maxSL = shapeTabsDOM.scrollWidth - shapeTabsDOM.clientWidth;
+                    leftInd.classList.toggle('opacity-0', shapeTabsDOM.scrollLeft <= 1);
+                    leftInd.classList.toggle('pointer-events-none', shapeTabsDOM.scrollLeft <= 1);
+                    leftInd.classList.toggle('opacity-100', shapeTabsDOM.scrollLeft > 1);
+                    rightInd.classList.toggle('opacity-0', Math.ceil(shapeTabsDOM.scrollLeft) >= maxSL - 1 || maxSL <= 0);
+                    rightInd.classList.toggle('pointer-events-none', Math.ceil(shapeTabsDOM.scrollLeft) >= maxSL - 1 || maxSL <= 0);
+                    rightInd.classList.toggle('opacity-100', Math.ceil(shapeTabsDOM.scrollLeft) < maxSL - 1 && maxSL > 0);
+                };
+                shapeTabsDOM.addEventListener('scroll', updateTabScrollIndicators);
+                window.addEventListener('resize', debounce(updateTabScrollIndicators, 100));
+                setTimeout(updateTabScrollIndicators, 150);
+
+                bindEvent('btnScrollLeft', 'click', () => { uiSound.playClick(); shapeTabsDOM.scrollBy({ left: -120, behavior: 'smooth' }); });
+                bindEvent('btnScrollRight', 'click', () => { uiSound.playClick(); shapeTabsDOM.scrollBy({ left: 120, behavior: 'smooth' }); });
+
+                let isDownTab = false, startXTab = 0, scrollLeftTab = 0;
+                shapeTabsDOM.addEventListener('mousedown', (e) => { isDownTab = true; startXTab = e.pageX - shapeTabsDOM.offsetLeft; scrollLeftTab = shapeTabsDOM.scrollLeft; });
+                shapeTabsDOM.addEventListener('mouseleave', () => isDownTab = false);
+                shapeTabsDOM.addEventListener('mouseup', () => isDownTab = false);
+                shapeTabsDOM.addEventListener('mousemove', (e) => { if (!isDownTab) return; e.preventDefault(); shapeTabsDOM.scrollLeft = scrollLeftTab - (e.pageX - shapeTabsDOM.offsetLeft - startXTab) * 1.5; });
+
+                const tabBtns = shapeTabsDOM.querySelectorAll('.tab-btn');
+                shapeTabsDOM.addEventListener('click', (e) => {
+                    const target = e.target.closest('.tab-btn');
+                    if (!target || (sysState.isStarted && !sysState.isPaused)) return;
+                    const newShape = target.getAttribute('data-shape');
+                    if (simData.shape === newShape) return;
+                    saveTabState(simData.shape);
+                    tabBtns.forEach(b => { b.classList.remove('border-indigo-600', 'text-indigo-600', 'bg-white'); b.classList.add('border-transparent', 'text-slate-500', 'bg-transparent', 'desktop-only:hover:bg-slate-200/50'); });
+                    target.classList.remove('border-transparent', 'text-slate-500', 'bg-transparent', 'desktop-only:hover:bg-slate-200/50');
+                    target.classList.add('border-indigo-600', 'text-indigo-600', 'bg-white');
+                    simData.shape = newShape;
+                    loadTabState(simData.shape);
+                });
+            }
+
+            /* 전체화면 마우스 오버 */
+            let fullscreenHoverTimer;
+            document.addEventListener('mousemove', (e) => {
+                if (!document.fullscreenElement) return;
+                const exitUI = document.getElementById('fullscreen-exit-ui'); if (!exitUI) return;
+                if (e.clientY < 80) { exitUI.classList.remove('opacity-0'); exitUI.classList.add('opacity-100'); clearTimeout(fullscreenHoverTimer); }
+                else { clearTimeout(fullscreenHoverTimer); fullscreenHoverTimer = setTimeout(() => { exitUI.classList.remove('opacity-100'); exitUI.classList.add('opacity-0'); }, 10); }
+            });
+        }
+        /* ════ ZONE J 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE K — 초기 실행 (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        const resizeObserver = new ResizeObserver(() => resizeCanvas());
+
+        window.addEventListener('load', () => {
+            if (container) resizeObserver.observe(container);
+            bindCoreEvents();   /* 🚫 코어 이벤트 바인딩 */
+            bindInputEvents();  /* ✏️ 입력 이벤트 바인딩 (ZONE I) */
+            initSimulation();   /* ✏️ 시뮬레이션 초기화  (ZONE F) */
+        });
+        /* ════ ZONE K 끝 ════════════════════════════════════════════════════════ */
+    </script>
+</body>
+
+</html>

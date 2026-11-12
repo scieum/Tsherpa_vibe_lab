@@ -1,0 +1,308 @@
+{
+  "viewport": [
+    1440,
+    900
+  ],
+  "steps": [
+    {
+      "do": "shot",
+      "name": "0_start"
+    },
+    {
+      "do": "radio",
+      "name": "valveOpt",
+      "value": "open"
+    },
+    {
+      "do": "wait",
+      "ms": 2500
+    },
+    {
+      "do": "shot",
+      "name": "1_stopper_closed_valve_open"
+    },
+    {
+      "do": "radio",
+      "name": "valveOpt",
+      "value": "closed"
+    },
+    {
+      "do": "radio",
+      "name": "stopperOpt",
+      "value": "open"
+    },
+    {
+      "do": "radio",
+      "name": "valveOpt",
+      "value": "open"
+    },
+    {
+      "do": "wait",
+      "ms": 3500
+    },
+    {
+      "do": "shot",
+      "name": "2_draining"
+    },
+    {
+      "do": "wait",
+      "ms": 6000
+    },
+    {
+      "do": "shot",
+      "name": "3_draining_late"
+    },
+    {
+      "do": "radio",
+      "name": "valveOpt",
+      "value": "closed"
+    },
+    {
+      "do": "wait",
+      "ms": 800
+    },
+    {
+      "do": "click",
+      "id": "pourBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 3500
+    },
+    {
+      "do": "shot",
+      "name": "4_after_pour"
+    },
+    {
+      "do": "click",
+      "id": "retryBtn"
+    },
+    {
+      "do": "select",
+      "id": "liquidMixSelect",
+      "index": 1
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "5_ethanol"
+    },
+    {
+      "do": "radio",
+      "name": "modeOpt",
+      "value": "solid"
+    },
+    {
+      "do": "select",
+      "id": "solidMixSelect",
+      "index": 0
+    },
+    {
+      "do": "radio",
+      "name": "sepLiquidOpt",
+      "value": "water"
+    },
+    {
+      "do": "click",
+      "id": "pauseBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 5000
+    },
+    {
+      "do": "shot",
+      "name": "6_plastic_water"
+    },
+    {
+      "do": "click",
+      "id": "transferBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 5000
+    },
+    {
+      "do": "shot",
+      "name": "7_glycerol"
+    },
+    {
+      "do": "click",
+      "id": "retryBtn"
+    },
+    {
+      "do": "select",
+      "id": "solidMixSelect",
+      "index": 1
+    },
+    {
+      "do": "radio",
+      "name": "sepLiquidOpt",
+      "value": "salt"
+    },
+    {
+      "do": "click",
+      "id": "pauseBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 5000
+    },
+    {
+      "do": "shot",
+      "name": "8_rice_salt"
+    },
+    {
+      "do": "click",
+      "id": "quizBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 1000
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 500
+    },
+    {
+      "do": "shot",
+      "name": "q1"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 500
+    },
+    {
+      "do": "shot",
+      "name": "q2"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 500
+    },
+    {
+      "do": "shot",
+      "name": "q3"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 500
+    },
+    {
+      "do": "shot",
+      "name": "q4"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 500
+    },
+    {
+      "do": "shot",
+      "name": "q5"
+    },
+    {
+      "do": "click",
+      "id": "closeQuizBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 500
+    },
+    {
+      "do": "viewport",
+      "size": [
+        2560,
+        1200
+      ]
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "9w_wide"
+    },
+    {
+      "do": "viewport",
+      "size": [
+        2960,
+        1300
+      ]
+    },
+    {
+      "do": "fullscreen",
+      "on": true
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "9f_fullscreen"
+    },
+    {
+      "do": "fullscreen",
+      "on": false
+    },
+    {
+      "do": "wait",
+      "ms": 800
+    },
+    {
+      "do": "viewport",
+      "size": [
+        390,
+        844
+      ]
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "9_mobile"
+    }
+  ]
+}

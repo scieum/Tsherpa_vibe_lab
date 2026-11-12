@@ -1,0 +1,524 @@
+{
+ "viewport": [
+  1440,
+  900
+ ],
+ "steps": [
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "shot",
+   "name": "00_start_free"
+  },
+  {
+   "do": "click",
+   "id": "helpBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 500
+  },
+  {
+   "do": "shot",
+   "name": "01_guide"
+  },
+  {
+   "do": "click",
+   "id": "closeHelpBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "conceptBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 500
+  },
+  {
+   "do": "shot",
+   "name": "02_concept"
+  },
+  {
+   "do": "click",
+   "id": "closeConceptBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "perturb1up"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "shot",
+   "name": "03a_free_selected"
+  },
+  {
+   "do": "click",
+   "id": "pred0down"
+  },
+  {
+   "do": "click",
+   "id": "pred2up"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "shot",
+   "name": "03b_free_predicted"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "shot",
+   "name": "04a_free_observing"
+  },
+  {
+   "do": "wait",
+   "ms": 3000
+  },
+  {
+   "do": "shot",
+   "name": "04_free_feedback_correct"
+  },
+  {
+   "do": "wait",
+   "ms": 12000
+  },
+  {
+   "do": "shot",
+   "name": "05_free_autostopped"
+  },
+  {
+   "do": "js",
+   "code": "(()=>{const c=document.getElementById('simCanvas');const b=simData.popupBtn;const r=c.getBoundingClientRect();c.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,clientX:r.left+b.x+b.w/2,clientY:r.top+b.y+b.h/2}));})()"
+  },
+  {
+   "do": "wait",
+   "ms": 400
+  },
+  {
+   "do": "shot",
+   "name": "05b_popup_closed"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 500
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "wait",
+   "ms": 400
+  },
+  {
+   "do": "shot",
+   "name": "06_dropdown_open"
+  },
+  {
+   "do": "option",
+   "value": "gorongosa"
+  },
+  {
+   "do": "wait",
+   "ms": 800
+  },
+  {
+   "do": "shot",
+   "name": "07_gorongosa_start"
+  },
+  {
+   "do": "click",
+   "id": "dogBtn"
+  },
+  {
+   "do": "click",
+   "id": "pred0down"
+  },
+  {
+   "do": "click",
+   "id": "pred1down"
+  },
+  {
+   "do": "click",
+   "id": "speedFast"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "shot",
+   "name": "07b_gorongosa_predicted_wrong"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 2500
+  },
+  {
+   "do": "shot",
+   "name": "08_gorongosa_feedback_wrong"
+  },
+  {
+   "do": "wait",
+   "ms": 9000
+  },
+  {
+   "do": "shot",
+   "name": "09_gorongosa_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "option",
+   "value": "limit"
+  },
+  {
+   "do": "wait",
+   "ms": 800
+  },
+  {
+   "do": "click",
+   "id": "perturb2down"
+  },
+  {
+   "do": "click",
+   "id": "pred0down"
+  },
+  {
+   "do": "click",
+   "id": "pred1up"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 5000
+  },
+  {
+   "do": "shot",
+   "name": "10_limit_no_recovery"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "perturb2up"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 9000
+  },
+  {
+   "do": "shot",
+   "name": "11_limit_reintroduced"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "quizBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 1000
+  },
+  {
+   "do": "click",
+   "id": "showAnswerBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 400
+  },
+  {
+   "do": "shot",
+   "name": "q1"
+  },
+  {
+   "do": "click",
+   "id": "nextQuizBtn"
+  },
+  {
+   "do": "click",
+   "id": "showAnswerBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 400
+  },
+  {
+   "do": "shot",
+   "name": "q2"
+  },
+  {
+   "do": "click",
+   "id": "nextQuizBtn"
+  },
+  {
+   "do": "click",
+   "id": "showAnswerBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 400
+  },
+  {
+   "do": "shot",
+   "name": "q3"
+  },
+  {
+   "do": "click",
+   "id": "nextQuizBtn"
+  },
+  {
+   "do": "click",
+   "id": "showAnswerBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 400
+  },
+  {
+   "do": "shot",
+   "name": "q4"
+  },
+  {
+   "do": "click",
+   "id": "nextQuizBtn"
+  },
+  {
+   "do": "click",
+   "id": "showAnswerBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 400
+  },
+  {
+   "do": "shot",
+   "name": "q5"
+  },
+  {
+   "do": "click",
+   "id": "closeQuizBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 400
+  },
+  {
+   "do": "option",
+   "value": "free"
+  },
+  {
+   "do": "wait",
+   "ms": 500
+  },
+  {
+   "do": "click",
+   "id": "perturb0up"
+  },
+  {
+   "do": "click",
+   "id": "pred1up"
+  },
+  {
+   "do": "click",
+   "id": "pred2up"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 12000
+  },
+  {
+   "do": "viewport",
+   "size": [
+    2560,
+    1200
+   ]
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "shot",
+   "name": "20_wide_2560"
+  },
+  {
+   "do": "viewport",
+   "size": [
+    2960,
+    1300
+   ]
+  },
+  {
+   "do": "fullscreen",
+   "on": true
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "shot",
+   "name": "21_fullscreen"
+  },
+  {
+   "do": "fullscreen",
+   "on": false
+  },
+  {
+   "do": "viewport",
+   "size": [
+    768,
+    1024
+   ],
+   "touch": true
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "shot",
+   "name": "22_tablet_portrait_768"
+  },
+  {
+   "do": "viewport",
+   "size": [
+    375,
+    667
+   ]
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "shot",
+   "name": "23_iphone_se"
+  },
+  {
+   "do": "viewport",
+   "size": [
+    412,
+    915
+   ]
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "shot",
+   "name": "24_s20_ultra"
+  },
+  {
+   "do": "click",
+   "id": "moreMenuBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 500
+  },
+  {
+   "do": "shot",
+   "name": "25_s20_more_menu"
+  },
+  {
+   "do": "click",
+   "id": "moreMenuBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "viewport",
+   "size": [
+    844,
+    390
+   ],
+   "touch": true
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "shot",
+   "name": "26_phone_landscape_scene"
+  },
+  {
+   "do": "js",
+   "code": "(()=>{const c=document.getElementById('simCanvas');const r=c.getBoundingClientRect();c.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,clientX:r.left+120,clientY:r.bottom-27}));})()"
+  },
+  {
+   "do": "wait",
+   "ms": 600
+  },
+  {
+   "do": "shot",
+   "name": "27_phone_landscape_graph"
+  }
+ ]
+}

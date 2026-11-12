@@ -1,0 +1,43 @@
+{
+  "approved": true,
+  "approver": "사용자 (채팅 \"승인할게\", 2026-11-12 재승인)",
+  "date": "2026-11-12",
+  "gates": {
+    "result": "ALL 통과 209 / 실패 0",
+    "console_errors": 0,
+    "note": "Windows에서 PYTHONUTF8=1, CHROME_PATH 지정으로 실행"
+  },
+  "N1": {
+    "standard": "[10통과2-02-02] 지도서 원문 확인 (00_research.json)",
+    "concept_cards": 4,
+    "quizzes": 5,
+    "sim": "지도서 p.139 예측 표를 FIRST_RESPONSE로 그대로 사용, 고롱고사 끝 상태는 교과서 83쪽대로 '전쟁 전 값으로 돌아감'이라고 하지 않음",
+    "species_note": "그림은 풀·임팔라·아프리카들개, 화면 글자는 생산자·초식동물(1차 소비자)·육식동물(2차 소비자). '임팔라'는 교과서에 없어 표기하지 않음"
+  },
+  "N2": {
+    "media": "contents/ 이미지 4장은 Higgsfield AI로 직접 생성(01_spec.json media에 작업 번호). clarchive 참고 그림 없음(03_reference.json skipped)",
+    "harness_exception": "SA '코드로 그림' 규칙 예외 — 사용자 결정 2026-11-12"
+  },
+  "template": {
+    "type": "T_Fixed",
+    "removed_features": [
+      "zoom",
+      "drag",
+      "env_panel"
+    ],
+    "must_keep_5": "유지"
+  },
+  "locked_zone_exceptions": [
+    "ZONE E 3줄: 효과음 playCorrect·playWrong·playDone 추가 (사용자 요청)",
+    "ZONE G 5줄: 실행 상태 안내·일시정지 버튼 이모지 → SVG (사용자 요청)",
+    "HTML 3줄: 시작 버튼 이모지 → SVG, body word-break: keep-all (사용자 요청)"
+  ],
+  "screen_check": {
+    "captures": "scenarios.json 30장 (PC 1440·2560·전체화면 2960, 태블릿 768, 아이폰SE, S20 울트라 + ⋮ 메뉴, 모바일 가로 장면·그래프 탭, 관찰 중·맞음·틀림·회복 팝업·팝업 닫기)",
+    "word_break": "페이지 전체(패널·가이드·개념·퀴즈) 어절 단위 줄바꿈 (body word-break: keep-all, HTML 예외에 기록)",
+    "fixed_after_approval": "아이폰SE 그래프 '시간 →'을 플롯 아래로 옮김 / 퀴즈 1·4·5 문항·해설을 줄여 정답 상자가 잘리지 않게 함 (2026-11-12, 사용자 요청 '작은 오류도 다 고쳐')",
+    "known_minor": "없음"
+  },
+  "not_checked_by_claude": "실제 기기·브라우저(크롬·엣지·웨일·삼성 인터넷·사파리 아이폰/아이패드) 확인은 사람 검수 몫",
+  "status": "재승인 완료 — 흐름 변경(교란→예측→시작, 예측 판정은 교란 뒤 모형 시간 6, 회복 시 자동 멈춤 + 평형 회복 팝업, 관찰 결과 칸 삭제, 시간 축 '상대적', 효과음) + 승인과 함께 요청한 시나리오별 교란 제한(복원 한계: 처음엔 감소만, 사라진 뒤엔 그 영양단계 증가만 / 고롱고사: 들개 도입 전 교란 잠금, 고를 수 없는 버튼은 점선·회색·취소선)"
+}

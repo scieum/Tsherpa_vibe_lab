@@ -1,0 +1,18 @@
+{
+  "created": "2026-10-17T15:53:31",
+  "files": {
+    "docs/design.md": "e5d7c90a9d517f368773a4670ef256d89549e59ec0429cd5317b5ca6dcfe9af1",
+    "docs/gates.md": "4510e46453d2a53c73797ff0051e96f2ddf1498e5e212f763b87cb199418a609",
+    "docs/outputs.md": "e7dddfbc48354ecb961808079d8e5f909ba2497faa8cd765b5c79dc3d60a79e2",
+    "docs/pipeline.md": "81f18f69e5a3f4e754ea6dacc99e6b0c0de2b127618ca098dfd872284ae4b74c",
+    "docs/prd.md": "060d038f04de3a81bb4682c7a0680a92b3f159b4517f5c5e1e328f93828e3beb",
+    "docs/purpose.md": "c162f4004cae747b0dc671f48158ce16acf28c652b25055de9a03bf4b7df9541",
+    "docs/roles.md": "bf225f51226ab2d5afe10202a1d765e20ab68d3d253cf986aaac4d956e507930",
+    "docs/story-service.md": "9010e1de9011c3fbb50f6a4263d30fada586f2de3948825e9a72711d888b6676",
+    "docs/story-work.md": "9790bf42da7969d6140eed285dffec88a0a38f7164c4d0cef712ec232dcf080b",
+    "templates/unit/00_input.md": "ee5ee60063ef58d6ccf57acbec0e13e937e938d5e6938d2da7912598723ec328",
+    "templates/unit/index.html": "ee3dd019ebb8b8c886606618b3b226a15d9d204dccdca3150147ef5b2848d0fa",
+    "scripts/check_unit.py": "2379f4344e17a0735f8345bf269e930a445878529cf2fa9f804a3dbe8283a8fc",
+    "scripts/render_check.mjs": "3f615ea832b4c8d26149156c7115a8e62bc43715394a08ae9eb3dc035ab498fa"
+  }
+}

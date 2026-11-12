@@ -1,0 +1,3300 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>밀도 차를 이용한 혼합물의 분리</title><!-- JS의 CONTENT_CONFIG.title로 자동 변경됩니다 -->
+
+    <!-- ════════════════════════════════════════════════════════
+         🚫 [수정 금지] 핵심 라이브러리 — KaTeX · Tailwind CSS
+         ════════════════════════════════════════════════════════ -->
+    <link rel="icon" href="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_short.png"
+        type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ════════════════════════════════════════════════════════
+         ⚙️  [선택 수정] Tailwind 테마 — 브랜드 색상·폰트만 변경
+         ════════════════════════════════════════════════════════ -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: { 'desktop-only': { 'raw': '(hover: hover) and (pointer: fine)' } },
+                    colors: { primary: '#4f46e5' },   /* ✏️ 브랜드 색상 */
+                    fontFamily: { sans: ['Noto Sans KR', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script>
+        /* 모바일에서 생략되는 number 스피너만 보완하고 PC 네이티브 UI는 유지 */
+        const isIPadDevice =
+            /iPad/i.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isMobileNumberUI =
+            navigator.userAgentData?.mobile === true ||
+            /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+            isIPadDevice;
+        if (isMobileNumberUI) document.documentElement.classList.add('mobile-number-controls');
+    </script>
+
+    <style>
+        html,
+        body,
+        button,
+        input,
+        select,
+        textarea {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        /* ════════════════════════════════════════════════════════
+           ⚙️  [선택 수정] CSS 변수 — 전체 색상·폰트 크기 일괄 조정
+           ════════════════════════════════════════════════════════ */
+        :root {
+            /* 폰트 크기 */
+            --font-size-title: 1.275rem;
+            --font-size-modal: 1.15rem;
+            --font-size-guide: 1.025rem;
+            --font-size-desc: 1rem;
+            --font-size-small: 0.9rem;
+            --font-size-tiny: 0.75rem;
+
+            /* 텍스트 색상 */
+            --color-text-main: #334155;
+            --color-text-sub: #475569;
+            --color-text-light: #64748b;
+
+            /* 테마 포인트 색상 */
+            --color-primary: #4f46e5;
+            /* ✏️ 메인 포인트 색상 */
+            --color-primary-bg: #e0e7ff;
+            --color-tab-bg: #d8e0ff80;
+            --color-action: #059669;
+            --color-action-hover: #047857;
+            --color-pause: #e11d48;
+            --color-pause-bg: #fff1f2;
+            --color-pause-border: #fecdd3;
+            --color-obs1: #ea580c;
+        }
+
+        /* ════════════════════════════════════════════════════════
+           ⚙️  [선택 수정] 디자인 클래스 매핑 — CSS 변수를 UI 요소에 적용
+           ════════════════════════════════════════════════════════ */
+        .sim-title {
+            font-size: var(--font-size-title);
+            font-weight: 700;
+            color: var(--color-text-main);
+            line-height: 1.25;
+        }
+
+        .guide-on-off {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: var(--color-text-light);
+        }
+
+        .guide-title {
+            font-size: var(--font-size-guide);
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .guide-desc {
+            font-size: var(--font-size-desc);
+            color: var(--color-text-sub);
+        }
+
+        .env-text {
+            font-weight: 700;
+            color: var(--color-text-light);
+            font-size: var(--font-size-tiny);
+        }
+
+        .tab-btn {
+            font-weight: 700;
+            color: var(--color-text-light);
+            font-size: var(--font-size-small);
+        }
+
+        @media (min-width: 768px) {
+            .env-text {
+                font-size: var(--font-size-small);
+            }
+        }
+
+        .helper-text-default {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .helper-text-running {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-pause);
+        }
+
+        .helper-text-paused {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .var-label-control {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-main);
+        }
+
+        .var-label-obs1 {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-obs1);
+        }
+
+        .var-label-obs2 {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-action);
+        }
+
+        .var-label-var {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: var(--color-text-main);
+        }
+
+        .slider-limit-label {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .var-unit-display {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-primary);
+            background-color: var(--color-primary-bg);
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .select-option-text {
+            font-size: var(--font-size-tiny);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .header-button {
+            background-color: #fff;
+            color: var(--color-text-sub);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .header-button:hover {
+                background-color: #f1f5f9;
+            }
+        }
+
+        .btn-action-start {
+            background-color: var(--color-action);
+            color: #fff;
+            border-color: var(--color-action-hover);
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-action-start:hover {
+                background-color: var(--color-action-hover);
+            }
+        }
+
+        .btn-action-pause {
+            background-color: var(--color-pause-bg);
+            color: var(--color-pause);
+            border-color: var(--color-pause-border);
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        .btn-sub {
+            background-color: #fff;
+            color: var(--color-text-main);
+            border-color: #cbd5e1;
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-sub:hover {
+                background-color: #f1f5f9;
+            }
+        }
+
+        .btn-reset-custom {
+            color: var(--color-text-main);
+            border-color: #cbd5e1;
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-reset-custom:hover {
+                color: var(--color-pause);
+                border-color: #fda4af;
+                background-color: var(--color-pause-bg);
+            }
+        }
+
+        .modal-title {
+            font-size: var(--font-size-modal);
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .modal-close-btn {
+            color: #94a3b8;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .modal-close-btn:hover {
+                color: #f43f5e;
+            }
+        }
+
+        .concept-title-1 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #c2410c;
+        }
+
+        .concept-title-2 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #047857;
+        }
+
+        .concept-title-3 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #4338ca;
+        }
+
+        .concept-title-4 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #6e0478;
+        }
+
+        .concept-desc {
+            font-size: var(--font-size-desc);
+            color: var(--color-text-main);
+        }
+
+        .quiz-step {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: #4338ca;
+            background-color: var(--color-primary-bg);
+        }
+
+        .quiz-question {
+            font-size: var(--font-size-modal);
+            font-weight: 700;
+            color: #1e293b;
+            white-space: pre-wrap; /* 질문·보기 줄바꿈과 보기 사이 공백 유지 */
+        }
+
+        .quiz-btn-check {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #fff;
+            background-color: #f97316;
+            border: 1px solid #f97316;
+            line-height: 1.5rem;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .quiz-btn-check:hover {
+                background-color: #ea580c;
+                border-color: #ea580c;
+            }
+        }
+
+        .quiz-answer-box {
+            font-size: var(--font-size-guide);
+            font-weight: 700;
+            line-height: 1.5rem;
+            color: var(--color-text-main);
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+            white-space: pre-line; /* 정답·해설 줄바꿈 유지 */
+        }
+
+        .header-button:is(.is-tap-feedback, .is-pen-hover),
+        .btn-sub:is(.is-tap-feedback, .is-pen-hover),
+        .zoom-btn:is(.is-tap-feedback, .is-pen-hover),
+        .nav-btn:is(.is-tap-feedback, .is-pen-hover),
+        #customSelectTrigger:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #f1f5f9;
+        }
+
+        .btn-action-start:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: var(--color-action-hover);
+        }
+
+        .btn-reset-custom:is(.is-tap-feedback, .is-pen-hover) {
+            color: var(--color-pause);
+            border-color: #fda4af;
+            background-color: var(--color-pause-bg);
+        }
+
+        .modal-close-btn:is(.is-tap-feedback, .is-pen-hover) {
+            color: #f43f5e;
+        }
+
+        .quiz-btn-check:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #ea580c;
+        }
+
+        .tab-btn:not(.border-indigo-600):is(.is-tap-feedback, .is-pen-hover) {
+            background-color: rgb(226 232 240 / 0.5);
+        }
+
+        .radio-label:not(:has(:checked)):is(.is-tap-feedback, .is-pen-hover),
+        .panel-block label:has(input[type="checkbox"]):is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #f8fafc;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .radio-label:not(:has(:checked)):hover {
+                background-color: #f8fafc;
+            }
+        }
+
+        #customSelectList [role="option"]:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #eef2ff;
+        }
+
+        /* PC·모바일에서 동일한 숫자 입력 스피너를 고정 노출 */
+        .ratio-number-field {
+            display: flex;
+            flex: 1 1 0%;
+            min-width: 0;
+            position: relative;
+        }
+
+        .ratio-number-stepper {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            width: 2.5rem;
+            justify-content: center;
+            gap: 0;
+        }
+
+        .ratio-step-btn {
+            display: flex;
+            flex: 1 1 50%;
+            min-height: 0;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 0.15rem;
+            background-color: transparent;
+            color: #737373;
+            line-height: 1;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ratio-step-icon {
+            width: 0.66rem;
+            height: 0.48rem;
+            fill: currentColor;
+        }
+
+        .ratio-step-btn[data-step-direction="up"] .ratio-step-icon {
+            transform: translateY(0.1875rem);
+        }
+
+        .ratio-step-btn[data-step-direction="down"] .ratio-step-icon {
+            transform: translateY(-0.1875rem);
+        }
+
+        .ratio-step-btn:active {
+            background-color: transparent;
+            color: #475569;
+        }
+
+        .ratio-step-btn:focus {
+            background-color: transparent;
+        }
+
+        .ratio-step-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .ratio-number-field>.input-text {
+            appearance: textfield;
+            -moz-appearance: textfield;
+            padding-right: 2.75rem;
+            background-color: transparent;
+            transition: border-color 150ms ease;
+        }
+
+        .ratio-number-field>.input-text::-webkit-inner-spin-button,
+        .ratio-number-field>.input-text::-webkit-outer-spin-button {
+            margin: 0;
+            -webkit-appearance: none;
+        }
+
+        .ratio-number-field:has(>.ratio-number-stepper>.ratio-step-btn:active)>.input-text,
+        .ratio-number-field:has(>.ratio-number-stepper>.ratio-step-btn.is-tap-feedback)>.input-text {
+            border-color: #6366f1;
+        }
+
+        /* iOS Safari는 16px 미만 입력창에 포커스할 때 화면을 자동 확대한다. */
+        @supports (-webkit-touch-callout: none) {
+            html.mobile-number-controls input[type="number"] {
+                font-size: 16px !important;
+            }
+
+            .radio-label>.select-option-text {
+                white-space: nowrap;
+            }
+        }
+
+        /* ════════════════════════════════════════════════════════
+           🚫 [수정 금지] 코어 레이아웃 구조 — 전체화면·캔버스·스크롤
+           ════════════════════════════════════════════════════════ */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        html,
+        body {
+            overscroll-behavior: none;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            font-size: 16px !important;
+        }
+
+        .ui-box {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+        }
+
+        .shutter-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .shutter-wrapper.is-open {
+            grid-template-rows: 1fr;
+        }
+
+        .shutter-inner {
+            overflow: hidden;
+        }
+
+        @media (hover: none),
+        (pointer: coarse) {
+
+            input,
+            textarea,
+            select,
+            button,
+            [role="button"],
+            [contenteditable="true"] {
+                touch-action: manipulation;
+            }
+
+            .nav-btn,
+            .header-button,
+            .btn-sub,
+            .btn-reset-custom,
+            .modal-close-btn {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+
+            .nav-btn:is(:active, .is-tap-feedback),
+            .header-button:is(:active, .is-tap-feedback),
+            .btn-sub:is(:active, .is-tap-feedback) {
+                background-color: #f1f5f9;
+            }
+
+            .btn-reset-custom:is(:active, .is-tap-feedback) {
+                color: var(--color-pause);
+                border-color: #fda4af;
+                background-color: var(--color-pause-bg);
+            }
+
+            .modal-close-btn:is(:active, .is-tap-feedback) {
+                color: #f43f5e;
+            }
+
+            #fullscreen-btn:is(:active, .is-tap-feedback),
+            #fullscreen-btn-mobile:is(:active, .is-tap-feedback) {
+                background-color: #f1f5f9;
+            }
+        }
+
+        canvas {
+            touch-action: none;
+            cursor: default;
+        }
+
+        .bar-track {
+            width: 100%;
+            height: 16px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .popup-overlay {
+            background-color: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(2px);
+        }
+
+        #workspace:fullscreen {
+            background-color: #f8fafc;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        @media (orientation: landscape) {
+            #workspace:fullscreen {
+                padding: 1rem;
+                overflow-y: hidden;
+            }
+        }
+    </style>
+
+    <!-- 🚫 [수정 금지] Tailwind 컴포넌트 추출 -->
+    <style type="text/tailwindcss">
+        @layer components {
+            .panel-block      { @apply flex flex-col gap-2 p-3 border border-slate-200 rounded-lg bg-white; }
+            .modal-container  { @apply bg-white border border-slate-300 rounded-2xl w-full flex flex-col relative shadow-2xl max-h-[70dvh]; }
+            .modal-header     { @apply h-14 lg:h-16 px-6 border-b border-slate-100 flex items-center justify-between flex-none; }
+            .modal-body       { @apply flex-1 overflow-y-auto p-4 lg:p-6 flex flex-col gap-4; }
+            .guide-block      { @apply p-4 bg-slate-50 border border-slate-200 rounded-xl; }
+            .zoom-btn         { @apply w-8 h-8 flex items-center justify-center bg-white border border-slate-300 rounded-full shadow-sm text-slate-600 font-bold desktop-only:hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed desktop-only:disabled:hover:bg-slate-50; }
+            .nav-btn          { @apply w-12 h-12 flex items-center justify-center bg-white border border-slate-300 text-slate-600 rounded-full desktop-only:hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed desktop-only:disabled:hover:bg-slate-50; }
+            .radio-label      { @apply flex items-start gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer transition-colors has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed; }
+            .input-text       { @apply w-full p-2 border border-slate-200 rounded text-center focus:outline-none focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50; }
+        }
+    </style>
+</head>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     🚫 [수정 금지] BODY — 레이아웃 클래스 수정 금지
+     ════════════════════════════════════════════════════════════════════ -->
+
+<body
+    class="bg-slate-100 text-slate-800 font-sans w-full m-0 p-0 box-border select-none overflow-x-hidden md:overflow-hidden landscape:overflow-hidden flex flex-col justify-center md:h-[100dvh] landscape:h-[100dvh]">
+
+    <div
+        class="flex flex-col w-full max-w-[1680px] mx-auto p-2 gap-2 box-border md:h-[100dvh] md:overflow-hidden landscape:h-[100dvh] landscape:overflow-hidden relative">
+
+        <!-- ═══════════════════════════════════════════════════════════════
+         🚫 [수정 금지] 헤더 — 제목은 JS CONTENT_CONFIG.title로 자동 주입
+         ═══════════════════════════════════════════════════════════════ -->
+        <header class="ui-box flex-none px-4 py-2 flex items-center justify-between z-10 bg-white relative">
+            <div class="flex items-center gap-4">
+                <a href="https://www.tsherpa.co.kr" target="_blank"
+                    class="flex items-center flex-none desktop-only:hover:opacity-80 transition-opacity">
+                    <img src="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_black.png"
+                        alt="T셀파"
+                        class="h-7 md:h-8 object-contain draggable-false flex-none hidden [@media(min-width:768px)]:block">
+                    <img src="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_short.png"
+                        alt="T셀파"
+                        class="h-7 md:h-8 object-contain draggable-false flex-none block [@media(min-width:768px)]:hidden">
+                </a>
+                <div class="border-l border-slate-300 pl-4">
+                    <h1 class="sim-title" id="sim-title-el">로딩 중...</h1><!-- CONTENT_CONFIG.title 자동 주입 -->
+                </div>
+            </div>
+            <div class="flex items-center relative">
+                <button id="moreMenuBtn"
+                    class="header-button flex landscape:hidden desktop-only:hidden transition-colors ml-2"
+                    title="메뉴 더보기">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                    </svg>
+                </button>
+                <div class="hidden landscape:flex desktop-only:flex items-center">
+                    <!-- 학습 가이드 -->
+                    <button id="helpBtn" class="header-button desktop-only:md:hidden font-bold text-lg ml-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <!-- 전체화면 | fullscreen -->
+                    <button id="fullscreen-btn" class="header-button flex ml-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="mobileMenuPanel"
+                    class="absolute top-1/2 -translate-y-1/2 right-full z-50 flex items-center gap-2 overflow-hidden transition-all duration-300 w-0 opacity-0">
+                    <button id="help-Btn" class="header-button flex-none flex font-bold text-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <button id="fullscreen-btn-mobile" class="header-button flex-none flex transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ════════════════════════════════════════════════════════
+         🚫 [수정 금지] 메인 워크스페이스 래퍼
+         ════════════════════════════════════════════════════════ -->
+        <main id="workspace"
+            class="flex flex-col md:flex-row landscape:flex-row flex-1 min-h-0 gap-3 relative bg-slate-100 md:bg-transparent">
+
+            <!-- 🚫 [수정 금지] 캔버스 영역 -->
+            <section id="content-area"
+                class="ui-box flex-none h-[50vh] md:h-auto landscape:h-auto md:flex-[3] landscape:flex-[3] flex flex-col min-h-[250px] md:min-h-[400px] landscape:min-h-0 overflow-hidden relative bg-white">
+                <!-- 캔버스 상단 환경변수 및 인디케이터 -->
+                <div class="hidden">
+                    <div class="env-text flex items-center gap-4 flex-none pl-4" id="environment-info">
+                        <span id="env-label-canvas">로딩 중...</span><!-- CONTENT_CONFIG.envLabel 자동 주입 -->
+                    </div>
+                    <div id="statusIndicator"
+                        class="w-3 h-3 rounded-full bg-emerald-500 border border-slate-300 transition-colors duration-200 translate-y-[1px]">
+                    </div>
+                </div>
+
+                <div class="flex-1 w-full relative bg-white overflow-hidden" id="canvas-container">
+                    <!-- 콘텐츠 상태 -->
+                    <div id="helperBoxWrapper"
+                        class="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full border border-slate-200 shadow-sm pointer-events-none">
+                        <p id="helperText" class="helper-text-default whitespace-nowrap transition-colors">로딩 중...</p>
+                    </div>
+                    <canvas id="simCanvas" class="w-full h-full block relative z-0">컨텐츠 영역</canvas>
+                </div>
+                <!-- 초기화 -->
+                <button id="resetBtn"
+                    class="btn-reset-custom flex absolute bottom-4 right-4 z-40 bg-white/95 backdrop-blur border rounded-full px-4 py-2 items-center gap-2 transition-colors shadow-sm">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span id="resetBtnText">초기화</span>
+                </button>
+            </section>
+
+
+            <!-- ╔══════════════════════════════════════════════════════════╗
+             ║  ✏️  EDIT ZONE — 제어 패널 (우측 사이드바)                ║
+             ║  이 <aside> 안의 입력 폼을 자유롭게 추가/수정/삭제하세요.   ║
+             ╚══════════════════════════════════════════════════════════╝ -->
+            <aside id="settings-area"
+                class="ui-box flex-none landscape:max-w-[300px] md:flex-[1] landscape:flex-[1] md:min-w-[250px] landscape:min-w-[250px] flex flex-col min-h-[300px] landscape:min-h-0 overflow-hidden relative">
+                <div class="flex-1 overflow-y-auto relative" id="controlsWrapper">
+                    <div class="p-3 md:p-4 min-h-full flex flex-col justify-between gap-4">
+                        <div class="flex flex-col gap-4">
+
+                            <!-- 환경변수 레이블 삭제됨 -->
+
+                            <!-- ─────────────────────────────────────────────
+                         ✏️  입력 폼 영역 시작 — 아래부터 자유롭게 수정
+                         ───────────────────────────────────────────── -->
+
+                            <!-- 모드 -->
+                            <div class="panel-block">
+                                <label class="var-label-control">모드</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="radio-label">
+                                        <input type="radio" name="modeOpt" value="liquid" class="mt-0.5 accent-indigo-600" checked>
+                                        <span class="select-option-text">액체 혼합물</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="modeOpt" value="solid" class="mt-0.5 accent-indigo-600">
+                                        <span class="select-option-text">고체 혼합물</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 액체 모드: 액체 혼합물 -->
+                            <div class="panel-block" data-mode-block="liquid">
+                                <label class="var-label-control" for="liquidMixSelect">액체 혼합물</label>
+                                <select id="liquidMixSelect"
+                                    class="select-option-text w-full h-10 p-2 border border-slate-200 rounded bg-white cursor-pointer">
+                                    <option value="oil">물 + 식용유</option>
+                                    <option value="ethanol">물 + 에탄올</option>
+                                </select>
+                            </div>
+
+                            <!-- 액체 모드: 마개 -->
+                            <div class="panel-block" data-mode-block="liquid">
+                                <label class="var-label-control">마개</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="radio-label">
+                                        <input type="radio" name="stopperOpt" value="closed" class="mt-0.5 accent-indigo-600" checked>
+                                        <span class="select-option-text">닫기</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="stopperOpt" value="open" class="mt-0.5 accent-indigo-600">
+                                        <span class="select-option-text">열기</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 액체 모드: 꼭지 -->
+                            <div class="panel-block" data-mode-block="liquid">
+                                <label class="var-label-control">꼭지</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="radio-label">
+                                        <input type="radio" name="valveOpt" value="closed" class="mt-0.5 accent-indigo-600" checked>
+                                        <span class="select-option-text">닫기</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="valveOpt" value="open" class="mt-0.5 accent-indigo-600">
+                                        <span class="select-option-text">열기</span>
+                                    </label>
+                                </div>
+                                <p class="slider-limit-label">화면의 마개와 꼭지를 눌러도 열고 닫을 수 있다.</p>
+                            </div>
+
+                            <!-- 액체 모드: 위층 따라 내기 -->
+                            <div class="panel-block" data-mode-block="liquid">
+                                <label class="var-label-control">위층 분리</label>
+                                <button id="pourBtn"
+                                    class="btn-sub w-full py-2 border rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">위층 따라 내기</button>
+                                <p class="slider-limit-label">경계면 직전에 꼭지를 닫은 뒤, 위층은 분별 깔때기의 입구로 따라 낸다.</p>
+                            </div>
+
+                            <!-- 고체 모드: 고체 혼합물 -->
+                            <div class="panel-block hidden" data-mode-block="solid">
+                                <label class="var-label-control" for="solidMixSelect">고체 혼합물</label>
+                                <select id="solidMixSelect"
+                                    class="select-option-text w-full h-10 p-2 border border-slate-200 rounded bg-white cursor-pointer">
+                                    <option value="plastic">플라스틱(PET·LDPE·PS)</option>
+                                    <option value="rice">볍씨(쭉정이 + 알찬 볍씨)</option>
+                                </select>
+                            </div>
+
+                            <!-- 고체 모드: 분리용 액체 -->
+                            <div class="panel-block hidden" data-mode-block="solid">
+                                <label class="var-label-control">분리용 액체</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="sepLiquidOpt" value="water" class="accent-indigo-600" checked>
+                                        <span class="select-option-text whitespace-nowrap">물</span>
+                                    </label>
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="sepLiquidOpt" value="glycerol" class="accent-indigo-600">
+                                        <span class="select-option-text whitespace-nowrap">글리세롤</span>
+                                    </label>
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="sepLiquidOpt" value="salt" class="accent-indigo-600">
+                                        <span class="select-option-text whitespace-nowrap">소금물</span>
+                                    </label>
+                                </div>
+                                <p class="slider-limit-label">플라스틱은 물·글리세롤, 볍씨는 소금물을 쓴다.</p>
+                            </div>
+
+                            <!-- 고체 모드: 가라앉은 것 옮기기 -->
+                            <div class="panel-block hidden" data-mode-block="solid">
+                                <button id="transferBtn"
+                                    class="btn-sub w-full py-2 border rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">가라앉은 것을 글리세롤로 옮기기</button>
+                                <p class="slider-limit-label">플라스틱을 물에 넣어 다 가라앉고 뜬 뒤에 누를 수 있다.</p>
+                            </div>
+
+                            <!-- 표시 요소 -->
+                            <div class="panel-block">
+                                <label class="var-label-control">표시 요소</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer">
+                                        <input type="checkbox" id="chkDensity" class="accent-indigo-600" checked>
+                                        <span class="select-option-text">밀도 비교</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer">
+                                        <input type="checkbox" id="chkLabels" class="accent-indigo-600" checked>
+                                        <span class="select-option-text">층 이름</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 다시하기 -->
+                            <button id="retryBtn" class="btn-sub w-full py-2 border rounded-lg transition-colors">다시하기</button>
+
+                            <!-- ─────────────────────────────────────────────
+                         ✏️  입력 폼 영역 끝
+                         ───────────────────────────────────────────── -->
+                        </div>
+
+                        <!-- 🚫 [수정 금지] 하단 동작 버튼 (텍스트만 변경 가능) -->
+                        <div class="flex flex-col gap-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button id="pauseBtn"
+                                    class="btn-action-start col-span-2 py-2 border rounded-lg transition-colors">▶
+                                    시작</button>
+                                <button id="conceptBtn"
+                                    class="btn-sub py-2 border rounded-lg transition-colors">개념 정리</button>
+                                <button id="quizBtn"
+                                    class="btn-sub py-2 border rounded-lg transition-colors">확인 퀴즈</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </aside>
+            <!-- ╚══════EDIT ZONE 끝═════════════════════════════════════════╝ -->
+
+
+            <!-- ═════════════════════════════════════════════════════════════
+             🚫 [수정 금지] 팝업 모달 — 내용은 JS CONTENT_CONFIG로 자동 주입
+             ═════════════════════════════════════════════════════════════ -->
+
+            <!-- 학습 가이드 모달 (모바일/태블릿) -->
+            <div id="helpBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-left">
+                <div class="modal-container max-w-4xl min-h-[200px]">
+                    <div class="modal-header">
+                        <h3 class="modal-title flex items-center gap-2"><svg class="w-6 h-6 text-indigo-600" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg> 학습 가이드</h3>
+                        <button id="closeHelpBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="guide-block">
+                            <h4 class="guide-title mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg> 콘텐츠 소개</h4>
+                            <p class="guide-desc" id="guide-intro-modal">로딩 중...</p>
+                        </div>
+                        <div class="guide-block">
+                            <h4 class="guide-title mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg> 사용 방법</h4>
+                            <ol class="guide-desc list-decimal pl-5 space-y-1.5 marker:text-slate-400 marker:font-bold"
+                                id="guide-steps-modal"><!-- JS 자동 주입 --></ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 개념 정리 모달 -->
+            <div id="conceptBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-left">
+                <div class="modal-container max-w-2xl min-h-[200px]">
+                    <div class="modal-header">
+                        <h3 class="modal-title">개념 정리</h3>
+                        <button id="closeConceptBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="modal-body" id="conceptContent"><!-- JS CONTENT_CONFIG.concept 자동 주입 --></div>
+                </div>
+            </div>
+
+            <!-- 확인 퀴즈 모달 -->
+            <div id="quizBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-center">
+                <div class="modal-container max-w-2xl min-h-[200px] lg:min-h-[480px] max-h-[70dvh] overflow-hidden">
+                    <div class="modal-header">
+                        <div class="flex items-center gap-3">
+                            <h3 class="modal-title">확인 퀴즈</h3>
+                            <span id="quizStep" class="quiz-step px-3 py-1 rounded-full">질문 1 / N</span>
+                        </div>
+                        <button id="closeQuizBtn" class="modal-close-btn transition-colors" aria-label="닫기"><svg
+                                class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="flex-1 flex flex-col min-h-0">
+                        <div class="flex-1 overflow-y-auto px-5 pt-5 flex flex-col gap-2 min-h-0">
+                            <p id="questionText" class="quiz-question flex-none"></p>
+                            <div id="answerArea" class="flex-1 flex flex-col justify-center min-h-0 py-4">
+                                <button id="showAnswerBtn"
+                                    class="quiz-btn-check w-full max-w-sm mx-auto py-3 rounded-xl transition-colors">정답
+                                    확인하기</button>
+                                <div id="answerText" class="quiz-answer-box hidden p-4 rounded-xl border w-full">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="quizNav" class="flex justify-center gap-4 flex-none py-4 px-5 mt-2">
+                            <button id="prevQuizBtn" class="nav-btn">←</button>
+                            <button id="nextQuizBtn" class="nav-btn">→</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🚫 [수정 금지] 전체화면 딤처리 UI -->
+            <div id="fullscreen-exit-ui"
+                class="hidden fixed top-0 left-0 w-full h-12 z-[60] transition-opacity duration-300 opacity-0 pointer-events-none">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent"></div>
+            </div>
+        </main>
+
+        <!-- 🚫 [수정 금지] 푸터 -->
+        <footer class="flex-none flex justify-center p-1">
+            <p class="text-[10px] text-slate-400 font-medium">copyright© 2026 by chunjae co.ltd all rights reserved.</p>
+        </footer>
+    </div>
+
+
+    <script>
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE A — CONTENT CONFIG (텍스트/콘텐츠 설정)              ████
+           ████   이 블록의 값만 수정하면 제목·가이드·개념·퀴즈가 모두 반영됩니다.  ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        const CONTENT_CONFIG = {
+            "title": "밀도 차를 이용한 혼합물의 분리",
+            "envLabel": "밀도 차 분리 시뮬레이터",
+            "envLabelpanel": "실험 설정 및 제어",
+            "guide": {
+                "intro": "밀도 차를 이용하여 액체 혼합물과 고체 혼합물이 분리되는 원리를 확인할 수 있다.",
+                "steps": [
+                    "모드에서 '액체 혼합물' 또는 '고체 혼합물'을 선택한다.",
+                    "액체 혼합물 모드에서는 혼합물을 고르고, 마개를 연 다음 꼭지를 열어 아래층을 받고, 경계면 직전에 꼭지를 닫는다.",
+                    "고체 혼합물 모드에서는 플라스틱 혼합물을 물에 넣은 뒤 가라앉은 것을 글리세롤에 넣거나, 볍씨를 소금물에 넣어 뜨는 것과 가라앉는 것을 관찰한다.",
+                    "표시 요소에서 '밀도 비교' 또는 '층 이름'을 골라 분리 결과를 확인한다."
+                ]
+            },
+            "concept": [
+                {
+                    "color": "orange",
+                    "title": "밀도 차를 이용한 분리",
+                    "desc": "밀도가 큰 물질은 아래로 가라앉고 밀도가 작은 물질은 위로 뜹니다. 혼합물을 이루는 물질의 밀도 차를 이용하면 혼합물을 분리할 수 있습니다. 혼합물 속 물질은 각각의 성질을 그대로 가지고 있으므로, 분리한 물질도 원래 물질의 성질을 그대로 가집니다. 생활 속에서는 바다에 유출된 기름을 기름막이로 막아 제거하고, 소금물에 볍씨를 넣어 알찬 볍씨를 고릅니다."
+                },
+                {
+                    "color": "green",
+                    "title": "서로 섞이지 않는 액체 혼합물의 분리",
+                    "desc": "물과 식용유처럼 서로 섞이지 않는 액체 혼합물은 밀도가 큰 물이 아래층, 밀도가 작은 식용유가 위층을 이룹니다. 분별 깔때기에 넣고 층이 나누어지면 마개를 연 다음 꼭지를 열어 아래층부터 받고, 경계면 직전에 꼭지를 닫습니다. 경계면 액체는 다른 비커에 받고, 위층 액체는 분별 깔때기의 입구로 따라 냅니다."
+                },
+                {
+                    "color": "blue",
+                    "title": "층이 생기지 않는 액체 혼합물",
+                    "desc": "물과 에탄올은 밀도가 달라도 서로 잘 섞여 층이 생기지 않으므로 분별 깔때기로 분리할 수 없습니다. 층이 생기지 않는다고 해서 밀도 차가 없는 것은 아닙니다. 분별 깔때기로는 서로 섞이지 않는 액체 혼합물을 분리합니다."
+                },
+                {
+                    "color": "purple",
+                    "title": "고체 혼합물의 분리",
+                    "desc": "고체 혼합물을 액체에 넣으면 액체보다 밀도가 큰 고체는 가라앉고, 밀도가 작은 고체는 뜹니다. 분리에 쓰는 액체는 두 고체를 녹이지 않고 밀도가 두 고체의 중간 정도여야 합니다. PET·LDPE·PS 플라스틱 혼합물을 물에 넣으면 LDPE는 뜨고, 가라앉은 PET와 PS를 글리세롤에 넣으면 PS는 뜨고 PET는 가라앉습니다. 볍씨를 소금물에 넣으면 속이 빈 쭉정이는 뜨고 알찬 볍씨는 가라앉습니다."
+                }
+            ],
+            "quizzes": [
+                {
+                    "q": "물과 식용유의 혼합물을 분별 깔때기에 넣고 층이 나누어진 뒤, 꼭지를 열어 먼저 받아 내는 아래층 액체는 무엇인가?\n\n① 식용유\n② 물\n③ 물과 식용유가 섞인 액체\n④ 아래층은 받아 낼 수 없다",
+                    "a": "정답: ② 물\n\n해설: 물과 식용유는 서로 섞이지 않으며, 밀도가 큰 물이 아래층, 밀도가 작은 식용유가 위층을 이룹니다. 분별 깔때기에서는 꼭지를 열어 아래층인 물부터 받고, 위층인 식용유는 분별 깔때기의 입구로 따라 냅니다."
+                },
+                {
+                    "q": "분별 깔때기로 액체 혼합물을 분리할 때, 꼭지를 열기 전에 마개를 먼저 여는 까닭으로 옳은 것은?\n\n① 두 액체가 빨리 섞이도록 하기 위해\n② 마개를 닫은 채 꼭지를 열면 액체가 잘 내려오지 않기 때문에\n③ 위층 액체를 꼭지로 먼저 받기 위해\n④ 액체의 밀도를 바꾸기 위해",
+                    "a": "정답: ② 마개를 닫은 채 꼭지를 열면 액체가 잘 내려오지 않기 때문에\n\n해설: 마개를 열지 않은 채 꼭지를 돌리면 분별 깔때기 안의 압력이 줄어 액체가 잘 내려오지 않고, 꼭지로 공기가 들어가 층이 뒤섞일 수 있습니다. 그래서 마개를 연 다음 꼭지를 천천히 열어 아래층부터 받습니다."
+                },
+                {
+                    "q": "PET·LDPE·PS 플라스틱 조각 혼합물을 물에 넣은 뒤, 가라앉은 조각을 꺼내 글리세롤에 넣었다. 글리세롤에서 뜨는 플라스틱은 무엇인가?\n\n① LDPE   ② PS   ③ PET   ④ 모두 가라앉는다",
+                    "a": "정답: ② PS\n\n해설: 물에 넣으면 물보다 밀도가 작은 LDPE는 뜨고, 물보다 밀도가 큰 PET와 PS는 가라앉습니다. 가라앉은 PET와 PS를 글리세롤에 넣으면 글리세롤보다 밀도가 작은 PS는 뜨고, 글리세롤보다 밀도가 큰 PET는 가라앉습니다."
+                },
+                {
+                    "q": "고체 혼합물을 분리할 때 쓰는 액체의 조건으로 옳은 것만을 고른 것은?\n\nㄱ. 두 고체를 녹이지 않는다.\nㄴ. 밀도가 두 고체의 중간 정도이다.\nㄷ. 밀도가 두 고체보다 모두 크다.\n\n① ㄱ   ② ㄷ   ③ ㄱ, ㄴ   ④ ㄴ, ㄷ   ⑤ ㄱ, ㄴ, ㄷ",
+                    "a": "정답: ③ ㄱ, ㄴ\n\n해설: 액체의 밀도가 두 고체의 중간 정도여야 하나는 뜨고 하나는 가라앉습니다. 고체가 녹으면 분리할 수 없으므로 두 고체를 녹이지 않아야 합니다. 밀도가 두 고체보다 모두 크면 둘 다 떠서 분리되지 않습니다."
+                },
+                {
+                    "q": "밀도 차를 이용한 분리에 대한 설명으로 옳지 않은 것은?\n\n① 바다에 유출된 기름은 바닷물과 섞이지 않고 밀도가 작아 위에 뜨므로 기름막이로 퍼지는 것을 막는다.\n② 볍씨를 소금물에 넣으면 속이 빈 쭉정이는 뜬다.\n③ 볍씨를 소금물에 넣으면 알찬 볍씨는 가라앉는다.\n④ 물과 에탄올을 섞으면 층이 생기지 않으므로 두 액체는 밀도 차가 없다.",
+                    "a": "정답: ④\n\n해설: 물과 에탄올은 밀도가 달라도 서로 잘 섞이기 때문에 층이 생기지 않습니다. 층이 생기지 않는다고 해서 밀도 차가 없는 것은 아닙니다. 기름막이와 소금물로 볍씨 고르기는 밀도 차를 이용한 생활 속 사례입니다."
+                }
+            ]
+        };
+        /* ████ ZONE A 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE B — SIM CONFIG (시뮬레이션 파라미터 설정)             ████
+           ████   슬라이더 범위, 초기 객체 크기 등 수치 설정을 여기서 변경하세요.   ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        const SIM_CONFIG = {
+            /* 이 단원은 슬라이더를 쓰지 않는다 (코어 호환용 기본값) */
+            slider: {
+                min: 0,
+                max: 100,
+                step: 1,
+                initialValue: 50,
+                unit: ""
+            },
+            /* 분별 깔때기에서 흘러나오는 빠르기 (한 프레임에 깔때기 전체 부피에 대한 비율) */
+            flow: {
+                baseRate: 0.0014,
+                minHeadFactor: 0.35,
+                slowFactor: 0.5,      /* 경계면 가까이에서는 천천히 나온다 (꼭지를 닫을 시간) */
+                dripRate: 0.00012,    /* 마개를 닫은 채 꼭지를 열었을 때 떨어지는 양 */
+                dripLimit: 0.004,     /* 마개를 닫은 채로는 이만큼만 떨어지고 멈춘다 */
+                pourRate: 0.003       /* 위층을 입구로 따라 내는 빠르기 */
+            },
+            /* 액체 혼합물 처음 양과 분리 판정 여유 (모두 처음 양에 대한 비율) */
+            liquid: {
+                initLowerRatio: 0.40,   /* 아래층(물) 처음 양: 깔때기 부피의 40% */
+                initUpperRatio: 0.30,   /* 위층(식용유) 처음 양: 깔때기 부피의 30% */
+                waterTolerance: 0.10,   /* 닫았을 때 물이 이만큼 이하로 남으면 경계면 직전으로 본다 */
+                oilTolerance: 0.04,     /* 식용유가 이만큼 넘게 나오면 섞여 나온 것으로 본다 */
+                nearInterface: 0.20,    /* 물이 이만큼 남으면 '경계면이 꼭지에 가까워짐' 안내 */
+                beakerFill: 160         /* 깔때기 전체 부피를 받는 비커 그림의 높이(그림 픽셀) */
+            },
+            /* 고체 모드 비커 그림 안의 액체 표면과 바닥 높이(그림 픽셀) */
+            solid: {
+                surface: 80,
+                bottom: 229,
+                maxScale: 2.4           /* 비커 최대 배율 (코드 그림이라 흐려지지 않음, 넓은 화면에서 너무 작지 않게) */
+            },
+            /* 시작 버튼·캔버스 안내 문구 (코어 updateUIState가 사용) */
+            labels: {
+                start: "▶ 실험 시작",
+                pause: "일시정지",
+                helperIdle: "조건을 고르고 실험 시작을 누르세요.",
+                helperRunning: "실험 중",
+                helperPaused: "일시정지됨 - 실험 시작을 누르면 이어서 진행해요."
+            }
+        };
+        /* ████ ZONE B 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE C — SIM STATE (동적 상태 변수)                       ████
+           ████   시뮬레이션 진행 중 변하는 값들을 여기에 추가·수정하세요.         ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        let simData = {
+            mode: "liquid",          /* 'liquid' | 'solid' */
+            liquidMix: "oil",        /* 'oil'(물 + 식용유) | 'ethanol'(물 + 에탄올) */
+            stopperOpen: false,      /* 마개 */
+            valveOpen: false,        /* 꼭지 */
+            lower: 0,                /* 깔때기 아래층(물) 양 */
+            upper: 0,                /* 깔때기 위층(식용유) 양 */
+            mix: 0,                  /* 깔때기 속 물 + 에탄올 양 */
+            initLower: 0, initUpper: 0, initMix: 0,
+            beakerLower: 0, beakerUpper: 0, beakerMix: 0,
+            sideOil: 0,              /* 입구로 따라 낸 위층 양 */
+            dripLeft: 0,             /* 마개를 닫은 채로 더 떨어질 수 있는 양 */
+            flowing: null,           /* 지금 흘러나오는 액체: 'water' | 'oil' | 'mix' | null */
+            dripping: false,
+            pouring: false,
+            poured: false,
+            notice: null,            /* 버튼을 잘못 눌렀을 때 잠깐 보여 주는 안내 */
+            solidMix: "plastic",     /* 'plastic'(PET·LDPE·PS) | 'rice'(쭉정이 + 알찬 볍씨) */
+            sepLiquid: "water",      /* 'water' | 'glycerol' | 'salt' */
+            stage: 1,                /* 2: 가라앉은 플라스틱을 글리세롤로 옮긴 뒤 */
+            particles: [],
+            settled: false,
+            showDensity: true,
+            showLabels: true,
+            frame: 0
+        };
+
+        /* 탭별 상태 저장소 (탭을 쓰는 단원만 탭 이름과 일치시켜 관리) */
+        const tabStates = {};
+        /* ████ ZONE C 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE D — CORE ENGINE (수정 금지)
+           캔버스·상태·사운드·DOM캐시 등 엔진 코어 초기화
+           ════════════════════════════════════════════════════════════════════════ */
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        const container = document.getElementById('canvas-container');
+
+        const varSlider1 = document.getElementById('varSlider1');
+        const varDisplay1 = document.getElementById('varDisplay1');
+
+        const sysState = {
+            isStarted: false, isPaused: false, isDragging: false, isLooping: false,
+            zoomLevel: 1.0, offsetX: 0, offsetY: 0, lastX: 0, lastY: 0,
+            currentQuizIndex: 0, canvasLogicalWidth: 0, canvasLogicalHeight: 0
+        };
+
+        const DOM = {}; /* DOM 요소 캐시 */
+
+        const debounce = (func, delay) => {
+            let id;
+            return (...args) => { clearTimeout(id); id = setTimeout(() => func.apply(this, args), delay); };
+        };
+
+        const bindEvent = (id, type, handler) => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener(type, handler);
+        };
+
+        /* CONTENT_CONFIG → DOM 주입 */
+        function renderContent() {
+            const C = CONTENT_CONFIG;
+
+            /* 제목 */
+            document.title = C.title;
+            const titleEl = document.getElementById('sim-title-el');
+            if (titleEl) titleEl.textContent = C.title;
+
+            /* 환경 변수 레이블 */
+            ['env-label-canvas', 'env-label-panel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.envLabel;
+            });
+
+            /* 제어패널 환경 변수 레이블 */
+            ['env-label-panel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.envLabelpanel;
+            });
+
+            /* 가이드 — 소개 */
+            ['guide-intro-desktop', 'guide-intro-modal'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.guide.intro;
+            });
+
+            /* 가이드 — 단계 (모달: 단순 주입) */
+            const stepsHTML = CONTENT_CONFIG.guide.steps.map(s => `<li>${s}</li>`).join('');
+            const modalSteps = document.getElementById('guide-steps-modal');
+            if (modalSteps) modalSteps.innerHTML = stepsHTML;
+
+            /* 가이드 — 단계 (데스크톱 셔터: 개수에 따라 비율·컬럼 분기) */
+            const steps = CONTENT_CONFIG.guide.steps;
+            const introCol = document.getElementById('guide-intro-col');
+            const stepsCol = document.getElementById('guide-steps-col');
+            const stepsWrap = document.getElementById('guide-steps-wrapper-desktop');
+
+            if (steps.length >= 4) {
+                /* 1:2 비율 적용 */
+                if (introCol) introCol.className = 'flex-1';
+                if (stepsCol) stepsCol.className = 'flex-[2]';
+
+                /* 컬럼 분할: ceil(n/2)개가 왼쪽 */
+                const split = Math.ceil(steps.length / 2);
+                const col1 = steps.slice(0, split);
+                const col2 = steps.slice(split);
+
+                if (stepsWrap) {
+                    stepsWrap.innerHTML = `
+                <div class="flex flex-col lg:flex-row gap-x-8 gap-y-1">
+                    <ol class="guide-desc flex-1 list-decimal pl-5 space-y-1">
+                        ${col1.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                    <ol class="guide-desc flex-1 list-decimal pl-5 space-y-1" start="${split + 1}">
+                        ${col2.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                </div>`;
+                }
+            } else {
+                /* 1:1 비율, 단일 리스트 */
+                if (introCol) introCol.className = 'flex-1';
+                if (stepsCol) stepsCol.className = 'flex-1';
+
+                if (stepsWrap) {
+                    stepsWrap.innerHTML = `
+                <ol class="guide-desc list-decimal pl-5 space-y-1">
+                    ${steps.map(s => `<li>${s}</li>`).join('')}
+                </ol>`;
+                }
+            }
+
+            /* 개념 정리 카드 */
+            const colorMap = {
+                orange: { bg: 'bg-orange-50', border: 'border-orange-500', titleClass: 'concept-title-1', descClass: 'concept-desc' },
+                green: { bg: 'bg-emerald-50', border: 'border-emerald-500', titleClass: 'concept-title-2', descClass: 'concept-desc' },
+                blue: { bg: 'bg-blue-50', border: 'border-blue-500', titleClass: 'concept-title-3', descClass: 'concept-desc' },
+                purple: { bg: 'bg-purple-50', border: 'border-purple-500', titleClass: 'concept-title-4', descClass: 'concept-desc' }
+            };
+            const conceptContent = document.getElementById('conceptContent');
+            if (conceptContent) {
+                conceptContent.innerHTML = C.concept.map(item => {
+                    const col = colorMap[item.color] || colorMap.orange;
+                    return `<div class="p-4 ${col.bg} border-l-4 ${col.border} rounded-r-xl">
+                        <p class="${col.titleClass} mb-1">${item.title}</p>
+                        <p class="${col.descClass}">${item.desc}</p>
+                    </div>`;
+                }).join('');
+            }
+
+            /* KaTeX 수식 렌더링 (콘텐츠 주입 후 실행) */
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '\\[', right: '\\]', display: true }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            /* DOM 캐싱 */
+            DOM.statusIndicator = document.getElementById('statusIndicator');
+            DOM.pauseBtn = document.getElementById('pauseBtn');
+            DOM.helperText = document.getElementById('helperText');
+            DOM.varSlider1 = document.getElementById('varSlider1');
+            DOM.directInputSingle = document.getElementById('directInputSingle');
+            DOM.ratioInputA = document.getElementById('ratioInputA');
+            DOM.ratioInputB = document.getElementById('ratioInputB');
+            DOM.customSelectTrigger = document.getElementById('customSelectTrigger');
+            DOM.customSelectList = document.getElementById('customSelectList');
+            DOM.radioOptions = document.querySelectorAll('input[name="simOption"]');
+
+            /* 콘텐츠 주입 */
+            renderContent();
+
+            /* 슬라이더 초기값 세팅 */
+            if (varSlider1) {
+                varSlider1.min = SIM_CONFIG.slider.min;
+                varSlider1.max = SIM_CONFIG.slider.max;
+                varSlider1.step = SIM_CONFIG.slider.step;
+                varSlider1.value = SIM_CONFIG.slider.initialValue;
+            }
+            if (varDisplay1) varDisplay1.textContent = `${SIM_CONFIG.slider.initialValue} ${SIM_CONFIG.slider.unit}`;
+
+            checkLandscape();
+        });
+
+        const checkLandscape = () => {
+            if (window.matchMedia("(orientation: landscape)").matches && window.innerWidth < 1024) {
+                const sc = document.getElementById('shutter-content');
+                if (sc && sc.classList.contains('is-open')) document.getElementById('shutter-toggle')?.click();
+            }
+        };
+        window.addEventListener('orientationchange', () => setTimeout(checkLandscape, 100));
+
+        if (!document.getElementById('shutter-toggle')) {
+            const helpBtn = document.getElementById('helpBtn');
+            if (helpBtn) helpBtn.classList.remove('desktop-only:md:hidden');
+        }
+        /* ════ ZONE D 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE E — SOUND MANAGER (수정 금지) (삭제시 uiSound 관련 코드 모두 삭제) - REMOVED
+           ════════════════════════════════════════════════════════════════════════ */
+
+
+        /* ███████████████████████████████████████████████████████████████████████
+           ████                                                               ████
+           ████   ✏️  ZONE F — SIMULATION LOGIC (시뮬레이션 핵심 로직)         ████
+           ████   draw()와 updatePhysics()에 시뮬레이션 코드를 작성하세요.       ████
+           ████                                                               ████
+           ███████████████████████████████████████████████████████████████████████ */
+
+        /* ── 공통 상수 ─────────────────────────────────────────────── */
+        const FONT = '"Noto Sans KR", sans-serif';
+        const COLORS = {
+            water: 'rgba(56, 189, 248, 0.45)', waterLine: '#0284c7',
+            oil: 'rgba(250, 204, 21, 0.75)', oilLine: '#a16207',
+            mix: 'rgba(125, 211, 252, 0.50)', mixLine: '#0369a1',
+            glass: '#94a3b8', text: '#334155', sub: '#64748b', light: '#94a3b8',
+            primary: '#4f46e5', bg: '#ffffff'
+        };
+        const LIQ = {
+            water: { fill: 'rgba(56, 189, 248, 0.26)', line: '#0284c7' },
+            glycerol: { fill: 'rgba(167, 139, 250, 0.26)', line: '#6d28d9' },
+            salt: { fill: 'rgba(45, 212, 191, 0.26)', line: '#0f766e' }
+        };
+        const BANNER_STYLE = {
+            info: { bg: 'rgba(255, 255, 255, 0.94)', border: '#cbd5e1', text: '#334155' },
+            success: { bg: 'rgba(236, 253, 245, 0.96)', border: '#10b981', text: '#047857' },
+            warn: { bg: 'rgba(255, 247, 237, 0.96)', border: '#fb923c', text: '#c2410c' }
+        };
+
+        /* 밀도 비교 (내부 판정용, 화면에는 수치를 내지 않고 '크다/작다'만 쓴다).
+           01_spec.json formula_or_source: 물 1.0, 글리세롤 1.26, PET 1.35, LDPE 0.91, PS 1.06, 식용유 0.93 g/mL.
+           소금물·볍씨는 수치 없이 정성 판정: 소금물 > 물, 쭉정이 < 소금물 < 알찬 볍씨. */
+        const DENSITY = { water: 1.0, glycerol: 1.26, PET: 1.35, LDPE: 0.91, PS: 1.06, oil: 0.93 };
+        const QUAL = { 'salt|water': 1, 'chaff|salt': -1, 'good|salt': 1 };
+        function denser(a, b) {
+            if (a in DENSITY && b in DENSITY) return DENSITY[a] > DENSITY[b];
+            if (QUAL[a + '|' + b] !== undefined) return QUAL[a + '|' + b] > 0;
+            if (QUAL[b + '|' + a] !== undefined) return QUAL[b + '|' + a] < 0;
+            return false;
+        }
+        const NAME = { PET: 'PET', LDPE: 'LDPE', PS: 'PS', chaff: '쭉정이', good: '알찬 볍씨', water: '물', glycerol: '글리세롤', salt: '소금물', oil: '식용유' };
+        const TOPIC = { PET: 'PET는', LDPE: 'LDPE는', PS: 'PS는', chaff: '쭉정이는', good: '알찬 볍씨는', water: '물은', glycerol: '글리세롤은', salt: '소금물은', oil: '식용유는' };
+        const SOLID_SETS = { plastic: ['PET', 'LDPE', 'PS'], rice: ['chaff', 'good'] };
+        /* 교과서 근거가 있는 조합만 고를 수 있다 (플라스틱: 물·글리세롤, 볍씨: 소금물) */
+        const ALLOWED_LIQUIDS = { plastic: ['water', 'glycerol'], rice: ['salt'] };
+
+        /* 고체 조각 모양·개수·움직임 (비커 그림 픽셀 단위) */
+        const PARTICLE_SPEC = {
+            PET: { count: 7, r: 5.6, ry: 4, speed: 1.0, sx: 14, sy: 8, floatK: 0 },
+            LDPE: { count: 7, r: 5.6, ry: 3.6, speed: 0.9, sx: 14, sy: 7, floatK: 1 },
+            PS: { count: 7, r: 4.8, ry: 4.8, speed: 0.8, sx: 13, sy: 9, floatK: 1 },
+            chaff: { count: 9, r: 7.2, ry: 2.6, speed: 0.9, sx: 16, sy: 6, floatK: 0 },
+            good: { count: 12, r: 7.6, ry: 4, speed: 0.9, sx: 16, sy: 7, floatK: 0 }
+        };
+        const PARTICLE_DRAW = 0.8;   /* 조각 그림 크기 (비커 배율에 곱함) */
+
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+        /* ── 캔버스 크기 비례 (design.md 4장): 배율 하나(UI)로 글자·상자·라벨·선 굵기·간격을 함께 키운다 ── */
+        let UI = 1;
+        function updateUI(w, h) { UI = clamp(Math.min(w / 1080, h / 700), 0.75, 1.5); }
+        const U = v => v * UI;                                            /* 길이·선 굵기·여백 */
+        const F = (base, min) => Math.round(Math.max(base * UI, min));    /* 글자 크기 (좁은 화면 최소값) */
+
+        /* ── 기구는 모두 코드로 그린다 (연한 회색 가는 선, 거의 투명한 유리 + 옅은 하이라이트) ── */
+        const GLASS = {
+            line: '#94a3b8', fill: 'rgba(241, 245, 249, 0.55)', hi: 'rgba(255, 255, 255, 0.85)',
+            metal: '#e2e8f0', metalDark: '#cbd5e1', metalLine: '#64748b', base: '#f8fafc'
+        };
+
+        /* ── 분별 깔때기 (설계 단위 94 × 296): 서양배 몸통, 좁은 목, 가는 관 ── */
+        const FN = { w: 94, h: 296, cx: 46.5, top: 56, bot: 206, stemX: 46.5, valveY: 214, stemBot: 288, neckY: 36, neckHW: 7, stemHW: 2.5 };
+        function funnelHW(y) {
+            if (y <= 122) {
+                const t = (122 - y) / 68;
+                return Math.max(6, 28 * Math.sqrt(Math.max(0, 1 - t * t)));
+            }
+            const s = Math.min(1, (y - 122) / 84);
+            return 2.5 + 25.5 * (1 - s) * (1 + 0.3 * s);
+        }
+        /* 아래(꼭지)부터 쌓인 부피 표 — 단면적 ∝ 반폭² */
+        const FUNNEL_SPAN = FN.bot - FN.top;
+        const FUNNEL_VOL = (() => {
+            const cum = [0];
+            for (let i = 1; i <= FUNNEL_SPAN; i++) {
+                const hw = funnelHW(FN.bot - i + 0.5);
+                cum.push(cum[i - 1] + hw * hw);
+            }
+            return cum;
+        })();
+        const FUNNEL_TOTAL = FUNNEL_VOL[FUNNEL_SPAN];
+        function levelForVolume(v) {
+            if (v <= 0) return FN.bot;
+            if (v >= FUNNEL_TOTAL) return FN.top;
+            let lo = 0, hi = FUNNEL_SPAN;
+            while (hi - lo > 1) {
+                const m = (lo + hi) >> 1;
+                if (FUNNEL_VOL[m] < v) lo = m; else hi = m;
+            }
+            const f = (v - FUNNEL_VOL[lo]) / (FUNNEL_VOL[hi] - FUNNEL_VOL[lo]);
+            return FN.bot - (lo + f);
+        }
+
+        /* ── 비커 (설계 단위 201 × 248): 위가 살짝 벌어진 원통, 납작한 타원 바닥 ──
+           외곽선과 액체가 같은 함수(bkWall)에서 나오고, 액체는 안쪽으로 INSET만큼 들어가 선 밖으로 나가지 않는다 */
+        const BK = { w: 201, h: 248, cx: 103, rimY: 20, rimRy: 10, bot: 228, ry: 10, base: 240, inset: 1.8 };
+        const BK_FLOOR = BK.bot + BK.ry - BK.inset - 1;   /* 안쪽 바닥의 가장 낮은 곳 */
+        function bkWall(v, inset) {
+            const t = (v - BK.rimY) / (BK.bot - BK.rimY);
+            return { l: 17 + t * 6 + inset, r: 189 - t * 6 - inset };
+        }
+        function mkBox(x0, y0, k) { return { k, x0, y0, x: u => x0 + u * k, y: v => y0 + v * k }; }
+
+        /* ── 스탠드 (설계 단위 600 × 600) 기준 배치 ───────────────── */
+        const STAND = {
+            clampX: 378, clampY: 175,          /* 클램프 링 가운데 = 깔때기 몸통 윗부분 */
+            funnelScale: 1.25, funnelGripY: 80,
+            mainBeaker: { cx: 378, bottom: 545, scale: 0.62 },
+            sideBeaker: { cx: 507, bottom: 545, scale: 0.45 },
+            stopperRest: { x: 200, y: 533 }
+        };
+        STAND.ringR = funnelHW(STAND.funnelGripY) * STAND.funnelScale + 2.5;   /* 링이 몸통에 딱 맞게 */
+
+        /* ── 배치 ───────────────────────────────────────────────────
+           밀도 비교 상자·범례·메시지 바 자리를 먼저 비워 두고, 남은 영역 가운데에 기구를 놓는다.
+           A: 밀도 비교 상자는 왼쪽, 범례는 오른쪽 세로 띠 / B: 둘 다 위쪽 여백 (좁은 화면)
+           두 배치 중 기구가 더 크게 들어가는 쪽을 고른다. */
+        function planLayout(w, h, sceneW, sceneH, padTop, padBot, hasLegend, maxS) {
+            updateUI(w, h);
+            const fsD = F(13, 11);
+            const legend = hasLegend ? legendSize(w) : null;
+            const banner = bannerSize(currentMessage(), w);
+            const bottom = h - Math.max(70, U(16) + banner.bh + U(10));
+            const fit = (left, top, regW) => {
+                const regH = bottom - top;
+                const S = Math.max(0.15, Math.min(regW / sceneW, (regH - padTop - padBot) / sceneH, maxS));
+                return {
+                    S, x0: left + (regW - sceneW * S) / 2,
+                    y0: top + padTop + Math.max(0, (regH - padTop - padBot - sceneH * S) / 2)
+                };
+            };
+            /* A: 옆 띠 */
+            const dA = simData.showDensity ? densitySize(Math.min(U(300), Math.max(U(150), w * 0.3)), fsD) : null;
+            const leftA = dA ? U(16) + dA.w + U(12) : U(16);
+            const rightA = legend ? U(16) + legend.w + U(12) : U(16);
+            const A = fit(leftA, 72, w - leftA - rightA);
+            A.d = dA;
+            /* B: 위쪽 여백 */
+            const maxDW = w - U(32) - (legend ? legend.w + U(12) : 0);
+            const dB = simData.showDensity ? densitySize(Math.max(U(120), Math.min(maxDW, U(460))), fsD) : null;
+            const topB = Math.max(72, 60 + Math.max(dB ? dB.h : 0, legend ? legend.h : 0) + U(12));
+            const B = fit(U(16), topB, w - U(32));
+            B.d = dB;
+            const P = (A.S >= B.S * 0.97) ? A : B;
+            P.dpos = { x: U(16), y: 60 };
+            P.legend = legend;
+            P.legendPos = legend ? { x: w - U(16) - legend.w, y: 60 } : null;
+            return P;
+        }
+
+        function liquidLayout(w, h) {
+            updateUI(w, h);
+            /* 기구 배율도 UI와 같은 수준으로만 커진다 (기준 화면 약 0.8) */
+            const plan = planLayout(w, h, 600, 600, 0, 0, false, 0.8 * UI);
+            const S = plan.S, X0 = plan.x0, Y0 = plan.y0;
+            const L = { S, X0, Y0, plan, X: u => X0 + u * S, Y: v => Y0 + v * S };
+            const fs = STAND.funnelScale;
+            L.fS = fs * S;
+            L.fx0 = L.X(STAND.clampX - FN.cx * fs);
+            L.fy0 = L.Y(STAND.clampY - STAND.funnelGripY * fs);
+            L.FX = u => L.fx0 + u * L.fS;
+            L.FY = v => L.fy0 + v * L.fS;
+            const bb = b => mkBox(L.X(b.cx - BK.cx * b.scale), L.Y(b.bottom - BK.base * b.scale), b.scale * S);
+            L.main = bb(STAND.mainBeaker);
+            L.side = bb(STAND.sideBeaker);
+            return L;
+        }
+        function solidLayout(w, h) {
+            const n = simData.stage === 2 ? 2 : 1;
+            updateUI(w, h);
+            const fs = F(13, 12);
+            const gapU = 60;                                   /* 비커 사이 (그림 픽셀) */
+            const padTop = fs + U(16);                         /* '분리용 액체' 이름 */
+            const padBot = simData.showLabels ? 2 * (fs + U(6)) + U(8) : U(6);   /* 뜬 것 / 가라앉은 것 */
+            const plan = planLayout(w, h, n * BK.w + (n - 1) * gapU, BK.h, padTop, padBot, true, Math.min(SIM_CONFIG.solid.maxScale, 1.5 * UI));
+            const k = plan.S;
+            const boxes = [];
+            for (let i = 0; i < n; i++) boxes.push(mkBox(plan.x0 + i * (BK.w + gapU) * k, plan.y0, k));
+            return { k, boxes, plan };
+        }
+
+        /* ── 그리기 도우미 ─────────────────────────────────────────── */
+        function rrect(x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+        function wrapLines(text, maxW) {
+            const words = text.split(' ');
+            const lines = [];
+            let cur = '';
+            words.forEach(wd => {
+                const t = cur ? cur + ' ' + wd : wd;
+                if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = wd; }
+                else cur = t;
+            });
+            if (cur) lines.push(cur);
+            return lines;
+        }
+        function haloText(text, x, y) {
+            ctx.save();
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = U(3);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
+            ctx.strokeText(text, x, y);
+            ctx.restore();
+            ctx.fillText(text, x, y);
+        }
+
+        /* 비커 경로 (vTop부터 바닥까지). inset > 0이면 안쪽(액체용), 0이면 외곽선 */
+        function beakerPath(B, vTop, inset) {
+            const a = bkWall(vTop, inset), b = bkWall(BK.bot, inset);
+            ctx.beginPath();
+            ctx.moveTo(B.x(a.l), B.y(vTop));
+            ctx.lineTo(B.x(b.l), B.y(BK.bot));
+            ctx.ellipse(B.x((b.l + b.r) / 2), B.y(BK.bot), (b.r - b.l) / 2 * B.k, Math.max(1, BK.ry - inset * 0.5) * B.k, 0, Math.PI, 0, true);
+            ctx.lineTo(B.x(a.r), B.y(vTop));
+            ctx.closePath();
+        }
+        function surfaceEllipse(B, v, color) {
+            if (v > BK.bot - 3) return;
+            const s = bkWall(v, BK.inset);
+            ctx.strokeStyle = color; ctx.lineWidth = U(1.2);
+            ctx.beginPath();
+            ctx.ellipse(B.x((s.l + s.r) / 2), B.y(v), (s.r - s.l) / 2 * B.k, 4 * B.k, 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        /* 비커 유리 뒤쪽 (액체보다 먼저) */
+        function drawBeakerBack(B) {
+            ctx.save();
+            beakerPath(B, BK.rimY, 0);
+            ctx.fillStyle = GLASS.fill; ctx.fill();
+            /* 바닥 타원 뒤쪽 반 */
+            const b = bkWall(BK.bot, 0);
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)'; ctx.lineWidth = U(1);
+            ctx.beginPath();
+            ctx.ellipse(B.x((b.l + b.r) / 2), B.y(BK.bot), (b.r - b.l) / 2 * B.k, BK.ry * B.k, 0, Math.PI, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+        }
+        /* 비커 유리 앞쪽 선 (액체 다음): 옆벽, 테두리 타원, 왼쪽 위 부리, 눈금, 하이라이트 */
+        function drawBeakerFront(B) {
+            const a = bkWall(BK.rimY, 0), b = bkWall(BK.bot, 0);
+            const lw = U(1.6);
+            ctx.save();
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            /* 하이라이트 */
+            ctx.strokeStyle = GLASS.hi; ctx.lineWidth = Math.max(1.5, 4 * B.k);
+            ctx.beginPath(); ctx.moveTo(B.x(bkWall(50, 0).l + 12), B.y(50)); ctx.lineTo(B.x(bkWall(200, 0).l + 12), B.y(200)); ctx.stroke();
+            ctx.lineWidth = Math.max(1, 2 * B.k);
+            ctx.beginPath(); ctx.moveTo(B.x(bkWall(60, 0).l + 22), B.y(60)); ctx.lineTo(B.x(bkWall(140, 0).l + 22), B.y(140)); ctx.stroke();
+            /* 옆벽 */
+            ctx.strokeStyle = GLASS.line; ctx.lineWidth = lw;
+            ctx.beginPath();
+            ctx.moveTo(B.x(a.l), B.y(BK.rimY)); ctx.lineTo(B.x(b.l), B.y(BK.bot));
+            ctx.moveTo(B.x(a.r), B.y(BK.rimY)); ctx.lineTo(B.x(b.r), B.y(BK.bot));
+            ctx.stroke();
+            /* 바닥 타원 앞쪽 반 */
+            ctx.beginPath();
+            ctx.ellipse(B.x((b.l + b.r) / 2), B.y(BK.bot), (b.r - b.l) / 2 * B.k, BK.ry * B.k, 0, 0, Math.PI);
+            ctx.stroke();
+            /* 테두리 */
+            ctx.beginPath();
+            ctx.ellipse(B.x((a.l + a.r) / 2), B.y(BK.rimY), (a.r - a.l) / 2 * B.k, BK.rimRy * B.k, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.lineWidth = Math.max(1, lw * 0.6);
+            ctx.beginPath();
+            ctx.ellipse(B.x((a.l + a.r) / 2), B.y(BK.rimY + 2), (a.r - a.l) / 2 * B.k - 3 * B.k, (BK.rimRy - 1.5) * B.k, 0, 0, Math.PI);
+            ctx.stroke();
+            /* 부리 (왼쪽 위) */
+            ctx.lineWidth = lw;
+            ctx.beginPath();
+            ctx.moveTo(B.x(a.l + 14), B.y(BK.rimY - 8));
+            ctx.quadraticCurveTo(B.x(a.l - 4), B.y(BK.rimY - 9), B.x(a.l - 9), B.y(BK.rimY - 3));
+            ctx.quadraticCurveTo(B.x(a.l - 4), B.y(BK.rimY + 3), B.x(a.l + 2), B.y(BK.rimY + 6));
+            ctx.stroke();
+            /* 눈금 */
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.8)'; ctx.lineWidth = U(1);
+            for (let v = 90; v <= 210; v += 30) {
+                const r = bkWall(v, 0).r;
+                ctx.beginPath(); ctx.moveTo(B.x(r - 30), B.y(v)); ctx.lineTo(B.x(r - 12), B.y(v)); ctx.stroke();
+            }
+            ctx.restore();
+        }
+        /* 받는 비커 속 액체 층 (아래부터). 맨 위 표면 높이(그림 픽셀)를 돌려준다 */
+        function drawBeakerContents(B, layers) {
+            const kv = SIM_CONFIG.liquid.beakerFill / FUNNEL_TOTAL;
+            let v = BK_FLOOR;
+            const surfaces = [];
+            ctx.save();
+            beakerPath(B, BK.rimY + 6, BK.inset);
+            ctx.clip();
+            layers.forEach(l => {
+                if (l.vol <= 0) return;
+                const top = v - l.vol * kv;
+                ctx.fillStyle = l.color;
+                ctx.fillRect(B.x(0), B.y(top), BK.w * B.k, (v - top) * B.k);
+                surfaces.push({ v: top, line: l.line });
+                v = top;
+            });
+            ctx.restore();
+            surfaces.forEach(s => surfaceEllipse(B, s.v, s.line));
+            return v;
+        }
+        /* 분별 깔때기 몸통 경로. inset > 0이면 안쪽(액체용) */
+        function funnelBodyPath(L, inset) {
+            ctx.beginPath();
+            for (let y = FN.top; y <= FN.bot; y += 2) ctx.lineTo(L.FX(FN.cx - Math.max(0.6, funnelHW(y) - inset)), L.FY(y));
+            for (let y = FN.bot; y >= FN.top; y -= 2) ctx.lineTo(L.FX(FN.cx + Math.max(0.6, funnelHW(y) - inset)), L.FY(y));
+            ctx.closePath();
+        }
+        /* 분별 깔때기 외곽선 (목 → 몸통 → 가는 관 → 비스듬한 끝) */
+        function funnelOutlinePath(L) {
+            const c = FN.cx;
+            ctx.beginPath();
+            ctx.moveTo(L.FX(c - FN.neckHW), L.FY(FN.neckY));
+            ctx.lineTo(L.FX(c - FN.neckHW), L.FY(FN.top));
+            for (let y = FN.top; y <= FN.bot; y += 2) ctx.lineTo(L.FX(c - Math.max(FN.stemHW, funnelHW(y))), L.FY(y));
+            ctx.lineTo(L.FX(c - FN.stemHW), L.FY(FN.stemBot));
+            ctx.lineTo(L.FX(c + FN.stemHW), L.FY(FN.stemBot + 4));
+            ctx.lineTo(L.FX(c + FN.stemHW), L.FY(FN.bot));
+            for (let y = FN.bot; y >= FN.top; y -= 2) ctx.lineTo(L.FX(c + Math.max(FN.stemHW, funnelHW(y))), L.FY(y));
+            ctx.lineTo(L.FX(c + FN.neckHW), L.FY(FN.neckY));
+        }
+
+        /* 마개 (코드로 그림): 공 모양 손잡이 + 깔때기에 꽂히는 부분 */
+        function drawStopperShape(x, y, s, rot) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rot);
+            ctx.fillStyle = '#f8fafc'; ctx.strokeStyle = GLASS.line; ctx.lineWidth = U(1.5);
+            ctx.beginPath(); ctx.arc(0, 0, 8.5 * s, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.rect(-2.5 * s, 8 * s, 5 * s, 5 * s); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.rect(-10 * s, 13 * s, 20 * s, 5 * s); ctx.fill(); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(-7 * s, 18 * s); ctx.lineTo(7 * s, 18 * s); ctx.lineTo(5 * s, 32 * s); ctx.lineTo(-5 * s, 32 * s);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.restore();
+        }
+
+        /* 꼭지 손잡이 (코드로 그림): 닫힘은 관과 수직, 열림은 관과 나란하게 */
+        /* 꼭지: 관을 감싸는 몸체 + 오른쪽 둥근 끝 + T자 손잡이 (닫힘 가로 / 열림 세로) */
+        function drawValve(L) {
+            const s = L.fS, open = simData.valveOpen, c = FN.cx, vy = FN.valveY;
+            ctx.save();
+            ctx.lineWidth = U(1.5); ctx.lineJoin = 'round';
+            /* 몸체 */
+            ctx.fillStyle = 'rgba(248, 250, 252, 0.9)'; ctx.strokeStyle = GLASS.line;
+            rrect(L.FX(c - 9), L.FY(vy - 4.5), 18 * s, 9 * s, 2.5 * s); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.arc(L.FX(c + 12.5), L.FY(vy), 3.8 * s, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            /* 관 속 액체가 몸체를 지나 보이게 */
+            if (simData.flowing && !simData.dripping) {
+                ctx.fillStyle = COLORS[simData.flowing];
+                ctx.fillRect(L.FX(c - 1.3), L.FY(vy - 4.5), 2.6 * s, 9 * s);
+            }
+            /* 손잡이 */
+            ctx.strokeStyle = open ? '#059669' : '#e11d48';
+            ctx.fillStyle = open ? '#d1fae5' : '#ffe4e6';
+            rrect(L.FX(c - 16), L.FY(vy - 2), 7 * s, 4 * s, 1.2 * s); ctx.fill(); ctx.stroke();
+            if (open) {
+                rrect(L.FX(c - 22), L.FY(vy - 15), 6 * s, 30 * s, 2.5 * s); ctx.fill(); ctx.stroke();
+            } else {
+                rrect(L.FX(c - 32), L.FY(vy - 3), 17 * s, 6 * s, 2.5 * s); ctx.fill(); ctx.stroke();
+                rrect(L.FX(c - 35), L.FY(vy - 10), 5 * s, 20 * s, 2 * s); ctx.fill(); ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        /* 스탠드: 원근감 있는 받침, 세로 막대, 십자 고정 나사, 가로 막대, 클램프 */
+        function drawStand(L) {
+            const X = L.X, Y = L.Y, S = L.S;
+            ctx.save();
+            ctx.lineWidth = U(1.5); ctx.lineJoin = 'round';
+            /* 받침 윗면 + 앞면 */
+            ctx.fillStyle = GLASS.base; ctx.strokeStyle = GLASS.line;
+            ctx.beginPath();
+            ctx.moveTo(X(125), Y(452)); ctx.lineTo(X(490), Y(452)); ctx.lineTo(X(560), Y(558)); ctx.lineTo(X(40), Y(558));
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = GLASS.metal;
+            ctx.beginPath();
+            ctx.moveTo(X(40), Y(558)); ctx.lineTo(X(560), Y(558)); ctx.lineTo(X(560), Y(580));
+            ctx.lineTo(X(530), Y(580)); ctx.lineTo(X(522), Y(588)); ctx.lineTo(X(78), Y(588)); ctx.lineTo(X(70), Y(580));
+            ctx.lineTo(X(40), Y(580)); ctx.closePath(); ctx.fill(); ctx.stroke();
+            /* 세로 막대 */
+            ctx.fillStyle = GLASS.metal; ctx.strokeStyle = GLASS.line;
+            rrect(X(148), Y(8), 14 * S, 495 * S, 3 * S); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = GLASS.metalDark; ctx.strokeStyle = GLASS.metalLine;
+            rrect(X(141), Y(482), 28 * S, 32 * S, 4 * S); ctx.fill(); ctx.stroke();
+            /* 가로 막대 (클램프 쪽) */
+            const ringL = STAND.clampX - STAND.ringR;
+            ctx.fillStyle = GLASS.metal; ctx.strokeStyle = GLASS.line;
+            rrect(X(70), Y(STAND.clampY - 6), (ringL - 50 - 70) * S, 12 * S, 3 * S); ctx.fill(); ctx.stroke();
+            /* 클램프 몸체 (링으로 이어짐) */
+            ctx.fillStyle = GLASS.metalDark; ctx.strokeStyle = GLASS.metalLine;
+            rrect(X(ringL - 56), Y(STAND.clampY - 10), 58 * S, 20 * S, 4 * S); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.arc(X(ringL - 28), Y(STAND.clampY), 4.5 * S, 0, Math.PI * 2); ctx.stroke();
+            /* 십자 고정 나사 */
+            ctx.fillStyle = GLASS.metal; ctx.strokeStyle = GLASS.metalLine;
+            rrect(X(136), Y(STAND.clampY - 24), 38 * S, 48 * S, 4 * S); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = GLASS.metalDark;
+            ctx.beginPath(); ctx.arc(X(155), Y(STAND.clampY), 9 * S, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(X(149), Y(STAND.clampY - 6)); ctx.lineTo(X(161), Y(STAND.clampY + 6)); ctx.stroke();
+            rrect(X(164), Y(STAND.clampY - 4), 22 * S, 8 * S, 3 * S); ctx.fill(); ctx.stroke();
+            ctx.restore();
+        }
+        /* 클램프 링 (뒤쪽 반 / 앞쪽 반): 깔때기 몸통 윗부분을 감싼다 */
+        function drawClampRing(L, front) {
+            const X = L.X, Y = L.Y, S = L.S, R = STAND.ringR;
+            ctx.save();
+            ctx.lineCap = 'round';
+            const arc = (color, width) => {
+                ctx.strokeStyle = color; ctx.lineWidth = width;
+                ctx.beginPath();
+                ctx.ellipse(X(STAND.clampX), Y(STAND.clampY), R * S, R * 0.3 * S, 0, front ? 0 : Math.PI, front ? Math.PI : Math.PI * 2);
+                ctx.stroke();
+            };
+            arc(GLASS.metalLine, Math.max(3, 7 * S));
+            arc(GLASS.metal, Math.max(1.5, 4 * S));
+            ctx.restore();
+        }
+
+        /* 분별 깔때기: 유리 면 → 액체(몸통 안쪽으로 클리핑) → 외곽선·하이라이트 → 꼭지·마개 */
+        function drawFunnel(L) {
+            const isOil = simData.liquidMix === 'oil';
+            ctx.save();
+            funnelOutlinePath(L); ctx.closePath();
+            ctx.fillStyle = GLASS.fill; ctx.fill();
+            ctx.restore();
+            const yL = levelForVolume(simData.lower);
+            const yU = levelForVolume(simData.lower + simData.upper);
+            const yM = levelForVolume(simData.mix);
+            const fill = (top, bottom, color) => {
+                ctx.fillStyle = color;
+                ctx.fillRect(L.FX(0), L.FY(top), FN.w * L.fS, (bottom - top) * L.fS);
+            };
+            ctx.save();
+            funnelBodyPath(L, 1.4);
+            ctx.clip();
+            if (isOil) {
+                if (simData.lower > 0) fill(yL, FN.bot + 1, COLORS.water);
+                if (simData.upper > 0) fill(yU, yL, COLORS.oil);
+            } else if (simData.mix > 0) {
+                fill(yM, FN.bot + 1, COLORS.mix);
+            }
+            ctx.restore();
+
+            const hLine = (yy, color, width) => {
+                const hw = Math.max(0.6, funnelHW(yy) - 1.4);
+                ctx.strokeStyle = color; ctx.lineWidth = U(width);
+                ctx.beginPath(); ctx.moveTo(L.FX(FN.cx - hw), L.FY(yy)); ctx.lineTo(L.FX(FN.cx + hw), L.FY(yy)); ctx.stroke();
+            };
+            if (isOil) {
+                if (simData.lower > 0 && simData.upper > 0) hLine(yL, COLORS.waterLine, 2);
+                if (simData.lower + simData.upper > 0) hLine(yU, simData.upper > 0 ? COLORS.oilLine : COLORS.waterLine, 1.3);
+            } else if (simData.mix > 0) {
+                hLine(yM, COLORS.mixLine, 1.3);
+            }
+
+            /* 꼭지 아래 관을 지나는 액체 */
+            if (simData.flowing && !simData.dripping) {
+                ctx.fillStyle = COLORS[simData.flowing];
+                ctx.fillRect(L.FX(FN.stemX - 1.3), L.FY(FN.bot - 2), 2.6 * L.fS, (FN.stemBot - FN.bot + 2) * L.fS);
+            }
+
+            /* 하이라이트 (몸통 왼쪽 안) */
+            ctx.save();
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = GLASS.hi; ctx.lineWidth = Math.max(1.5, 3.5 * L.fS);
+            ctx.beginPath();
+            for (let y = 78; y <= 150; y += 3) ctx.lineTo(L.FX(FN.cx - funnelHW(y) * 0.62), L.FY(y));
+            ctx.stroke();
+            ctx.restore();
+
+            /* 외곽선 */
+            ctx.save();
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = GLASS.line; ctx.lineWidth = U(1.6);
+            funnelOutlinePath(L); ctx.stroke();
+            /* 입구 테두리 */
+            ctx.fillStyle = 'rgba(248, 250, 252, 0.9)';
+            rrect(L.FX(FN.cx - 9.5), L.FY(FN.neckY - 3.5), 19 * L.fS, 4 * L.fS, 1.5 * L.fS); ctx.fill(); ctx.stroke();
+            ctx.restore();
+
+            drawValve(L);
+            /* 마개를 닫았으면 입구에 꽂혀 있다 (열면 받침 위에 놓인다) */
+            if (!simData.stopperOpen) drawStopperShape(L.FX(FN.cx), L.FY(FN.neckY - 21.5), L.fS, 0);
+        }
+
+        /* 위층을 입구로 따라 내는 줄기 */
+        function drawPourStream(L) {
+            const sx = L.FX(FN.cx + FN.neckHW), sy = L.FY(FN.neckY - 3);
+            const ex = L.side.x(BK.cx), ey = L.side.y(70);
+            ctx.save();
+            ctx.strokeStyle = COLORS.oil; ctx.lineWidth = Math.max(2, 4 * L.S);
+            ctx.setLineDash([U(8), U(6)]);
+            ctx.lineDashOffset = -simData.frame * 1.5;
+            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(L.X(500), L.Y(20), ex, ey); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+        }
+
+        /* 이름표 여러 개를 겹치지 않게 오른쪽에 세운다 */
+        function drawTags(tags, xText, fs) {
+            if (!tags.length) return;
+            tags.sort((a, b) => a.y - b.y);
+            const gap = fs + U(6);
+            tags.forEach((t, i) => { t.ty = i ? Math.max(t.y, tags[i - 1].ty + gap) : t.y; });
+            ctx.save();
+            ctx.font = `600 ${fs}px ${FONT}`;
+            ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            tags.forEach(t => {
+                ctx.strokeStyle = t.color; ctx.lineWidth = U(1.2);
+                ctx.beginPath(); ctx.moveTo(t.ax, t.y); ctx.lineTo(xText - U(10), t.ty); ctx.lineTo(xText - U(4), t.ty); ctx.stroke();
+                ctx.fillStyle = t.color;
+                ctx.beginPath(); ctx.arc(t.ax, t.y, U(2.5), 0, Math.PI * 2); ctx.fill();
+                haloText(t.text, xText, t.ty);
+            });
+            ctx.restore();
+        }
+
+        /* 고체 조각 (코드로 그림) — PET: 파란 조각, LDPE: 초록 원판, PS: 주황 네모, 볍씨 */
+        function drawParticleAt(type, x, y, s, rot) {
+            const sp = PARTICLE_SPEC[type];
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rot);
+            ctx.lineWidth = U(1.1);
+            const q = s * PARTICLE_DRAW;
+            if (type === 'PET') {
+                ctx.beginPath();
+                ctx.moveTo(-7 * q, -4.5 * q); ctx.lineTo(6 * q, -5.5 * q); ctx.lineTo(7.5 * q, 4 * q); ctx.lineTo(-5 * q, 5.5 * q);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(59, 130, 246, 0.6)'; ctx.fill();
+                ctx.strokeStyle = '#1d4ed8'; ctx.stroke();
+            } else if (type === 'LDPE') {
+                ctx.beginPath(); ctx.ellipse(0, 0, sp.r * s, sp.ry * s, 0, 0, Math.PI * 2);
+                ctx.fillStyle = '#86efac'; ctx.fill();
+                ctx.strokeStyle = '#15803d'; ctx.stroke();
+            } else if (type === 'PS') {
+                ctx.beginPath(); ctx.rect(-5.5 * q, -5.5 * q, 11 * q, 11 * q);
+                ctx.fillStyle = '#fdba74'; ctx.fill();
+                ctx.strokeStyle = '#c2410c'; ctx.stroke();
+            } else {
+                const fillC = { chaff: '#f1e6c2', good: '#d4952f' }[type];
+                const strokeC = { chaff: '#b9a26b', good: '#8a5a12' }[type];
+                ctx.beginPath(); ctx.ellipse(0, 0, sp.r * s, sp.ry * s, 0, 0, Math.PI * 2);
+                ctx.fillStyle = fillC; ctx.fill();
+                ctx.strokeStyle = strokeC; ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-sp.r * 0.65 * s, 0); ctx.lineTo(sp.r * 0.65 * s, 0);
+                ctx.globalAlpha = 0.45; ctx.lineWidth = U(0.9); ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        /* ── 고체 조각 만들기·자리 정하기 ──────────────────────────── */
+        function makeParticles() {
+            const list = [];
+            SOLID_SETS[simData.solidMix].forEach(type => {
+                const sp = PARTICLE_SPEC[type];
+                for (let i = 0; i < sp.count; i++) {
+                    list.push({
+                        type, beaker: 0, x: 36 + Math.random() * 132, y: 100 + Math.random() * 112, tx: 0, ty: 0,
+                        rot: (Math.random() - 0.5) * 1.2, phase: Math.random() * Math.PI * 2,
+                        speed: sp.speed * (0.8 + Math.random() * 0.4), floats: false
+                    });
+                }
+            });
+            for (let i = list.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [list[i], list[j]] = [list[j], list[i]];
+            }
+            assignTargets(list, simData.sepLiquid);
+            return list;
+        }
+        function assignTargets(list, liquid) {
+            const surf = SIM_CONFIG.solid.surface, bottom = SIM_CONFIG.solid.bottom;
+            const groups = { float: [], sink: [] };
+            list.forEach(p => {
+                p.floats = !denser(p.type, liquid);   /* 액체보다 밀도가 작으면 뜬다 */
+                groups[p.floats ? 'float' : 'sink'].push(p);
+            });
+            ['float', 'sink'].forEach(g => {
+                const ps = groups[g].slice();
+                if (!ps.length) return;
+                const sx = Math.max(...ps.map(p => PARTICLE_SPEC[p.type].sx));
+                const sy = Math.max(...ps.map(p => PARTICLE_SPEC[p.type].sy));
+                const left = 32, inner = 142;
+                const ncols = Math.max(1, Math.floor(inner / sx));
+                const step = inner / ncols;
+                const slots = ps.map((_, i) => {
+                    const row = Math.floor(i / ncols), col = i % ncols;
+                    const x = left + (col + 0.5 + (row % 2 ? 0.5 : 0)) * step;
+                    return { x: Math.min(left + inner - 4, x) + (Math.random() - 0.5) * 2, row };
+                });
+                ps.sort((a, b) => a.x - b.x);
+                slots.sort((a, b) => a.x - b.x);
+                ps.forEach((p, i) => {
+                    const sp = PARTICLE_SPEC[p.type];
+                    const slot = slots[i];
+                    p.tx = slot.x;
+                    p.ty = g === 'float' ? surf + sp.floatK + slot.row * sy : bottom - sp.ry - slot.row * sy;
+                });
+            });
+        }
+        function beakerLiquid(i) {
+            if (simData.stage === 2) return i === 0 ? 'water' : 'glycerol';
+            return simData.sepLiquid;
+        }
+
+        /* ── 실험 상태 ─────────────────────────────────────────────── */
+        function ensureAllowedLiquid() {
+            const allowed = ALLOWED_LIQUIDS[simData.solidMix];
+            if (!allowed.includes(simData.sepLiquid)) simData.sepLiquid = allowed[0];
+        }
+        function syncPanel() {
+            const setRadio = (name, val) => {
+                const r = document.querySelector(`input[name="${name}"][value="${val}"]`);
+                if (r) r.checked = true;
+            };
+            setRadio('modeOpt', simData.mode);
+            setRadio('stopperOpt', simData.stopperOpen ? 'open' : 'closed');
+            setRadio('valveOpt', simData.valveOpen ? 'open' : 'closed');
+            const allowed = ALLOWED_LIQUIDS[simData.solidMix];
+            document.querySelectorAll('input[name="sepLiquidOpt"]').forEach(r => {
+                r.disabled = !allowed.includes(r.value);
+                r.checked = r.value === simData.sepLiquid;
+            });
+            const lm = document.getElementById('liquidMixSelect'); if (lm) lm.value = simData.liquidMix;
+            const sm = document.getElementById('solidMixSelect'); if (sm) sm.value = simData.solidMix;
+            const cd = document.getElementById('chkDensity'); if (cd) cd.checked = simData.showDensity;
+            const cl = document.getElementById('chkLabels'); if (cl) cl.checked = simData.showLabels;
+            document.querySelectorAll('[data-mode-block]').forEach(el => {
+                el.classList.toggle('hidden', el.getAttribute('data-mode-block') !== simData.mode);
+            });
+            updateButtons();
+        }
+        function canPour() {
+            return simData.mode === 'liquid' && simData.liquidMix === 'oil' && !simData.valveOpen && !simData.pouring &&
+                simData.upper > 0 && simData.lower <= simData.initLower * SIM_CONFIG.liquid.waterTolerance;
+        }
+        function canTransfer() {
+            return simData.mode === 'solid' && simData.solidMix === 'plastic' && simData.sepLiquid === 'water' &&
+                simData.stage === 1 && sysState.isStarted && simData.settled;
+        }
+        function updateButtons() {
+            const pour = document.getElementById('pourBtn');
+            if (pour) pour.disabled = !canPour();
+            const tr = document.getElementById('transferBtn');
+            if (tr) tr.disabled = !canTransfer();
+        }
+
+        function resetExperiment() {
+            const T = FUNNEL_TOTAL, C = SIM_CONFIG.liquid;
+            simData.stopperOpen = false;
+            simData.valveOpen = false;
+            simData.flowing = null;
+            simData.dripping = false;
+            simData.pouring = false;
+            simData.poured = false;
+            simData.notice = null;
+            simData.dripLeft = T * SIM_CONFIG.flow.dripLimit;
+            if (simData.liquidMix === 'oil') {
+                simData.lower = T * C.initLowerRatio; simData.upper = T * C.initUpperRatio; simData.mix = 0;
+            } else {
+                simData.lower = 0; simData.upper = 0; simData.mix = T * (C.initLowerRatio + C.initUpperRatio);
+            }
+            simData.initLower = simData.lower; simData.initUpper = simData.upper; simData.initMix = simData.mix;
+            simData.beakerLower = 0; simData.beakerUpper = 0; simData.beakerMix = 0; simData.sideOil = 0;
+            ensureAllowedLiquid();
+            simData.stage = 1;
+            simData.particles = makeParticles();
+            simData.settled = false;
+            simData.frame = 0;
+            syncPanel();
+        }
+
+        function stopRun() {
+            sysState.isStarted = false;
+            sysState.isPaused = false;
+            stopLoop();
+            updateUIState();
+        }
+        function ensureRunning() {
+            if (!sysState.isStarted || sysState.isPaused) {
+                sysState.isStarted = true;
+                sysState.isPaused = false;
+                startLoop();
+                updateUIState();
+            }
+        }
+        function setValve(open) {
+            if (simData.mode !== 'liquid') return;
+            simData.valveOpen = open;
+            simData.notice = null;
+            if (open) simData.pouring = false;
+            else { simData.flowing = null; simData.dripping = false; }
+            syncPanel();
+            if (open) ensureRunning();
+            if (!sysState.isLooping) draw();
+        }
+        function setStopper(open) {
+            if (simData.mode !== 'liquid') return;
+            simData.stopperOpen = open;
+            simData.notice = null;
+            if (!open) simData.pouring = false;
+            syncPanel();
+            if (!sysState.isLooping) draw();
+        }
+        function startPour() {
+            if (!canPour()) return;
+            if (!simData.stopperOpen) {
+                simData.notice = { kind: 'warn', text: '위층은 분별 깔때기의 입구로 따라 낸다. 마개를 먼저 열자.' };
+                draw();
+                return;
+            }
+            simData.notice = null;
+            simData.pouring = true;
+            ensureRunning();
+            updateButtons();
+            draw();
+        }
+        function transferSunk() {
+            if (!canTransfer()) return;
+            const moved = simData.particles.filter(p => p.beaker === 0 && !p.floats);
+            moved.forEach(p => {
+                p.beaker = 1;
+                p.x = 36 + Math.random() * 130;
+                p.y = 96 + Math.random() * 40;
+            });
+            assignTargets(moved, 'glycerol');
+            simData.stage = 2;
+            simData.settled = false;
+            ensureRunning();
+            updateButtons();
+            draw();
+        }
+
+        /* 시뮬레이션 초기화 — 초기화 버튼과 첫 실행 때 호출된다 (코어가 호출, 이름 유지) */
+        function initSimulation() {
+            simData.mode = 'liquid';
+            simData.liquidMix = 'oil';
+            simData.solidMix = 'plastic';
+            simData.sepLiquid = 'water';
+            simData.showDensity = true;
+            simData.showLabels = true;
+            resetExperiment();
+
+            sysState.isStarted = false;
+            sysState.isPaused = false;
+            sysState.zoomLevel = 1.0;
+            sysState.offsetX = 0;
+            sysState.offsetY = 0;
+
+            stopLoop();
+            updateUIState();
+            draw();
+        }
+
+        /* ── 안내 문장 ─────────────────────────────────────────────── */
+        const MSG_STOPPER_CLOSED = '마개를 닫은 채 꼭지를 열면 분별 깔때기 안의 압력이 줄어 액체가 잘 내려오지 않는다. 꼭지를 닫고 마개를 먼저 열자.';
+        function liquidMessage() {
+            const C = SIM_CONFIG.liquid;
+            if (simData.notice) return simData.notice;
+            if (simData.valveOpen && !simData.stopperOpen && simData.lower + simData.upper + simData.mix > 0) {
+                return { kind: 'warn', text: MSG_STOPPER_CLOSED };
+            }
+            if (simData.liquidMix === 'ethanol') {
+                if (simData.valveOpen && simData.mix > 0) return { kind: 'warn', text: '물과 에탄올이 섞인 채로 함께 흘러나온다. 층이 없어서 한 가지 액체만 따로 받을 수 없다.' };
+                if (simData.beakerMix > 0) return { kind: 'warn', text: '비커에 받은 액체도 물과 에탄올이 섞여 있다. 밀도 차가 있어도 완전히 섞이면 층이 생기지 않으므로 분별 깔때기로 나뉘지 않는다.' };
+                return { kind: 'info', text: '물과 에탄올은 서로 잘 섞여 층이 생기지 않았다. 마개를 연 다음 꼭지를 열어 어떻게 되는지 관찰해 보자.' };
+            }
+            const tolW = simData.initLower * C.waterTolerance;
+            const tolO = simData.initUpper * C.oilTolerance;
+            const late = simData.beakerUpper > tolO;
+            if (simData.pouring) return { kind: 'info', text: '위층의 식용유를 분별 깔때기의 입구로 따라 내고 있다.' };
+            if (simData.poured) {
+                if (late) return { kind: 'warn', text: '위층의 식용유를 입구로 따라 냈다. 하지만 꼭지를 늦게 닫아 아래층을 받은 비커에도 식용유가 섞여 있다. 다시하기를 눌러 보자.' };
+                return { kind: 'success', text: '분리 완료! 밀도가 큰 물은 아래층이라 꼭지로 먼저 받고, 밀도가 작은 식용유는 위층이라 입구로 따라 냈다. 깔때기에 남은 경계면 부근 액체는 다른 비커에 받는다.' };
+            }
+            if (simData.valveOpen) {
+                if (simData.lower + simData.upper <= 0) return { kind: 'warn', text: '꼭지를 계속 열어 두어 식용유까지 모두 흘러나왔다. 비커에서 식용유가 다시 물 위에 떠 있어 분리되지 않았다. 다시하기를 눌러 보자.' };
+                if (simData.lower > 0) {
+                    if (simData.lower > simData.initLower * C.nearInterface) return { kind: 'info', text: '아래층의 물이 먼저 비커로 흘러나오고 있다. 경계면이 내려오는 것을 지켜보자.' };
+                    return { kind: 'warn', text: '경계면이 꼭지에 가까워졌다. 경계면 직전에 꼭지를 닫자!' };
+                }
+                return { kind: 'warn', text: '경계면이 꼭지를 지나 식용유도 섞여 나오고 있다. 얼른 꼭지를 닫자!' };
+            }
+            if (simData.beakerLower + simData.beakerUpper <= 0) {
+                if (!simData.stopperOpen) return { kind: 'info', text: '물과 식용유가 두 층으로 나뉘어 있다. 마개를 연 다음 꼭지를 열어 아래층부터 받아 보자.' };
+                return { kind: 'info', text: '마개를 열었다. 이제 꼭지를 열어 아래층의 물부터 받아 보자.' };
+            }
+            if (late) return { kind: 'warn', text: '꼭지를 늦게 닫아 식용유도 비커로 섞여 나왔다. 다시하기를 눌러 경계면 직전에 꼭지를 닫아 보자.' };
+            if (simData.lower > tolW) return { kind: 'info', text: '꼭지를 닫았다. 아직 아래층의 물이 많이 남아 있다. 꼭지를 다시 열어 경계면 직전까지 받자.' };
+            return { kind: 'success', text: '경계면 직전에 꼭지를 잘 닫았다! 경계면 부근 액체는 다른 비커에 받고, \'위층 따라 내기\'를 눌러 위층의 식용유를 입구로 따라 내자.' };
+        }
+
+        function solidMessage() {
+            const liq = simData.sepLiquid;
+            if (!sysState.isStarted) return { kind: 'info', text: `고체 혼합물을 ${NAME[liq]}에 넣고 저어 섞었다. 실험 시작을 누르면 어떻게 되는지 관찰해 보자.` };
+            if (!simData.settled) {
+                const l = simData.stage === 2 ? 'glycerol' : liq;
+                return { kind: 'info', text: `${NAME[l]}보다 밀도가 작은 것은 떠오르고, 밀도가 큰 것은 가라앉고 있다.` };
+            }
+            /* 01_spec.json 판정 결과표 그대로 */
+            if (simData.solidMix === 'rice') return { kind: 'success', text: '소금물에서 속이 빈 쭉정이는 뜨고 알찬 볍씨는 가라앉았다. 가라앉은 알찬 볍씨만 골라낼 수 있다.' };
+            if (simData.stage === 2) return { kind: 'success', text: '글리세롤에서 PS는 뜨고 PET는 가라앉았다. 물과 글리세롤을 차례로 써서 PET, LDPE, PS를 모두 분리했다.' };
+            if (liq === 'water') return { kind: 'success', text: '물에서 LDPE는 뜨고 PET와 PS는 가라앉았다. \'가라앉은 것을 글리세롤로 옮기기\'를 눌러 PET와 PS를 나눠 보자.' };
+            return { kind: 'warn', text: '글리세롤에서 LDPE와 PS는 뜨고 PET는 가라앉았다. LDPE와 PS는 함께 떠서 나뉘지 않으므로, 먼저 물에 넣어 LDPE를 분리해 보자.' };
+        }
+
+        function densityLines() {
+            const cmp = (a, b) => `${TOPIC[a]} ${NAME[b]}보다 밀도가 ${denser(a, b) ? '크다' : '작다'}`;
+            if (simData.mode === 'liquid') {
+                if (simData.liquidMix === 'oil') return [cmp('water', 'oil') + '.', '→ 밀도가 큰 물이 아래층, 밀도가 작은 식용유가 위층이 된다.'];
+                return ['물과 에탄올은 밀도가 다르다.', '하지만 서로 잘 섞여 층이 생기지 않는다.', '밀도 차가 있어도 완전히 섞이면 층이 생기지 않는다.'];
+            }
+            const liqs = simData.stage === 2 ? ['water', 'glycerol'] : [simData.sepLiquid];
+            const lines = [];
+            liqs.forEach(liq => {
+                if (liq !== 'water') lines.push(cmp(liq, 'water') + '.');
+                const types = (simData.stage === 2 && liq === 'glycerol') ? ['PET', 'PS'] : SOLID_SETS[simData.solidMix];
+                types.forEach(t => lines.push(`${cmp(t, liq)} → ${denser(t, liq) ? '가라앉는다' : '뜬다'}`));
+            });
+            return lines;
+        }
+
+        /* ── 화면 상자 ─────────────────────────────────────────────── */
+        function currentMessage() {
+            return simData.mode === 'liquid' ? liquidMessage() : solidMessage();
+        }
+        function bannerSize(msg, w) {
+            if (!msg) return { lines: [], bw: 0, bh: 0, fs: 12, lh: 16 };
+            const fs = F(14, 12);
+            ctx.save();
+            ctx.font = `600 ${fs}px ${FONT}`;
+            /* 오른쪽 아래 초기화 버튼(DOM, 크기 고정) 자리는 비운다 */
+            const maxW = Math.max(U(160), Math.min(w - U(32) - (w < 640 ? 52 : 150), U(640)));
+            const lines = wrapLines(msg.text, maxW - U(24));
+            const lh = fs * 1.45;
+            const bw = Math.min(maxW, Math.max(...lines.map(l => ctx.measureText(l).width)) + U(24));
+            ctx.restore();
+            return { lines, bw, bh: lines.length * lh + U(16), fs, lh };
+        }
+        function drawBanner(msg, w, h) {
+            if (!msg) return;
+            const b = bannerSize(msg, w);
+            ctx.save();
+            ctx.font = `600 ${b.fs}px ${FONT}`;
+            const x = U(16), y = h - U(16) - b.bh;
+            const st = BANNER_STYLE[msg.kind] || BANNER_STYLE.info;
+            rrect(x, y, b.bw, b.bh, U(10));
+            ctx.fillStyle = st.bg; ctx.fill();
+            ctx.strokeStyle = st.border; ctx.lineWidth = U(1.5); ctx.stroke();
+            ctx.fillStyle = st.text; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            b.lines.forEach((l, i) => ctx.fillText(l, x + U(12), y + U(8) + b.lh * (i + 0.5)));
+            ctx.restore();
+        }
+
+        function densitySize(maxW, fs) {
+            const lines = densityLines();
+            if (!lines.length) return null;
+            ctx.save();
+            ctx.font = `500 ${fs}px ${FONT}`;
+            let wrapped = [];
+            lines.forEach(l => { wrapped = wrapped.concat(wrapLines(l, maxW - U(24))); });
+            const textW = Math.max(...wrapped.map(l => ctx.measureText(l).width));
+            ctx.font = `700 ${fs}px ${FONT}`;
+            const titleW = ctx.measureText('밀도 비교').width;
+            ctx.restore();
+            const lh = fs * 1.5;
+            return { w: Math.min(maxW, Math.max(textW, titleW) + U(24)), h: U(10) + lh + wrapped.length * lh + U(8), lines: wrapped, fs, lh };
+        }
+        function drawDensityBox(d, pos) {
+            if (!d) return;
+            const x = pos.x, y = pos.y, lh = d.lh;
+            ctx.save();
+            rrect(x, y, d.w, d.h, U(10));
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.94)'; ctx.fill();
+            ctx.strokeStyle = '#c7d2fe'; ctx.lineWidth = U(1.5); ctx.stroke();
+            ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            ctx.font = `700 ${d.fs}px ${FONT}`;
+            ctx.fillStyle = COLORS.primary;
+            ctx.fillText('밀도 비교', x + U(12), y + U(10) + lh * 0.5);
+            ctx.font = `500 ${d.fs}px ${FONT}`;
+            ctx.fillStyle = COLORS.text;
+            d.lines.forEach((l, i) => ctx.fillText(l, x + U(12), y + U(10) + lh * (i + 1.5)));
+            ctx.restore();
+        }
+
+        function legendSize(w) {
+            const types = SOLID_SETS[simData.solidMix];
+            const fs = F(13, 11);
+            ctx.save();
+            ctx.font = `500 ${fs}px ${FONT}`;
+            const textW = Math.max(...types.map(t => ctx.measureText(NAME[t]).width));
+            ctx.restore();
+            const rowH = fs + U(14);
+            return { w: textW + U(54), h: types.length * rowH + U(12), fs, rowH, types };
+        }
+        function drawLegend(g, pos) {
+            if (!g) return;
+            const types = g.types, fs = g.fs, rowH = g.rowH, bw = g.w, bh = g.h;
+            const x = pos.x, y = pos.y;
+            ctx.save();
+            ctx.font = `500 ${fs}px ${FONT}`;
+            rrect(x, y, bw, bh, U(10));
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.94)'; ctx.fill();
+            ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = U(1.2); ctx.stroke();
+            types.forEach((t, i) => {
+                const cy = y + U(6) + rowH * (i + 0.5);
+                drawParticleAt(t, x + U(22), cy, U(1.5), 0);
+                ctx.fillStyle = COLORS.text; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+                ctx.fillText(NAME[t], x + U(42), cy);
+            });
+            ctx.restore();
+        }
+
+        /* ── 액체 혼합물 모드 그리기 ───────────────────────────────── */
+        function drawLiquidMode(L, w, h) {
+            const S = L.S;
+            const fs = F(13, 12);
+            const isOil = simData.liquidMix === 'oil';
+            ctx.save();
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+            /* 스탠드와 클램프 링 뒤쪽 반 */
+            drawStand(L);
+            drawClampRing(L, false);
+
+            /* 비커 유리 뒤쪽 */
+            drawBeakerBack(L.main);
+            if (isOil) drawBeakerBack(L.side);
+
+            /* 분별 깔때기 (관 끝이 받는 비커 안으로 들어간다) */
+            drawFunnel(L);
+            drawClampRing(L, true);
+
+            /* 비커 속 액체 */
+            const mainLayers = isOil
+                ? [{ vol: simData.beakerLower, color: COLORS.water, line: COLORS.waterLine },
+                   { vol: simData.beakerUpper, color: COLORS.oil, line: COLORS.oilLine }]
+                : [{ vol: simData.beakerMix, color: COLORS.mix, line: COLORS.mixLine }];
+            const mainTop = drawBeakerContents(L.main, mainLayers);
+            if (isOil) drawBeakerContents(L.side, [{ vol: simData.sideOil, color: COLORS.oil, line: COLORS.oilLine }]);
+
+            /* 꼭지에서 비커로 떨어지는 액체 */
+            const tipX = L.FX(FN.stemX), tipY = L.FY(FN.stemBot + 1);
+            const surfY = L.main.y(mainTop);
+            if (simData.flowing && surfY > tipY) {
+                ctx.fillStyle = COLORS[simData.flowing];
+                ctx.strokeStyle = COLORS[simData.flowing];
+                if (simData.dripping) {
+                    const t = (simData.frame % 40) / 40;
+                    ctx.beginPath(); ctx.arc(tipX, tipY + (surfY - tipY) * t, Math.max(1.8, 2.6 * S), 0, Math.PI * 2); ctx.fill();
+                } else {
+                    ctx.lineWidth = Math.max(2, 3 * S); ctx.lineCap = 'butt';
+                    ctx.beginPath(); ctx.moveTo(tipX, tipY); ctx.lineTo(tipX, surfY); ctx.stroke();
+                    ctx.lineCap = 'round';
+                }
+            }
+
+            /* 비커 유리 앞쪽 선 */
+            drawBeakerFront(L.main);
+            if (isOil) drawBeakerFront(L.side);
+
+            /* 마개를 열었으면 받침 위에 놓아 둔다 */
+            if (simData.stopperOpen) drawStopperShape(L.X(STAND.stopperRest.x), L.Y(STAND.stopperRest.y), L.fS, -Math.PI / 2);
+
+            /* 위층 따라 내기 */
+            if (simData.pouring) drawPourStream(L);
+
+            /* 마개·꼭지 상태 */
+            ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+            ctx.font = `700 ${fs}px ${FONT}`;
+            ctx.fillStyle = simData.valveOpen ? '#047857' : '#be123c';
+            haloText(simData.valveOpen ? '꼭지: 열림' : '꼭지: 닫힘', L.FX(4), L.FY(FN.valveY));
+            ctx.fillStyle = simData.stopperOpen ? '#047857' : '#be123c';
+            haloText(simData.stopperOpen ? '마개: 열림' : '마개: 닫힘', L.FX(24), L.FY(16));
+            ctx.font = `500 ${F(12, 11)}px ${FONT}`;
+            ctx.fillStyle = COLORS.light;
+            haloText('(눌러서 열기·닫기)', L.FX(4), L.FY(FN.valveY) + fs + U(4));
+            haloText('(눌러서 열기·닫기)', L.FX(24), L.FY(16) + fs + U(4));
+
+            /* 층 이름 */
+            if (simData.showLabels) {
+                const yL = levelForVolume(simData.lower);
+                const yU = levelForVolume(simData.lower + simData.upper);
+                const yM = levelForVolume(simData.mix);
+                const anchor = v => L.FX(FN.cx + funnelHW(v) * 0.75);
+                const tags = [];
+                if (isOil) {
+                    if (simData.upper > 0 && yL - yU > 2) {
+                        const v = (yU + yL) / 2;
+                        tags.push({ y: L.FY(v), ax: anchor(v), text: '식용유 (위층)', color: COLORS.oilLine });
+                    }
+                    if (simData.upper > 0 && simData.lower > 0) {
+                        tags.push({ y: L.FY(yL), ax: anchor(yL), text: '경계면', color: COLORS.text });
+                    }
+                    if (simData.lower > 0) {
+                        const v = Math.min((yL + FN.bot) / 2, FN.bot - 4);
+                        tags.push({ y: L.FY(v), ax: L.FX(FN.cx), text: simData.poured ? '경계면 부근 액체' : '물 (아래층)', color: COLORS.waterLine });
+                    }
+                } else if (simData.mix > 0) {
+                    const v = (yM + FN.bot) / 2;
+                    tags.push({ y: L.FY(v), ax: anchor(v), text: '물 + 에탄올 (층이 생기지 않음)', color: COLORS.mixLine });
+                }
+                drawTags(tags, L.FX(FN.cx + 30) + U(14), fs);
+
+                /* 받는 비커 속 (왼쪽에 이름) */
+                const kv = SIM_CONFIG.liquid.beakerFill / FUNNEL_TOTAL;
+                const B = L.main;
+                ctx.save();
+                ctx.font = `600 ${fs}px ${FONT}`;
+                ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+                const lx = B.x(14);
+                if (isOil) {
+                    const hW = simData.beakerLower * kv, hO = simData.beakerUpper * kv;
+                    const base = BK_FLOOR;
+                    let wy = null;
+                    if (hW > 6) { wy = B.y(base - hW / 2); ctx.fillStyle = COLORS.waterLine; haloText('물', lx, wy); }
+                    if (hO > 2) {
+                        let oy = B.y(base - hW - hO / 2);
+                        if (wy !== null) oy = Math.min(oy, wy - fs - U(4));
+                        ctx.fillStyle = COLORS.oilLine; haloText('식용유', lx, oy);
+                    }
+                    if (simData.sideOil > 0) {
+                        const sB = L.side;
+                        ctx.textAlign = 'center'; ctx.fillStyle = COLORS.oilLine;
+                        haloText('식용유 (따라 낸 위층)', sB.x(BK.cx), sB.y(0) - fs);
+                    }
+                } else {
+                    const hM = simData.beakerMix * kv;
+                    if (hM > 6) { ctx.fillStyle = COLORS.mixLine; haloText('물 + 에탄올', lx, B.y(BK_FLOOR - hM / 2)); }
+                }
+                ctx.restore();
+
+                /* 기구 이름 */
+                ctx.font = `500 ${fs}px ${FONT}`;
+                ctx.fillStyle = COLORS.sub; ctx.textAlign = 'left';
+                haloText('분별 깔때기', L.FX(64), L.FY(48));
+            }
+            ctx.restore();
+        }
+
+        /* ── 고체 혼합물 모드 그리기 ───────────────────────────────── */
+        function drawSolidMode(lay, w, h) {
+            const fs = F(13, 12);
+            const surf = SIM_CONFIG.solid.surface;
+            lay.boxes.forEach((B, i) => {
+                const liqKey = beakerLiquid(i);
+                const liq = LIQ[liqKey];
+                ctx.save();
+                ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+                /* 유리 뒤쪽 */
+                drawBeakerBack(B);
+
+                /* 액체 (비커 안쪽 경로) */
+                ctx.save();
+                beakerPath(B, surf, BK.inset);
+                ctx.fillStyle = liq.fill; ctx.fill();
+                ctx.restore();
+
+                /* 조각 (비커 안쪽으로 클리핑) */
+                ctx.save();
+                beakerPath(B, BK.rimY + 6, BK.inset);
+                ctx.clip();
+                simData.particles.forEach(p => {
+                    if (p.beaker !== i) return;
+                    const bob = (p.floats && Math.abs(p.ty - p.y) < 1) ? Math.sin(simData.frame * 0.05 + p.phase) * 0.6 : 0;
+                    drawParticleAt(p.type, B.x(p.x), B.y(p.y + bob), B.k, p.rot);
+                });
+                ctx.restore();
+                surfaceEllipse(B, surf, liq.line);
+
+                /* 유리 앞쪽 선 */
+                drawBeakerFront(B);
+
+                /* 분리용 액체 이름 */
+                ctx.font = `700 ${fs}px ${FONT}`;
+                ctx.fillStyle = liq.line; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                haloText(`분리용 액체: ${NAME[liqKey]}`, B.x(BK.cx), B.y(0) - U(12));
+
+                /* 뜬 것 / 가라앉은 것 */
+                if (simData.showLabels && sysState.isStarted && simData.settled) {
+                    const types = SOLID_SETS[simData.solidMix];
+                    const here = simData.particles.filter(p => p.beaker === i);
+                    const fl = types.filter(t => here.some(p => p.type === t && p.floats)).map(t => NAME[t]);
+                    const sk = types.filter(t => here.some(p => p.type === t && !p.floats)).map(t => NAME[t]);
+                    const skText = sk.length ? sk.join(', ') : (simData.stage === 2 && i === 0 ? '글리세롤로 옮김' : '없음');
+                    ctx.font = `600 ${fs}px ${FONT}`;
+                    const ty = B.y(BK.h) + fs;
+                    ctx.fillStyle = '#0369a1';
+                    haloText(`뜬 것: ${fl.length ? fl.join(', ') : '없음'}`, B.x(BK.cx), ty);
+                    ctx.fillStyle = '#92400e';
+                    haloText(`가라앉은 것: ${skText}`, B.x(BK.cx), ty + fs + U(6));
+                }
+                ctx.restore();
+            });
+
+            /* 옮기는 화살표 */
+            if (lay.boxes.length === 2) {
+                const a = lay.boxes[0], b = lay.boxes[1];
+                const x1 = a.x(190) + U(4), x2 = b.x(14) - U(4), yy = a.y(150);
+                if (x2 - x1 < U(24)) { drawLegend(lay.plan.legend, lay.plan.legendPos); return; }
+                ctx.save();
+                ctx.strokeStyle = COLORS.sub; ctx.fillStyle = COLORS.sub; ctx.lineWidth = U(2);
+                ctx.beginPath(); ctx.moveTo(x1, yy); ctx.lineTo(x2 - U(6), yy); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(x2, yy); ctx.lineTo(x2 - U(9), yy - U(5)); ctx.lineTo(x2 - U(9), yy + U(5)); ctx.closePath(); ctx.fill();
+                ctx.font = `500 ${F(12, 11)}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+                ctx.save(); ctx.translate((x1 + x2) / 2, yy - U(6));
+                const lw = ctx.measureText('가라앉은 것').width;
+                if (lw > x2 - x1) ctx.scale((x2 - x1) / lw, (x2 - x1) / lw);
+                haloText('가라앉은 것', 0, 0);
+                ctx.restore();
+                ctx.restore();
+            }
+            drawLegend(lay.plan.legend, lay.plan.legendPos);
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           ✏️  draw() — 매 프레임 캔버스를 그리는 함수 (코어가 호출, 이름 유지)
+           ctx와 simData 값을 이용해 원하는 도형을 그리세요.
+           ───────────────────────────────────────────────────────────── */
+        function draw() {
+            if (!ctx) return;
+            const w = sysState.canvasLogicalWidth, h = sysState.canvasLogicalHeight;
+            if (!w || !h) return;
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = COLORS.bg;
+            ctx.fillRect(0, 0, w, h);
+            let plan;
+            if (simData.mode === 'liquid') { const L = liquidLayout(w, h); drawLiquidMode(L, w, h); plan = L.plan; }
+            else { const lay = solidLayout(w, h); drawSolidMode(lay, w, h); plan = lay.plan; }
+            if (simData.showDensity) drawDensityBox(plan.d, plan.dpos);
+            drawBanner(currentMessage(), w, h);
+            updateButtons();
+        }
+
+        /* 분별 깔때기에서 흘러나오기: 마개를 열어야 잘 나오고, 아래층부터 나온다 */
+        function updateFlow() {
+            const F = SIM_CONFIG.flow, C = SIM_CONFIG.liquid, T = FUNNEL_TOTAL;
+            simData.flowing = null;
+            simData.dripping = false;
+
+            /* 위층을 입구로 따라 내기 */
+            if (simData.pouring) {
+                const d = Math.min(simData.upper, T * F.pourRate);
+                simData.upper -= d; simData.sideOil += d;
+                if (simData.upper <= 1e-9) { simData.upper = 0; simData.pouring = false; simData.poured = true; }
+                return;
+            }
+
+            if (!simData.valveOpen) return;
+            const total = simData.lower + simData.upper + simData.mix;
+            if (total <= 0) return;
+            let rate;
+            if (!simData.stopperOpen) {
+                /* 마개를 닫은 채로는 몇 방울만 떨어지고 멈춘다 */
+                if (simData.dripLeft <= 0) return;
+                rate = Math.min(simData.dripLeft, T * F.dripRate);
+                simData.dripLeft -= rate;
+                simData.dripping = true;
+            } else {
+                const head = (FN.bot - levelForVolume(total)) / FUNNEL_SPAN;
+                rate = T * F.baseRate * Math.max(F.minHeadFactor, Math.sqrt(head));
+                if (simData.liquidMix === 'oil') {
+                    const nearWater = simData.lower > 0 && simData.lower < simData.initLower * C.nearInterface;
+                    const justPast = simData.lower <= 0 && simData.beakerUpper < simData.initUpper * 0.15;
+                    if (nearWater || justPast) rate *= F.slowFactor;
+                }
+            }
+            if (simData.liquidMix === 'oil') {
+                if (simData.lower > 0) {
+                    const d = Math.min(rate, simData.lower);
+                    simData.lower -= d; simData.beakerLower += d; simData.flowing = 'water';
+                } else {
+                    const d = Math.min(rate, simData.upper);
+                    simData.upper -= d; simData.beakerUpper += d; simData.flowing = 'oil';
+                }
+            } else {
+                const d = Math.min(rate, simData.mix);
+                simData.mix -= d; simData.beakerMix += d; simData.flowing = 'mix';
+            }
+        }
+
+        /* 고체 조각: 액체보다 밀도가 작으면 표면으로, 크면 바닥으로 */
+        function updateParticles() {
+            let allSettled = true;
+            simData.particles.forEach(p => {
+                const dy = p.ty - p.y, ady = Math.abs(dy);
+                const v = p.speed * (ady < 14 ? Math.max(0.12, ady / 14) : 1);
+                p.y += Math.sign(dy) * Math.min(ady, v);
+                const dx = p.tx - p.x;
+                p.x += dx * 0.03 + (ady > 3 ? Math.sin(simData.frame * 0.06 + p.phase) * 0.25 : 0);
+                if (ady > 3) p.rot += Math.sin(simData.frame * 0.03 + p.phase) * 0.01;
+                else p.rot *= 0.97;
+                if (ady > 0.6 || Math.abs(dx) > 1.2) allSettled = false;
+            });
+            simData.settled = allSettled;
+        }
+
+        /* 프레임별 물리 연산 — 시작 버튼을 누르면 매 프레임 호출된다 (코어가 호출, 이름 유지) */
+        function updatePhysics() {
+            simData.frame++;
+            if (simData.mode === 'liquid') updateFlow();
+            else updateParticles();
+        }
+
+        /* 캔버스 포인터 조작 — type: 'down' | 'move' | 'up', pos: 캔버스 논리 좌표 {x, y} (코어 ZONE J가 호출) */
+        function onCanvasPointer(type, pos, e) {
+            if (type !== 'down' || simData.mode !== 'liquid') return;
+            const L = liquidLayout(sysState.canvasLogicalWidth, sysState.canvasLogicalHeight);
+            const r = Math.max(18, 20 * L.fS);
+            if (Math.hypot(pos.x - L.FX(26), pos.y - L.FY(FN.valveY)) < r) { setValve(!simData.valveOpen); return; }
+            const sx = simData.stopperOpen ? L.X(STAND.stopperRest.x) + 12 * L.fS : L.FX(FN.cx);
+            const sy = simData.stopperOpen ? L.Y(STAND.stopperRest.y) : L.FY(18);
+            if (Math.hypot(pos.x - sx, pos.y - sy) < r) setStopper(!simData.stopperOpen);
+        }
+        /* ████ ZONE F 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE G — LOOP & TAB STATE MANAGER (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        function startLoop() { if (!sysState.isLooping) { sysState.isLooping = true; updateLoop(); } }
+        function stopLoop() { sysState.isLooping = false; }
+        function updateLoop() {
+            if (!sysState.isLooping) return;
+            updatePhysics(); draw();
+            requestAnimationFrame(updateLoop);
+        }
+
+        function saveTabState(shape) {
+            const selectedRadio = document.querySelector('input[name="simOption"]:checked')?.value;
+            const selectedVal = DOM.customSelectTrigger?.getAttribute('data-selected-value') || null;
+            tabStates[shape] = {
+                ...simData,
+                isStarted: sysState.isStarted, isPaused: sysState.isPaused,
+                zoomLevel: sysState.zoomLevel, offsetX: sysState.offsetX, offsetY: sysState.offsetY,
+                selectVal: selectedVal, radioVal: selectedRadio
+            };
+        }
+
+        function loadTabState(shape) {
+            const state = tabStates[shape];
+            if (state) {
+                Object.assign(simData, state);
+                sysState.isStarted = state.isStarted; sysState.isPaused = state.isPaused;
+                sysState.zoomLevel = state.zoomLevel || 1.0;
+                sysState.offsetX = state.offsetX || 0;
+                sysState.offsetY = state.offsetY || 0;
+
+                const csvEl = document.getElementById('customSelectValue');
+                if (state.selectVal) {
+                    const li = document.querySelector(`#customSelectList li[data-value="${state.selectVal}"]`);
+                    if (li && csvEl) { csvEl.innerHTML = li.innerHTML; DOM.customSelectTrigger?.setAttribute('data-selected-value', state.selectVal); }
+                } else {
+                    if (csvEl) csvEl.textContent = '학습 내용을 선택하세요';
+                    DOM.customSelectTrigger?.removeAttribute('data-selected-value');
+                }
+                const radio = document.querySelector(`input[name="simOption"][value="${state.radioVal}"]`);
+                if (radio) radio.checked = true;
+            } else {
+                simData.value1 = SIM_CONFIG.slider.initialValue;
+                simData.diameter = SIM_CONFIG.object.radius * 2;
+                simData.radius = SIM_CONFIG.object.radius;
+                simData.ratioA = 1; simData.ratioB = 1;
+                sysState.isStarted = false; sysState.isPaused = false;
+                sysState.zoomLevel = 1.0; sysState.offsetX = 0; sysState.offsetY = 0;
+                if (canvas) { simData.x = sysState.canvasLogicalWidth / 2; simData.y = sysState.canvasLogicalHeight / 2; }
+                const csvEl = document.getElementById('customSelectValue');
+                if (csvEl) csvEl.textContent = '학습 내용을 선택하세요';
+                DOM.customSelectTrigger?.removeAttribute('data-selected-value');
+                const dr = document.querySelector('input[name="simOption"][value="parallel"]');
+                if (dr) dr.checked = true;
+            }
+
+            if (varSlider1) varSlider1.value = simData.value1;
+            if (varDisplay1) varDisplay1.textContent = `${simData.value1} ${SIM_CONFIG.slider.unit}`;
+            if (DOM.directInputSingle) DOM.directInputSingle.value = simData.diameter;
+            if (DOM.ratioInputA) DOM.ratioInputA.value = simData.ratioA;
+            if (DOM.ratioInputB) DOM.ratioInputB.value = simData.ratioB;
+
+            sysState.isStarted && !sysState.isPaused ? startLoop() : stopLoop();
+            updateUIState(); draw();
+        }
+
+        function updateUIState() {
+            const { statusIndicator, pauseBtn, helperText } = DOM;
+            if (!statusIndicator || !pauseBtn || !helperText) return;
+            const isRunning = sysState.isStarted && !sysState.isPaused;
+            const isPaused = sysState.isPaused;
+            const lock = false; /* 동작 중 입력 잠금 해제 (실시간 상호작용 지원) */
+
+            if (DOM.varSlider1) DOM.varSlider1.disabled = lock;
+            if (DOM.directInputSingle) DOM.directInputSingle.disabled = lock;
+            if (DOM.ratioInputA) DOM.ratioInputA.disabled = lock;
+            if (DOM.ratioInputB) DOM.ratioInputB.disabled = lock;
+            if (DOM.customSelectTrigger) {
+                DOM.customSelectTrigger.disabled = lock;
+                if (lock && DOM.customSelectList && !DOM.customSelectList.classList.contains('hidden')) {
+                    DOM.customSelectList.classList.add('hidden');
+                    DOM.customSelectTrigger.setAttribute('aria-expanded', 'false');
+                }
+            }
+            if (DOM.radioOptions) DOM.radioOptions.forEach(r => r.disabled = lock);
+
+            const helperBoxWrapper = document.getElementById('helperBoxWrapper');
+            if (isRunning) {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-rose-500 border border-rose-300 animate-pulse translate-y-[1px]";
+                pauseBtn.className = "btn-action-pause col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = SIM_CONFIG.labels.pause;
+                helperText.textContent = SIM_CONFIG.labels.helperRunning;
+                helperText.className = "helper-text-running whitespace-nowrap transition-colors";
+                if (helperBoxWrapper) helperBoxWrapper.classList.add('hidden');
+            } else if (isPaused) {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-amber-400 border border-amber-300 translate-y-[1px]";
+                pauseBtn.className = "btn-action-start col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = SIM_CONFIG.labels.start;
+                helperText.textContent = SIM_CONFIG.labels.helperPaused;
+                helperText.className = "helper-text-paused whitespace-nowrap transition-colors";
+                if (helperBoxWrapper) helperBoxWrapper.classList.remove('hidden');
+            } else {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-emerald-500 border border-emerald-300 translate-y-[1px]";
+                pauseBtn.className = "btn-action-start col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = SIM_CONFIG.labels.start;
+                helperText.textContent = SIM_CONFIG.labels.helperIdle;
+                helperText.className = "helper-text-default whitespace-nowrap transition-colors";
+                if (helperBoxWrapper) helperBoxWrapper.classList.remove('hidden');
+            }
+        }
+        /* ════ ZONE G 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE H — CANVAS RESIZE (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        function limitOffset() {
+            if (!canvas) return;
+            if (sysState.zoomLevel <= 1.0) {
+                sysState.offsetX = 0;
+                sysState.offsetY = 0;
+                return;
+            }
+            const maxOffset = Math.min(sysState.canvasLogicalWidth, sysState.canvasLogicalHeight) * 0.5 * (sysState.zoomLevel - 1.0);
+            sysState.offsetX = Math.max(-maxOffset, Math.min(maxOffset, sysState.offsetX));
+            sysState.offsetY = Math.max(-maxOffset, Math.min(maxOffset, sysState.offsetY));
+        }
+
+        function resizeCanvas() {
+            if (!container || !canvas || !ctx) return;
+            const dpr = window.devicePixelRatio || 1;
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+            canvas.style.width = `${rect.width}px`; canvas.style.height = `${rect.height}px`;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            sysState.canvasLogicalWidth = rect.width;
+            sysState.canvasLogicalHeight = rect.height;
+            simData.x = rect.width / 2; simData.y = rect.height / 2;
+            for (const k in tabStates) { if (tabStates[k]) { tabStates[k].x = rect.width / 2; tabStates[k].y = rect.height / 2; } }
+
+            // 초기화 버튼 동적 스타일 조정 (높이가 270px 이하일 때)
+            const resetBtn = document.getElementById('resetBtn');
+            const resetBtnText = document.getElementById('resetBtnText');
+            if (resetBtn && resetBtnText) {
+                if (rect.height <= 400) {
+                    resetBtnText.style.display = 'none';
+                    resetBtn.style.padding = '0';
+                    resetBtn.style.width = '2.5rem';
+                    resetBtn.style.height = '2.5rem';
+                    resetBtn.style.justifyContent = 'center';
+                } else {
+                    resetBtnText.style.display = '';
+                    resetBtn.style.padding = '';
+                    resetBtn.style.width = '';
+                    resetBtn.style.height = '';
+                    resetBtn.style.justifyContent = '';
+                }
+            }
+
+            limitOffset(); draw();
+        }
+
+        const isFullscreenActive = () =>
+            !!(document.fullscreenElement || document.webkitFullscreenElement);
+        const FULLSCREEN_HISTORY_KEY = '__templateFullscreen';
+        const FULLSCREEN_HISTORY_CLEANUP_DELAY = 400;
+        const isNaverInAppBrowser = () => /NAVER\s*\((?:inapp|higgs);/i.test(navigator.userAgent);
+        let fullscreenHistoryToken = null;
+        let fullscreenExitFromHistory = false;
+        let fullscreenHistoryCleanup = false;
+        let fullscreenHistoryCleanupTimer = null;
+        let previousScrollRestoration = null;
+
+        const addFullscreenHistoryToken = stateValue => {
+            if (!fullscreenHistoryToken) return stateValue;
+            return { ...stateValue, [FULLSCREEN_HISTORY_KEY]: fullscreenHistoryToken };
+        };
+
+        const clearFullscreenHistoryTracking = () => {
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = null;
+            if (previousScrollRestoration !== null && 'scrollRestoration' in history) {
+                history.scrollRestoration = previousScrollRestoration;
+            }
+            previousScrollRestoration = null;
+            fullscreenHistoryToken = null;
+            fullscreenExitFromHistory = false;
+            fullscreenHistoryCleanup = false;
+        };
+
+        const pushFullscreenHistoryEntry = () => {
+            if (!isNaverInAppBrowser() || fullscreenHistoryToken) return;
+            const token = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+            try {
+                if ('scrollRestoration' in history && previousScrollRestoration === null) {
+                    previousScrollRestoration = history.scrollRestoration;
+                    history.scrollRestoration = 'manual';
+                }
+                history.pushState({ [FULLSCREEN_HISTORY_KEY]: token }, '');
+                fullscreenHistoryToken = token;
+            } catch (_) {
+                clearFullscreenHistoryTracking();
+            }
+        };
+
+        const restoreFullscreenHistoryEntry = () => {
+            const shouldRestore = isFullscreenActive();
+            clearFullscreenHistoryTracking();
+            if (shouldRestore) pushFullscreenHistoryEntry();
+        };
+
+        const exitFullscreenFromHistory = () => {
+            const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+            if (!exitFullscreen) {
+                restoreFullscreenHistoryEntry();
+                return;
+            }
+            const token = fullscreenHistoryToken;
+            const restoreEntry = () => {
+                if (fullscreenHistoryToken === token) restoreFullscreenHistoryEntry();
+            };
+            fullscreenExitFromHistory = true;
+            try {
+                const result = exitFullscreen.call(document);
+                if (result && typeof result.catch === 'function') result.catch(restoreEntry);
+            } catch (_) {
+                restoreEntry();
+            }
+        };
+
+        const cleanupFullscreenHistoryEntry = () => {
+            const token = fullscreenHistoryToken;
+            if (!token || !history.state || history.state[FULLSCREEN_HISTORY_KEY] !== token) {
+                clearFullscreenHistoryTracking();
+                return;
+            }
+            fullscreenHistoryCleanup = true;
+            history.back();
+        };
+
+        const scheduleFullscreenHistoryCleanup = () => {
+            const token = fullscreenHistoryToken;
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = setTimeout(() => {
+                if (fullscreenHistoryToken !== token || isFullscreenActive()) return;
+                const state = history.state;
+                if (!state || state[FULLSCREEN_HISTORY_KEY] !== token) {
+                    clearFullscreenHistoryTracking();
+                    return;
+                }
+                if (Object.keys(state).length === 1) cleanupFullscreenHistoryEntry();
+            }, FULLSCREEN_HISTORY_CLEANUP_DELAY);
+        };
+
+        window.addEventListener('popstate', event => {
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = null;
+            const token = fullscreenHistoryToken;
+            if (!token) return;
+            const sameFullscreenEntry = !!(
+                event.state && event.state[FULLSCREEN_HISTORY_KEY] === token
+            );
+            if (fullscreenHistoryCleanup) {
+                if (sameFullscreenEntry) history.back();
+                else clearFullscreenHistoryTracking();
+                return;
+            }
+            if (sameFullscreenEntry) {
+                if (!isFullscreenActive()) scheduleFullscreenHistoryCleanup();
+                return;
+            }
+            if (isFullscreenActive()) exitFullscreenFromHistory();
+            else clearFullscreenHistoryTracking();
+        });
+
+        function toggleFullScreen() {
+            const workspace = document.getElementById('workspace');
+            if (!workspace) return;
+
+            if (!isFullscreenActive()) {
+                if (workspace.requestFullscreen) workspace.requestFullscreen().catch(e => console.error(e));
+                else if (workspace.webkitRequestFullscreen) workspace.webkitRequestFullscreen();
+                else alert("현재 브라우저는 전체화면을 지원하지 않습니다.");
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            }
+        }
+
+        const resetFullscreenButtonFeedback = () => {
+            ['fullscreen-btn', 'fullscreen-btn-mobile'].forEach(id => {
+                const button = document.getElementById(id);
+                if (!button) return;
+                clearTimeout(button._tapFeedbackTimer);
+                button.classList.remove('is-tap-feedback', 'is-pen-hover');
+                button.blur();
+            });
+        };
+
+        const showSimulationToast = message => {
+            document.getElementById('sim-toast')?.remove();
+            const toast = document.createElement('div');
+            toast.id = 'sim-toast';
+            toast.setAttribute('role', 'status');
+            toast.className = 'fixed top-30 left-1/2 transform -translate-x-1/2 bg-slate-800/90 backdrop-blur-sm text-white px-6 py-3 rounded-full shadow-lg z-[9999] font-bold text-[0.95rem] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-2';
+            toast.innerHTML = '<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
+            toast.appendChild(document.createTextNode(message));
+            (document.getElementById('workspace') || document.body).appendChild(toast);
+            setTimeout(() => toast.classList.remove('opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 1500);
+        };
+
+        let fullscreenExitForNumberInput = false;
+        let fullscreenNumberExitResetTimer = null;
+
+        const resetFullscreenNumberExitTracking = () => {
+            clearTimeout(fullscreenNumberExitResetTimer);
+            fullscreenNumberExitResetTimer = null;
+            fullscreenExitForNumberInput = false;
+        };
+
+        const markFullscreenNumberInputPress = event => {
+            if (!isIPadDevice || !isFullscreenActive()) return;
+            const input = event.target.closest?.('#workspace input[type="number"]');
+            if (!input || input.disabled) return;
+            fullscreenExitForNumberInput = true;
+            clearTimeout(fullscreenNumberExitResetTimer);
+            fullscreenNumberExitResetTimer = setTimeout(resetFullscreenNumberExitTracking, 2000);
+        };
+
+        const fullscreenNumberPressEvent = window.PointerEvent ? 'pointerdown' : 'touchstart';
+        document.addEventListener(fullscreenNumberPressEvent, markFullscreenNumberInputPress, {
+            capture: true,
+            passive: true
+        });
+
+        const handleFullscreenChange = () => {
+            if (!isFullscreenActive() && fullscreenExitForNumberInput) {
+                resetFullscreenNumberExitTracking();
+                showSimulationToast('숫자 입력을 위해 전체화면이 종료되었습니다.');
+            }
+            if (isFullscreenActive()) {
+                pushFullscreenHistoryEntry();
+            } else if (fullscreenHistoryToken) {
+                if (fullscreenExitFromHistory) clearFullscreenHistoryTracking();
+                else scheduleFullscreenHistoryCleanup();
+            }
+            if (!isFullscreenActive()) resetFullscreenButtonFeedback();
+            requestAnimationFrame(() => {
+                if (!isFullscreenActive()) resetFullscreenButtonFeedback();
+                resizeCanvas();
+            });
+
+            const exitUI = document.getElementById('fullscreen-exit-ui');
+            if (!exitUI) return;
+            if (isFullscreenActive()) {
+                exitUI.classList.remove('hidden', 'opacity-100');
+                exitUI.classList.add('opacity-0');
+            } else {
+                exitUI.classList.add('hidden', 'opacity-0');
+                exitUI.classList.remove('opacity-100');
+            }
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        /* ════ ZONE H 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                               ████
+           ████   ✏️  ZONE I — INPUT EVENT HANDLERS (입력 이벤트 핸들러)       ████
+           ████   폼 변경 시 simData를 어떻게 업데이트할지 여기서 작성하세요.     ████
+           ████                                                               ████
+           ████████████████████████████████████████████████████████████████████████ */
+        function bindInputEvents() {
+            const onRadio = (name, handler) => {
+                document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                    r.addEventListener('change', () => { if (r.checked) handler(r.value); });
+                });
+            };
+            const restart = () => { stopRun(); resetExperiment(); draw(); };
+
+            /* 모드 전환: 새 실험으로 바꾸고 시작 전 상태로 */
+            onRadio('modeOpt', value => { simData.mode = value; restart(); });
+
+            /* 액체 혼합물 선택 */
+            const liquidMixSelect = document.getElementById('liquidMixSelect');
+            if (liquidMixSelect) {
+                liquidMixSelect.addEventListener('change', () => { simData.liquidMix = liquidMixSelect.value; restart(); });
+            }
+
+            /* 마개·꼭지 */
+            onRadio('stopperOpt', value => setStopper(value === 'open'));
+            onRadio('valveOpt', value => setValve(value === 'open'));
+
+            /* 위층 따라 내기 */
+            const pourBtn = document.getElementById('pourBtn');
+            if (pourBtn) pourBtn.addEventListener('click', startPour);
+
+            /* 고체 혼합물 선택: 고를 수 있는 분리용 액체도 함께 바뀐다 */
+            const solidMixSelect = document.getElementById('solidMixSelect');
+            if (solidMixSelect) {
+                solidMixSelect.addEventListener('change', () => {
+                    simData.solidMix = solidMixSelect.value;
+                    ensureAllowedLiquid();
+                    restart();
+                });
+            }
+
+            /* 분리용 액체: 고르면 고체 혼합물을 새로 넣고 바로 관찰한다 */
+            onRadio('sepLiquidOpt', value => {
+                if (!ALLOWED_LIQUIDS[simData.solidMix].includes(value)) { syncPanel(); return; }
+                simData.sepLiquid = value;
+                resetExperiment();
+                ensureRunning();
+                draw();
+            });
+
+            /* 가라앉은 것을 글리세롤로 옮기기 */
+            const transferBtn = document.getElementById('transferBtn');
+            if (transferBtn) transferBtn.addEventListener('click', transferSunk);
+
+            /* 표시 요소 */
+            const chkDensity = document.getElementById('chkDensity');
+            if (chkDensity) chkDensity.addEventListener('change', () => { simData.showDensity = chkDensity.checked; draw(); });
+            const chkLabels = document.getElementById('chkLabels');
+            if (chkLabels) chkLabels.addEventListener('change', () => { simData.showLabels = chkLabels.checked; draw(); });
+
+            /* 다시하기: 고른 조건은 그대로 두고 실험만 처음 상태로 */
+            const retryBtn = document.getElementById('retryBtn');
+            if (retryBtn) retryBtn.addEventListener('click', restart);
+        }
+        /* ████ ZONE I 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE J — CORE EVENT BINDING (수정 금지)
+           전체화면·모달·셔터·캔버스 드래그·줌·탭·토스트 이벤트 처리
+           ════════════════════════════════════════════════════════════════════════ */
+        function bindCoreEvents() {
+
+            /* 동작 중 입력 차단 토스트 */
+            const interceptInteraction = (e) => {
+                // 실시간 상호작용을 허용하므로 아무런 차단도 수행하지 않음
+            };
+
+            /* 손가락·펜 입력 피드백 */
+            const TAP_FEEDBACK_SELECTOR = 'button, [role="button"], .radio-label, label:has(input[type="checkbox"])';
+            const isFeedbackDisabled = control =>
+                control.matches(':disabled, [aria-disabled="true"]') || !!control.querySelector(':disabled');
+            document.addEventListener('pointerdown', e => {
+                if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || isFeedbackDisabled(control)) return;
+                control.classList.add('is-tap-feedback');
+                clearTimeout(control._tapFeedbackTimer);
+                control._tapFeedbackTimer = setTimeout(() => {
+                    control.classList.remove('is-tap-feedback');
+                    control.blur();
+                }, 250);
+            });
+            document.addEventListener('pointerover', e => {
+                if (e.pointerType !== 'pen' || e.buttons !== 0) return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || isFeedbackDisabled(control)) return;
+                control.classList.add('is-pen-hover');
+            });
+            document.addEventListener('pointerout', e => {
+                if (e.pointerType !== 'pen') return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || control.contains(e.relatedTarget)) return;
+                control.classList.remove('is-pen-hover');
+            });
+            document.addEventListener('pointerup', e => {
+                if (e.pointerType !== 'pen' || matchMedia('(any-hover: hover)').matches) return;
+                e.target.closest?.(TAP_FEEDBACK_SELECTOR)?.classList.remove('is-pen-hover');
+            });
+
+            /* 모바일 메뉴 */
+            const moreMenuBtn = document.getElementById('moreMenuBtn');
+            const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+            if (moreMenuBtn && mobileMenuPanel) {
+                const close = () => { mobileMenuPanel.classList.remove('w-[84px]', 'opacity-100'); mobileMenuPanel.classList.add('w-0', 'opacity-0'); };
+                const toggle = () => {
+                    const isOpen = mobileMenuPanel.classList.contains('w-[84px]');
+                    if (!isOpen) { mobileMenuPanel.classList.remove('w-0', 'opacity-0'); mobileMenuPanel.classList.add('w-[84px]', 'opacity-100'); }
+                    else { close(); }
+                };
+                moreMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+                window.addEventListener('resize', () => {
+                    if (isFullscreenActive()) return;
+                    if (getComputedStyle(moreMenuBtn).display === 'none' && mobileMenuPanel.classList.contains('w-[84px]')) close();
+                });
+                window.addEventListener('click', (e) => {
+                    if (!moreMenuBtn.contains(e.target) && !mobileMenuPanel.contains(e.target) && mobileMenuPanel.classList.contains('w-[84px]')) close();
+                });
+            }
+
+            /* 전체화면 */
+            bindEvent('fullscreen-btn', 'click', toggleFullScreen);
+            bindEvent('fullscreen-btn-mobile', 'click', toggleFullScreen);
+
+            /* 모달 */
+            const toggleModal = (id, show) => {
+                const modal = document.getElementById(id); if (!modal) return;
+                if (show) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; history.pushState(addFullscreenHistoryToken({ modalOpen: id }), ''); }
+                else { modal.classList.add('hidden'); document.body.style.overflow = ''; if (history.state?.modalOpen === id) history.back(); }
+            };
+            window.addEventListener('popstate', () => {
+                ['helpBox', 'conceptBox', 'quizBox'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+                document.body.style.overflow = '';
+            });
+            document.addEventListener('keydown', event => {
+                if (event.key !== 'Escape') return;
+                const openModalId = ['helpBox', 'conceptBox', 'quizBox'].find(id => {
+                    const modal = document.getElementById(id);
+                    return modal && !modal.classList.contains('hidden');
+                });
+                if (!openModalId) return;
+                event.preventDefault();
+                toggleModal(openModalId, false);
+            });
+            bindEvent('helpBtn', 'click', () => toggleModal('helpBox', true));
+            bindEvent('help-Btn', 'click', () => toggleModal('helpBox', true));
+            bindEvent('closeHelpBtn', 'click', () => toggleModal('helpBox', false));
+            bindEvent('conceptBtn', 'click', () => toggleModal('conceptBox', true));
+            bindEvent('closeConceptBtn', 'click', () => toggleModal('conceptBox', false));
+            bindEvent('closeQuizBtn', 'click', () => toggleModal('quizBox', false));
+
+            /* 셔터 */
+            const shutterToggle = document.getElementById('shutter-toggle');
+            const shutterContent = document.getElementById('shutter-content');
+            const shutterIcon = document.getElementById('shutter-icon');
+            if (shutterToggle && shutterContent) {
+                const shutterText = shutterToggle.querySelector('span');
+                shutterToggle.addEventListener('click', () => {
+                    const isOpen = shutterContent.classList.toggle('is-open');
+                    shutterToggle.classList.toggle('is-open', isOpen);
+                    if (shutterIcon) shutterIcon.classList.toggle('rotate-180', isOpen);
+                    if (shutterText) shutterText.textContent = isOpen ? '학습 가이드 닫기' : '학습 가이드 보기';
+                });
+            }
+
+            /* 시작/일시정지 */
+            bindEvent('pauseBtn', 'click', () => {
+                if (!sysState.isStarted) { sysState.isStarted = true; sysState.isPaused = false; startLoop(); }
+                else { sysState.isPaused = !sysState.isPaused; sysState.isPaused ? stopLoop() : startLoop(); }
+                updateUIState(); draw();
+            });
+
+            /* 리셋 */
+            bindEvent('resetBtn', 'click', () => { initSimulation(); });
+
+            /* 퀴즈 */
+            function stabilizeQuizLayout() {
+                if (!CONTENT_CONFIG.quizzes?.length) return;
+                const quizBox = document.getElementById('quizBox');
+                const modal = quizBox?.querySelector('.modal-container');
+                const qEl = document.getElementById('questionText');
+                const answerArea = document.getElementById('answerArea');
+                const aEl = document.getElementById('answerText');
+                const showBtn = document.getElementById('showAnswerBtn');
+                if (!quizBox || quizBox.classList.contains('hidden') || !modal || !qEl || !answerArea || !aEl || !showBtn) return;
+
+                const currentQuestion = qEl.textContent;
+                const currentAnswer = aEl.textContent;
+                const answerWasHidden = aEl.classList.contains('hidden');
+                const buttonWasHidden = showBtn.classList.contains('hidden');
+                modal.style.height = '';
+                qEl.style.height = '';
+                answerArea.style.height = '';
+                answerArea.style.flex = '';
+                answerArea.style.minHeight = '';
+
+                let maxQuestionHeight = 0;
+                CONTENT_CONFIG.quizzes.forEach(({ q }) => {
+                    qEl.textContent = q;
+                    maxQuestionHeight = Math.max(maxQuestionHeight, qEl.getBoundingClientRect().height);
+                });
+                showBtn.classList.add('hidden');
+                aEl.classList.remove('hidden');
+                let maxAnswerHeight = 0;
+                CONTENT_CONFIG.quizzes.forEach(({ a }) => {
+                    aEl.textContent = a;
+                    maxAnswerHeight = Math.max(maxAnswerHeight, aEl.getBoundingClientRect().height);
+                });
+                showBtn.classList.remove('hidden');
+                maxAnswerHeight = Math.max(maxAnswerHeight, showBtn.getBoundingClientRect().height);
+                qEl.style.height = `${Math.ceil(maxQuestionHeight)}px`;
+                const answerStyle = getComputedStyle(answerArea);
+                const answerPadding = (parseFloat(answerStyle.paddingTop) || 0) + (parseFloat(answerStyle.paddingBottom) || 0);
+                answerArea.style.minHeight = `${Math.ceil(maxAnswerHeight + answerPadding)}px`;
+                const fixedModalHeight = Math.ceil(modal.getBoundingClientRect().height);
+
+                qEl.textContent = currentQuestion;
+                aEl.textContent = currentAnswer;
+                aEl.classList.toggle('hidden', answerWasHidden);
+                showBtn.classList.toggle('hidden', buttonWasHidden);
+                qEl.style.height = '';
+                answerArea.style.minHeight = '';
+                modal.style.height = `${fixedModalHeight}px`;
+            }
+
+            function updateQuizUI() {
+                if (!CONTENT_CONFIG.quizzes?.length) return;
+                const q = CONTENT_CONFIG.quizzes[sysState.currentQuizIndex];
+                const stepEl = document.getElementById('quizStep');
+                const qEl = document.getElementById('questionText');
+                const aEl = document.getElementById('answerText');
+                const showBtn = document.getElementById('showAnswerBtn');
+                const prevBtn = document.getElementById('prevQuizBtn');
+                const nextBtn = document.getElementById('nextQuizBtn');
+                if (stepEl) stepEl.textContent = `질문 ${sysState.currentQuizIndex + 1} / ${CONTENT_CONFIG.quizzes.length}`;
+                if (qEl) qEl.textContent = q.q;  /* 줄바꿈은 CSS pre-wrap으로 (innerText는 높이 맞춤 때 줄바꿈이 사라짐) */
+                if (aEl) { aEl.textContent = q.a; aEl.classList.add('hidden'); }
+                if (showBtn) showBtn.classList.remove('hidden');
+                if (prevBtn) prevBtn.disabled = sysState.currentQuizIndex === 0;
+                if (nextBtn) nextBtn.disabled = sysState.currentQuizIndex === CONTENT_CONFIG.quizzes.length - 1;
+            }
+            bindEvent('quizBtn', 'click', () => { sysState.currentQuizIndex = 0; updateQuizUI(); toggleModal('quizBox', true); requestAnimationFrame(stabilizeQuizLayout); });
+            bindEvent('showAnswerBtn', 'click', () => { document.getElementById('answerText')?.classList.remove('hidden'); document.getElementById('showAnswerBtn')?.classList.add('hidden'); });
+            bindEvent('nextQuizBtn', 'click', () => { if (sysState.currentQuizIndex < CONTENT_CONFIG.quizzes.length - 1) { sysState.currentQuizIndex++; updateQuizUI(); } });
+            bindEvent('prevQuizBtn', 'click', () => { if (sysState.currentQuizIndex > 0) { sysState.currentQuizIndex--; updateQuizUI(); } });
+            window.addEventListener('resize', debounce(stabilizeQuizLayout, 100));
+
+            /* 캔버스 포인터 — 단원별 조작은 ZONE F의 onCanvasPointer(type, pos, e)에서 처리 */
+            if (canvas) {
+                const getPos = (clientX, clientY) => {
+                    const r = canvas.getBoundingClientRect();
+                    return {
+                        x: (clientX - r.left) * (sysState.canvasLogicalWidth / r.width),
+                        y: (clientY - r.top) * (sysState.canvasLogicalHeight / r.height)
+                    };
+                };
+                const emit = (type, e) => {
+                    if (typeof onCanvasPointer === 'function') onCanvasPointer(type, getPos(e.clientX, e.clientY), e);
+                };
+                canvas.addEventListener('pointerdown', (e) => { canvas.setPointerCapture(e.pointerId); emit('down', e); });
+                canvas.addEventListener('pointermove', (e) => emit('move', e));
+                const pointerUp = (e) => {
+                    if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+                    emit('up', e);
+                    updateUIState();
+                };
+                canvas.addEventListener('pointerup', pointerUp);
+                canvas.addEventListener('pointercancel', pointerUp);
+            }
+
+            /* 캔버스 상단 탭 */
+            const shapeTabsDOM = document.getElementById('shapeTabs');
+            if (shapeTabsDOM) {
+                const updateTabScrollIndicators = () => {
+                    const leftInd = document.getElementById('tabScrollLeft');
+                    const rightInd = document.getElementById('tabScrollRight');
+                    if (!leftInd || !rightInd) return;
+                    const maxSL = shapeTabsDOM.scrollWidth - shapeTabsDOM.clientWidth;
+                    leftInd.classList.toggle('opacity-0', shapeTabsDOM.scrollLeft <= 1);
+                    leftInd.classList.toggle('pointer-events-none', shapeTabsDOM.scrollLeft <= 1);
+                    leftInd.classList.toggle('opacity-100', shapeTabsDOM.scrollLeft > 1);
+                    rightInd.classList.toggle('opacity-0', Math.ceil(shapeTabsDOM.scrollLeft) >= maxSL - 1 || maxSL <= 0);
+                    rightInd.classList.toggle('pointer-events-none', Math.ceil(shapeTabsDOM.scrollLeft) >= maxSL - 1 || maxSL <= 0);
+                    rightInd.classList.toggle('opacity-100', Math.ceil(shapeTabsDOM.scrollLeft) < maxSL - 1 && maxSL > 0);
+                };
+                shapeTabsDOM.addEventListener('scroll', updateTabScrollIndicators);
+                window.addEventListener('resize', debounce(updateTabScrollIndicators, 100));
+                setTimeout(updateTabScrollIndicators, 150);
+
+                bindEvent('btnScrollLeft', 'click', () => { shapeTabsDOM.scrollBy({ left: -120, behavior: 'smooth' }); });
+                bindEvent('btnScrollRight', 'click', () => { shapeTabsDOM.scrollBy({ left: 120, behavior: 'smooth' }); });
+
+                let isDownTab = false, startXTab = 0, scrollLeftTab = 0;
+                shapeTabsDOM.addEventListener('mousedown', (e) => { isDownTab = true; startXTab = e.pageX - shapeTabsDOM.offsetLeft; scrollLeftTab = shapeTabsDOM.scrollLeft; });
+                shapeTabsDOM.addEventListener('mouseleave', () => isDownTab = false);
+                shapeTabsDOM.addEventListener('mouseup', () => isDownTab = false);
+                shapeTabsDOM.addEventListener('mousemove', (e) => { if (!isDownTab) return; e.preventDefault(); shapeTabsDOM.scrollLeft = scrollLeftTab - (e.pageX - shapeTabsDOM.offsetLeft - startXTab) * 1.5; });
+
+                const tabBtns = shapeTabsDOM.querySelectorAll('.tab-btn');
+                shapeTabsDOM.addEventListener('click', (e) => {
+                    const target = e.target.closest('.tab-btn');
+                    if (!target || (sysState.isStarted && !sysState.isPaused)) return;
+                    const newShape = target.getAttribute('data-shape');
+                    if (simData.shape === newShape) return;
+                    saveTabState(simData.shape);
+                    tabBtns.forEach(b => { b.classList.remove('border-indigo-600', 'text-indigo-600', 'bg-white'); b.classList.add('border-transparent', 'text-slate-500', 'bg-transparent', 'desktop-only:hover:bg-slate-200/50'); });
+                    target.classList.remove('border-transparent', 'text-slate-500', 'bg-transparent', 'desktop-only:hover:bg-slate-200/50');
+                    target.classList.add('border-indigo-600', 'text-indigo-600', 'bg-white');
+                    simData.shape = newShape;
+                    loadTabState(simData.shape);
+                });
+            }
+
+            /* 전체화면 마우스 오버 */
+            let fullscreenHoverTimer;
+            document.addEventListener('mousemove', (e) => {
+                if (!document.fullscreenElement) return;
+                const exitUI = document.getElementById('fullscreen-exit-ui'); if (!exitUI) return;
+                if (e.clientY < 80) { exitUI.classList.remove('opacity-0'); exitUI.classList.add('opacity-100'); clearTimeout(fullscreenHoverTimer); }
+                else { clearTimeout(fullscreenHoverTimer); fullscreenHoverTimer = setTimeout(() => { exitUI.classList.remove('opacity-100'); exitUI.classList.add('opacity-0'); }, 10); }
+            });
+        }
+        /* ════ ZONE J 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE K — 초기 실행 (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        const resizeObserver = new ResizeObserver(() => resizeCanvas());
+
+        window.addEventListener('load', () => {
+            if (container) resizeObserver.observe(container);
+            bindCoreEvents();   /* 🚫 코어 이벤트 바인딩 */
+            bindInputEvents();  /* ✏️ 입력 이벤트 바인딩 (ZONE I) */
+            initSimulation();   /* ✏️ 시뮬레이션 초기화  (ZONE F) */
+        });
+        /* ════ ZONE K 끝 ════════════════════════════════════════════════════════ */
+    </script>
+</body>
+
+</html>

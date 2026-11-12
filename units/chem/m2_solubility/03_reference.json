@@ -1,0 +1,10 @@
+{
+  "policy": "참고 그림은 페이지에 넣지 않는다. 기구는 캔버스 코드로 직접 그린다.",
+  "skipped": "앞 단원(units/chem/m2_density_separation, m2_boiling_melting_point)에서 코드로 그린 기구 스타일(연한 회색 가는 선, 투명 유리 + 옅은 하이라이트)을 이어 쓴다. 용해도 곡선 모양은 inbox/refs/m2_solubility/의 교과서 쪽 PDF를 참고한다. 새 참고 그림이 필요하면 G4에서 SA로 돌린다.",
+  "style_notes": [
+    "units/chem/m2_boiling_melting_point/index.html의 비커·핫플레이트·온도계/센서·그래프 카드 스타일을 따른다",
+    "결정(녹지 않은 고체·석출): 비커 바닥에 작은 흰 결정 조각, 황산 구리(Ⅱ)는 파란 결정과 파란 용액",
+    "용해도 곡선 그래프: inbox/refs/m2_solubility/jdh_textbook_p17-20.pdf, lss_textbook_p18-21.pdf 참고 (물질별 색 곡선, 축 '온도(℃)', '용해도(g/물 100 g)')"
+  ],
+  "items": []
+}

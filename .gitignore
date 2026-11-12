@@ -1,0 +1,10 @@
+# 교과서·지도서 자료 (저작권, 대용량)
+inbox/textbook/
+# 참고 그림·교과서 쪽 발췌 (clarchive 원본 배포 금지)
+inbox/refs/
+# 생성물
+*.zip
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

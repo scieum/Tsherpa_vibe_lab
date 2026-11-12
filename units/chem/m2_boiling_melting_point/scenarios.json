@@ -1,0 +1,311 @@
+{
+  "viewport": [
+    1440,
+    900
+  ],
+  "steps": [
+    {
+      "do": "shot",
+      "name": "0_start"
+    },
+    {
+      "do": "click",
+      "id": "pauseBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 3000
+    },
+    {
+      "do": "shot",
+      "name": "1_water_heating"
+    },
+    {
+      "do": "wait",
+      "ms": 6000
+    },
+    {
+      "do": "shot",
+      "name": "2_water_done"
+    },
+    {
+      "do": "radio",
+      "name": "boilSubOpt",
+      "value": "ethanol"
+    },
+    {
+      "do": "click",
+      "id": "pauseBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 8000
+    },
+    {
+      "do": "shot",
+      "name": "3_ethanol_done"
+    },
+    {
+      "do": "radio",
+      "name": "overlayOpt",
+      "value": "amount"
+    },
+    {
+      "do": "radio",
+      "name": "boilSubOpt",
+      "value": "water"
+    },
+    {
+      "do": "click",
+      "id": "pauseBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 12000
+    },
+    {
+      "do": "shot",
+      "name": "4_water_amount_overlay"
+    },
+    {
+      "do": "radio",
+      "name": "overlayOpt",
+      "value": "kind"
+    },
+    {
+      "do": "click",
+      "id": "retryBtn"
+    },
+    {
+      "do": "click",
+      "id": "pauseBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 12000
+    },
+    {
+      "do": "shot",
+      "name": "5_kind_overlay"
+    },
+    {
+      "do": "radio",
+      "name": "overlayOpt",
+      "value": "off"
+    },
+    {
+      "do": "radio",
+      "name": "modeOpt",
+      "value": "melt"
+    },
+    {
+      "do": "radio",
+      "name": "meltSubOpt",
+      "value": "palmitic"
+    },
+    {
+      "do": "click",
+      "id": "pauseBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 3000
+    },
+    {
+      "do": "shot",
+      "name": "6_palmitic_melting"
+    },
+    {
+      "do": "wait",
+      "ms": 4000
+    },
+    {
+      "do": "shot",
+      "name": "7_palmitic_melted"
+    },
+    {
+      "do": "radio",
+      "name": "phaseOpt",
+      "value": "cool"
+    },
+    {
+      "do": "wait",
+      "ms": 9000
+    },
+    {
+      "do": "shot",
+      "name": "8_palmitic_cooled"
+    },
+    {
+      "do": "radio",
+      "name": "meltSubOpt",
+      "value": "lauric"
+    },
+    {
+      "do": "radio",
+      "name": "overlayOpt",
+      "value": "amount"
+    },
+    {
+      "do": "click",
+      "id": "pauseBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 12000
+    },
+    {
+      "do": "shot",
+      "name": "9_lauric_amount"
+    },
+    {
+      "do": "click",
+      "id": "quizBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 1000
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "shot",
+      "name": "q1"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "shot",
+      "name": "q2"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "shot",
+      "name": "q3"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "shot",
+      "name": "q4"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "shot",
+      "name": "q5"
+    },
+    {
+      "do": "click",
+      "id": "closeQuizBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "viewport",
+      "size": [
+        2560,
+        1200
+      ]
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "9w_wide"
+    },
+    {
+      "do": "viewport",
+      "size": [
+        2960,
+        1300
+      ]
+    },
+    {
+      "do": "fullscreen",
+      "on": true
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "9f_fullscreen"
+    },
+    {
+      "do": "fullscreen",
+      "on": false
+    },
+    {
+      "do": "wait",
+      "ms": 800
+    },
+    {
+      "do": "viewport",
+      "size": [
+        390,
+        844
+      ]
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "10_mobile"
+    }
+  ]
+}

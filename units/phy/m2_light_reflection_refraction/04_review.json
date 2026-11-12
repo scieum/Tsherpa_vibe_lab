@@ -1,0 +1,25 @@
+{
+  "approved": true,
+  "approver": "제작자(검수자 겸임)",
+  "date": "2026-10-17",
+  "approval_text": "ㄱㄱ하자",
+  "gates": {
+    "G0": "6/6 통과",
+    "G1": "11/11 통과",
+    "G2": "29/29 통과",
+    "G3": "71/71 통과",
+    "ALL": "117/117 통과"
+  },
+  "checklist": {
+    "N1_content_vs_textbook": "승인으로 일괄 확인 (개념 4장, 퀴즈 4문항)",
+    "N1_simulation_vs_textbook": "승인으로 일괄 확인",
+    "N1_standard_official_text": "미확인 — [9과10-01] 문구는 나무위키 2차 자료. ncic.go.kr 원문 대조 필요",
+    "N2_sources": "외부 데이터 없음. 로고만 cdata2.tsherpa.co.kr",
+    "locked_zone_exceptions": "없음"
+  },
+  "accepted_as_is": [
+    "화면에 굴절각 관찰값(예: 32.1°)을 숫자로 표시 — 공식·굴절률은 비노출",
+    "가이드 5단계 '시작 버튼' 표현 (실제 버튼명 '레이저 켜기')",
+    "에이전트가 정한 기본값: 표시 요소 법선·각도·경계선 켜짐, 상단 공기·하단 물"
+  ]
+}

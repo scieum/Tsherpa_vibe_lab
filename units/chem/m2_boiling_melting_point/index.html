@@ -1,0 +1,3090 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>끓는점과 녹는점</title><!-- JS의 CONTENT_CONFIG.title로 자동 변경됩니다 -->
+
+    <!-- ════════════════════════════════════════════════════════
+         🚫 [수정 금지] 핵심 라이브러리 — KaTeX · Tailwind CSS
+         ════════════════════════════════════════════════════════ -->
+    <link rel="icon" href="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_short.png"
+        type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ════════════════════════════════════════════════════════
+         ⚙️  [선택 수정] Tailwind 테마 — 브랜드 색상·폰트만 변경
+         ════════════════════════════════════════════════════════ -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: { 'desktop-only': { 'raw': '(hover: hover) and (pointer: fine)' } },
+                    colors: { primary: '#4f46e5' },   /* ✏️ 브랜드 색상 */
+                    fontFamily: { sans: ['Noto Sans KR', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script>
+        /* 모바일에서 생략되는 number 스피너만 보완하고 PC 네이티브 UI는 유지 */
+        const isIPadDevice =
+            /iPad/i.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isMobileNumberUI =
+            navigator.userAgentData?.mobile === true ||
+            /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+            isIPadDevice;
+        if (isMobileNumberUI) document.documentElement.classList.add('mobile-number-controls');
+    </script>
+
+    <style>
+        html,
+        body,
+        button,
+        input,
+        select,
+        textarea {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        /* ════════════════════════════════════════════════════════
+           ⚙️  [선택 수정] CSS 변수 — 전체 색상·폰트 크기 일괄 조정
+           ════════════════════════════════════════════════════════ */
+        :root {
+            /* 폰트 크기 */
+            --font-size-title: 1.275rem;
+            --font-size-modal: 1.15rem;
+            --font-size-guide: 1.025rem;
+            --font-size-desc: 1rem;
+            --font-size-small: 0.9rem;
+            --font-size-tiny: 0.75rem;
+
+            /* 텍스트 색상 */
+            --color-text-main: #334155;
+            --color-text-sub: #475569;
+            --color-text-light: #64748b;
+
+            /* 테마 포인트 색상 */
+            --color-primary: #4f46e5;
+            /* ✏️ 메인 포인트 색상 */
+            --color-primary-bg: #e0e7ff;
+            --color-tab-bg: #d8e0ff80;
+            --color-action: #059669;
+            --color-action-hover: #047857;
+            --color-pause: #e11d48;
+            --color-pause-bg: #fff1f2;
+            --color-pause-border: #fecdd3;
+            --color-obs1: #ea580c;
+        }
+
+        /* ════════════════════════════════════════════════════════
+           ⚙️  [선택 수정] 디자인 클래스 매핑 — CSS 변수를 UI 요소에 적용
+           ════════════════════════════════════════════════════════ */
+        .sim-title {
+            font-size: var(--font-size-title);
+            font-weight: 700;
+            color: var(--color-text-main);
+            line-height: 1.25;
+        }
+
+        .guide-on-off {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: var(--color-text-light);
+        }
+
+        .guide-title {
+            font-size: var(--font-size-guide);
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .guide-desc {
+            font-size: var(--font-size-desc);
+            color: var(--color-text-sub);
+        }
+
+        .env-text {
+            font-weight: 700;
+            color: var(--color-text-light);
+            font-size: var(--font-size-tiny);
+        }
+
+        .tab-btn {
+            font-weight: 700;
+            color: var(--color-text-light);
+            font-size: var(--font-size-small);
+        }
+
+        @media (min-width: 768px) {
+            .env-text {
+                font-size: var(--font-size-small);
+            }
+        }
+
+        .helper-text-default {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .helper-text-running {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-pause);
+        }
+
+        .helper-text-paused {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .var-label-control {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-main);
+        }
+
+        .var-label-obs1 {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-obs1);
+        }
+
+        .var-label-obs2 {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-action);
+        }
+
+        .var-label-var {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: var(--color-text-main);
+        }
+
+        .slider-limit-label {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .var-unit-display {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-primary);
+            background-color: var(--color-primary-bg);
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .select-option-text {
+            font-size: var(--font-size-tiny);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .header-button {
+            background-color: #fff;
+            color: var(--color-text-sub);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .header-button:hover {
+                background-color: #f1f5f9;
+            }
+        }
+
+        .btn-action-start {
+            background-color: var(--color-action);
+            color: #fff;
+            border-color: var(--color-action-hover);
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-action-start:hover {
+                background-color: var(--color-action-hover);
+            }
+        }
+
+        .btn-action-pause {
+            background-color: var(--color-pause-bg);
+            color: var(--color-pause);
+            border-color: var(--color-pause-border);
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        .btn-sub {
+            background-color: #fff;
+            color: var(--color-text-main);
+            border-color: #cbd5e1;
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-sub:hover {
+                background-color: #f1f5f9;
+            }
+        }
+
+        .btn-reset-custom {
+            color: var(--color-text-main);
+            border-color: #cbd5e1;
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-reset-custom:hover {
+                color: var(--color-pause);
+                border-color: #fda4af;
+                background-color: var(--color-pause-bg);
+            }
+        }
+
+        .modal-title {
+            font-size: var(--font-size-modal);
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .modal-close-btn {
+            color: #94a3b8;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .modal-close-btn:hover {
+                color: #f43f5e;
+            }
+        }
+
+        .concept-title-1 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #c2410c;
+        }
+
+        .concept-title-2 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #047857;
+        }
+
+        .concept-title-3 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #4338ca;
+        }
+
+        .concept-title-4 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #6e0478;
+        }
+
+        .concept-desc {
+            font-size: var(--font-size-desc);
+            color: var(--color-text-main);
+        }
+
+        .quiz-step {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: #4338ca;
+            background-color: var(--color-primary-bg);
+        }
+
+        .quiz-question {
+            font-size: var(--font-size-modal);
+            font-weight: 700;
+            color: #1e293b;
+            white-space: pre-wrap; /* 질문·보기 줄바꿈과 보기 사이 공백 유지 */
+        }
+
+        .quiz-btn-check {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #fff;
+            background-color: #f97316;
+            border: 1px solid #f97316;
+            line-height: 1.5rem;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .quiz-btn-check:hover {
+                background-color: #ea580c;
+                border-color: #ea580c;
+            }
+        }
+
+        .quiz-answer-box {
+            font-size: var(--font-size-guide);
+            font-weight: 700;
+            line-height: 1.5rem;
+            color: var(--color-text-main);
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+            white-space: pre-line; /* 정답·해설 줄바꿈 유지 */
+        }
+
+        .header-button:is(.is-tap-feedback, .is-pen-hover),
+        .btn-sub:is(.is-tap-feedback, .is-pen-hover),
+        .zoom-btn:is(.is-tap-feedback, .is-pen-hover),
+        .nav-btn:is(.is-tap-feedback, .is-pen-hover),
+        #customSelectTrigger:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #f1f5f9;
+        }
+
+        .btn-action-start:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: var(--color-action-hover);
+        }
+
+        .btn-reset-custom:is(.is-tap-feedback, .is-pen-hover) {
+            color: var(--color-pause);
+            border-color: #fda4af;
+            background-color: var(--color-pause-bg);
+        }
+
+        .modal-close-btn:is(.is-tap-feedback, .is-pen-hover) {
+            color: #f43f5e;
+        }
+
+        .quiz-btn-check:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #ea580c;
+        }
+
+        .tab-btn:not(.border-indigo-600):is(.is-tap-feedback, .is-pen-hover) {
+            background-color: rgb(226 232 240 / 0.5);
+        }
+
+        .radio-label:not(:has(:checked)):is(.is-tap-feedback, .is-pen-hover),
+        .panel-block label:has(input[type="checkbox"]):is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #f8fafc;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .radio-label:not(:has(:checked)):hover {
+                background-color: #f8fafc;
+            }
+        }
+
+        #customSelectList [role="option"]:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #eef2ff;
+        }
+
+        /* PC·모바일에서 동일한 숫자 입력 스피너를 고정 노출 */
+        .ratio-number-field {
+            display: flex;
+            flex: 1 1 0%;
+            min-width: 0;
+            position: relative;
+        }
+
+        .ratio-number-stepper {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            width: 2.5rem;
+            justify-content: center;
+            gap: 0;
+        }
+
+        .ratio-step-btn {
+            display: flex;
+            flex: 1 1 50%;
+            min-height: 0;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 0.15rem;
+            background-color: transparent;
+            color: #737373;
+            line-height: 1;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ratio-step-icon {
+            width: 0.66rem;
+            height: 0.48rem;
+            fill: currentColor;
+        }
+
+        .ratio-step-btn[data-step-direction="up"] .ratio-step-icon {
+            transform: translateY(0.1875rem);
+        }
+
+        .ratio-step-btn[data-step-direction="down"] .ratio-step-icon {
+            transform: translateY(-0.1875rem);
+        }
+
+        .ratio-step-btn:active {
+            background-color: transparent;
+            color: #475569;
+        }
+
+        .ratio-step-btn:focus {
+            background-color: transparent;
+        }
+
+        .ratio-step-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .ratio-number-field>.input-text {
+            appearance: textfield;
+            -moz-appearance: textfield;
+            padding-right: 2.75rem;
+            background-color: transparent;
+            transition: border-color 150ms ease;
+        }
+
+        .ratio-number-field>.input-text::-webkit-inner-spin-button,
+        .ratio-number-field>.input-text::-webkit-outer-spin-button {
+            margin: 0;
+            -webkit-appearance: none;
+        }
+
+        .ratio-number-field:has(>.ratio-number-stepper>.ratio-step-btn:active)>.input-text,
+        .ratio-number-field:has(>.ratio-number-stepper>.ratio-step-btn.is-tap-feedback)>.input-text {
+            border-color: #6366f1;
+        }
+
+        /* iOS Safari는 16px 미만 입력창에 포커스할 때 화면을 자동 확대한다. */
+        @supports (-webkit-touch-callout: none) {
+            html.mobile-number-controls input[type="number"] {
+                font-size: 16px !important;
+            }
+
+            .radio-label>.select-option-text {
+                white-space: nowrap;
+            }
+        }
+
+        /* ════════════════════════════════════════════════════════
+           🚫 [수정 금지] 코어 레이아웃 구조 — 전체화면·캔버스·스크롤
+           ════════════════════════════════════════════════════════ */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        html,
+        body {
+            overscroll-behavior: none;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            font-size: 16px !important;
+        }
+
+        .ui-box {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+        }
+
+        .shutter-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .shutter-wrapper.is-open {
+            grid-template-rows: 1fr;
+        }
+
+        .shutter-inner {
+            overflow: hidden;
+        }
+
+        @media (hover: none),
+        (pointer: coarse) {
+
+            input,
+            textarea,
+            select,
+            button,
+            [role="button"],
+            [contenteditable="true"] {
+                touch-action: manipulation;
+            }
+
+            .nav-btn,
+            .header-button,
+            .btn-sub,
+            .btn-reset-custom,
+            .modal-close-btn {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+
+            .nav-btn:is(:active, .is-tap-feedback),
+            .header-button:is(:active, .is-tap-feedback),
+            .btn-sub:is(:active, .is-tap-feedback) {
+                background-color: #f1f5f9;
+            }
+
+            .btn-reset-custom:is(:active, .is-tap-feedback) {
+                color: var(--color-pause);
+                border-color: #fda4af;
+                background-color: var(--color-pause-bg);
+            }
+
+            .modal-close-btn:is(:active, .is-tap-feedback) {
+                color: #f43f5e;
+            }
+
+            #fullscreen-btn:is(:active, .is-tap-feedback),
+            #fullscreen-btn-mobile:is(:active, .is-tap-feedback) {
+                background-color: #f1f5f9;
+            }
+        }
+
+        canvas {
+            touch-action: none;
+            cursor: default;
+        }
+
+        .bar-track {
+            width: 100%;
+            height: 16px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .popup-overlay {
+            background-color: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(2px);
+        }
+
+        #workspace:fullscreen {
+            background-color: #f8fafc;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        @media (orientation: landscape) {
+            #workspace:fullscreen {
+                padding: 1rem;
+                overflow-y: hidden;
+            }
+        }
+    </style>
+
+    <!-- 🚫 [수정 금지] Tailwind 컴포넌트 추출 -->
+    <style type="text/tailwindcss">
+        @layer components {
+            .panel-block      { @apply flex flex-col gap-2 p-3 border border-slate-200 rounded-lg bg-white; }
+            .modal-container  { @apply bg-white border border-slate-300 rounded-2xl w-full flex flex-col relative shadow-2xl max-h-[70dvh]; }
+            .modal-header     { @apply h-14 lg:h-16 px-6 border-b border-slate-100 flex items-center justify-between flex-none; }
+            .modal-body       { @apply flex-1 overflow-y-auto p-4 lg:p-6 flex flex-col gap-4; }
+            .guide-block      { @apply p-4 bg-slate-50 border border-slate-200 rounded-xl; }
+            .zoom-btn         { @apply w-8 h-8 flex items-center justify-center bg-white border border-slate-300 rounded-full shadow-sm text-slate-600 font-bold desktop-only:hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed desktop-only:disabled:hover:bg-slate-50; }
+            .nav-btn          { @apply w-12 h-12 flex items-center justify-center bg-white border border-slate-300 text-slate-600 rounded-full desktop-only:hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed desktop-only:disabled:hover:bg-slate-50; }
+            .radio-label      { @apply flex items-start gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer transition-colors has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed; }
+            .input-text       { @apply w-full p-2 border border-slate-200 rounded text-center focus:outline-none focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50; }
+        }
+    </style>
+</head>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     🚫 [수정 금지] BODY — 레이아웃 클래스 수정 금지
+     ════════════════════════════════════════════════════════════════════ -->
+
+<body
+    class="bg-slate-100 text-slate-800 font-sans w-full m-0 p-0 box-border select-none overflow-x-hidden md:overflow-hidden landscape:overflow-hidden flex flex-col justify-center md:h-[100dvh] landscape:h-[100dvh]">
+
+    <div
+        class="flex flex-col w-full max-w-[1680px] mx-auto p-2 gap-2 box-border md:h-[100dvh] md:overflow-hidden landscape:h-[100dvh] landscape:overflow-hidden relative">
+
+        <!-- ═══════════════════════════════════════════════════════════════
+         🚫 [수정 금지] 헤더 — 제목은 JS CONTENT_CONFIG.title로 자동 주입
+         ═══════════════════════════════════════════════════════════════ -->
+        <header class="ui-box flex-none px-4 py-2 flex items-center justify-between z-10 bg-white relative">
+            <div class="flex items-center gap-4">
+                <a href="https://www.tsherpa.co.kr" target="_blank"
+                    class="flex items-center flex-none desktop-only:hover:opacity-80 transition-opacity">
+                    <img src="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_black.png"
+                        alt="T셀파"
+                        class="h-7 md:h-8 object-contain draggable-false flex-none hidden [@media(min-width:768px)]:block">
+                    <img src="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_short.png"
+                        alt="T셀파"
+                        class="h-7 md:h-8 object-contain draggable-false flex-none block [@media(min-width:768px)]:hidden">
+                </a>
+                <div class="border-l border-slate-300 pl-4">
+                    <h1 class="sim-title" id="sim-title-el">로딩 중...</h1><!-- CONTENT_CONFIG.title 자동 주입 -->
+                </div>
+            </div>
+            <div class="flex items-center relative">
+                <button id="moreMenuBtn"
+                    class="header-button flex landscape:hidden desktop-only:hidden transition-colors ml-2"
+                    title="메뉴 더보기">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                    </svg>
+                </button>
+                <div class="hidden landscape:flex desktop-only:flex items-center">
+                    <!-- 학습 가이드 -->
+                    <button id="helpBtn" class="header-button desktop-only:md:hidden font-bold text-lg ml-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <!-- 전체화면 | fullscreen -->
+                    <button id="fullscreen-btn" class="header-button flex ml-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="mobileMenuPanel"
+                    class="absolute top-1/2 -translate-y-1/2 right-full z-50 flex items-center gap-2 overflow-hidden transition-all duration-300 w-0 opacity-0">
+                    <button id="help-Btn" class="header-button flex-none flex font-bold text-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <button id="fullscreen-btn-mobile" class="header-button flex-none flex transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ════════════════════════════════════════════════════════
+         🚫 [수정 금지] 메인 워크스페이스 래퍼
+         ════════════════════════════════════════════════════════ -->
+        <main id="workspace"
+            class="flex flex-col md:flex-row landscape:flex-row flex-1 min-h-0 gap-3 relative bg-slate-100 md:bg-transparent">
+
+            <!-- 🚫 [수정 금지] 캔버스 영역 -->
+            <section id="content-area"
+                class="ui-box flex-none h-[50vh] md:h-auto landscape:h-auto md:flex-[3] landscape:flex-[3] flex flex-col min-h-[250px] md:min-h-[400px] landscape:min-h-0 overflow-hidden relative bg-white">
+                <!-- 캔버스 상단 환경변수 및 인디케이터 -->
+                <div class="hidden">
+                    <div class="env-text flex items-center gap-4 flex-none pl-4" id="environment-info">
+                        <span id="env-label-canvas">로딩 중...</span><!-- CONTENT_CONFIG.envLabel 자동 주입 -->
+                    </div>
+                    <div id="statusIndicator"
+                        class="w-3 h-3 rounded-full bg-emerald-500 border border-slate-300 transition-colors duration-200 translate-y-[1px]">
+                    </div>
+                </div>
+
+                <div class="flex-1 w-full relative bg-white overflow-hidden" id="canvas-container">
+                    <!-- 콘텐츠 상태 -->
+                    <div id="helperBoxWrapper"
+                        class="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full border border-slate-200 shadow-sm pointer-events-none">
+                        <p id="helperText" class="helper-text-default whitespace-nowrap transition-colors">로딩 중...</p>
+                    </div>
+                    <canvas id="simCanvas" class="w-full h-full block relative z-0">컨텐츠 영역</canvas>
+                </div>
+                <!-- 초기화 -->
+                <button id="resetBtn"
+                    class="btn-reset-custom flex absolute bottom-4 right-4 z-40 bg-white/95 backdrop-blur border rounded-full px-4 py-2 items-center gap-2 transition-colors shadow-sm">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span id="resetBtnText">초기화</span>
+                </button>
+            </section>
+
+
+            <!-- ╔══════════════════════════════════════════════════════════╗
+             ║  ✏️  EDIT ZONE — 제어 패널 (우측 사이드바)                ║
+             ║  이 <aside> 안의 입력 폼을 자유롭게 추가/수정/삭제하세요.   ║
+             ╚══════════════════════════════════════════════════════════╝ -->
+            <aside id="settings-area"
+                class="ui-box flex-none landscape:max-w-[300px] md:flex-[1] landscape:flex-[1] md:min-w-[250px] landscape:min-w-[250px] flex flex-col min-h-[300px] landscape:min-h-0 overflow-hidden relative">
+                <div class="flex-1 overflow-y-auto relative" id="controlsWrapper">
+                    <div class="p-3 md:p-4 min-h-full flex flex-col justify-between gap-4">
+                        <div class="flex flex-col gap-4">
+
+                            <!-- 환경변수 레이블 삭제됨 -->
+
+                            <!-- ─────────────────────────────────────────────
+                         ✏️  입력 폼 영역 시작 — 아래부터 자유롭게 수정
+                         ───────────────────────────────────────────── -->
+
+                            <!-- 모드 -->
+                            <div class="panel-block">
+                                <label class="var-label-control">모드</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="modeOpt" value="boil" class="accent-indigo-600" checked>
+                                        <span class="select-option-text whitespace-nowrap">끓는점</span>
+                                    </label>
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="modeOpt" value="melt" class="accent-indigo-600">
+                                        <span class="select-option-text whitespace-nowrap">녹는점·어는점</span>
+                                    </label>
+                                </div>
+                                <p class="slider-limit-label">모든 값은 1 기압에서 측정한 값이다.</p>
+                            </div>
+
+                            <!-- 끓는점 모드: 물질 -->
+                            <div class="panel-block" data-mode-block="boil">
+                                <label class="var-label-control">물질</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="boilSubOpt" value="water" class="accent-indigo-600" checked>
+                                        <span class="select-option-text whitespace-nowrap">물</span>
+                                    </label>
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="boilSubOpt" value="ethanol" class="accent-indigo-600">
+                                        <span class="select-option-text whitespace-nowrap">에탄올</span>
+                                    </label>
+                                </div>
+                                <p class="slider-limit-label">물은 핫플레이트로 직접, 에탄올은 물중탕으로 가열한다.</p>
+                            </div>
+
+                            <!-- 녹는점·어는점 모드: 물질 -->
+                            <div class="panel-block hidden" data-mode-block="melt">
+                                <label class="var-label-control">물질</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="meltSubOpt" value="palmitic" class="accent-indigo-600" checked>
+                                        <span class="select-option-text whitespace-nowrap">팔미트산</span>
+                                    </label>
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="meltSubOpt" value="lauric" class="accent-indigo-600">
+                                        <span class="select-option-text whitespace-nowrap">로르산</span>
+                                    </label>
+                                </div>
+                                <p class="slider-limit-label">시험관에 넣고 뜨거운 물에 중탕하여 녹인다.</p>
+                            </div>
+
+                            <!-- 물질의 양 -->
+                            <div class="panel-block">
+                                <label class="var-label-control">물질의 양</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="amountOpt" value="small" class="accent-indigo-600" checked>
+                                        <span class="select-option-text whitespace-nowrap">적음</span>
+                                    </label>
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="amountOpt" value="large" class="accent-indigo-600">
+                                        <span class="select-option-text whitespace-nowrap">많음</span>
+                                    </label>
+                                </div>
+                                <p class="slider-limit-label">모든 조건은 같은 세기로 가열한다. 가열 속도는 시뮬레이션 설정값이다.</p>
+                            </div>
+
+                            <!-- 진행 -->
+                            <div class="panel-block">
+                                <label class="var-label-control">진행</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="phaseOpt" value="heat" class="accent-indigo-600" checked>
+                                        <span class="select-option-text whitespace-nowrap">가열</span>
+                                    </label>
+                                    <label class="radio-label min-w-0 items-center justify-center">
+                                        <input type="radio" name="phaseOpt" value="cool" class="accent-indigo-600" disabled>
+                                        <span class="select-option-text whitespace-nowrap">냉각</span>
+                                    </label>
+                                </div>
+                                <p class="slider-limit-label">녹는점·어는점 모드에서 시료가 다 녹으면 냉각을 고를 수 있다.</p>
+                            </div>
+
+                            <!-- 겹쳐 그리기 -->
+                            <div class="panel-block">
+                                <label class="var-label-control">겹쳐 그리기</label>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <label class="radio-label min-w-0 items-center justify-center gap-1 px-1">
+                                        <input type="radio" name="overlayOpt" value="off" class="accent-indigo-600" checked>
+                                        <span class="select-option-text whitespace-nowrap">끄기</span>
+                                    </label>
+                                    <label class="radio-label min-w-0 items-center justify-center gap-1 px-1">
+                                        <input type="radio" name="overlayOpt" value="amount" class="accent-indigo-600">
+                                        <span class="select-option-text whitespace-nowrap">양 비교</span>
+                                    </label>
+                                    <label class="radio-label min-w-0 items-center justify-center gap-1 px-1">
+                                        <input type="radio" name="overlayOpt" value="kind" class="accent-indigo-600">
+                                        <span class="select-option-text whitespace-nowrap">종류 비교</span>
+                                    </label>
+                                </div>
+                                <p class="slider-limit-label">양 비교: 적음(실선)과 많음(점선) / 종류 비교: 같은 양의 두 물질</p>
+                            </div>
+
+                            <!-- 표시 요소 -->
+                            <div class="panel-block">
+                                <label class="var-label-control">표시 요소</label>
+                                <div class="grid grid-cols-1 gap-2">
+                                    <label class="flex items-center gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer">
+                                        <input type="checkbox" id="chkGrid" class="accent-indigo-600" checked>
+                                        <span class="select-option-text whitespace-nowrap">그래프 눈금선</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer">
+                                        <input type="checkbox" id="chkState" class="accent-indigo-600" checked>
+                                        <span class="select-option-text whitespace-nowrap">상태 표시</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer">
+                                        <input type="checkbox" id="chkRef" class="accent-indigo-600" checked>
+                                        <span class="select-option-text whitespace-nowrap">끓는점·녹는점 기준선</span>
+                                    </label>
+                                </div>
+                                <p class="slider-limit-label">기준선은 온도가 일정해지면 나타난다.</p>
+                            </div>
+
+                            <!-- 다시 측정 -->
+                            <button id="retryBtn" class="btn-sub w-full py-2 border rounded-lg transition-colors">다시 측정</button>
+
+                            <!-- ─────────────────────────────────────────────
+                         ✏️  입력 폼 영역 끝
+                         ───────────────────────────────────────────── -->
+                        </div>
+
+                        <!-- 🚫 [수정 금지] 하단 동작 버튼 (텍스트만 변경 가능) -->
+                        <div class="flex flex-col gap-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button id="pauseBtn"
+                                    class="btn-action-start col-span-2 py-2 border rounded-lg transition-colors">▶
+                                    시작</button>
+                                <button id="conceptBtn"
+                                    class="btn-sub py-2 border rounded-lg transition-colors">개념 정리</button>
+                                <button id="quizBtn"
+                                    class="btn-sub py-2 border rounded-lg transition-colors">확인 퀴즈</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </aside>
+            <!-- ╚══════EDIT ZONE 끝═════════════════════════════════════════╝ -->
+
+
+            <!-- ═════════════════════════════════════════════════════════════
+             🚫 [수정 금지] 팝업 모달 — 내용은 JS CONTENT_CONFIG로 자동 주입
+             ═════════════════════════════════════════════════════════════ -->
+
+            <!-- 학습 가이드 모달 (모바일/태블릿) -->
+            <div id="helpBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-left">
+                <div class="modal-container max-w-4xl min-h-[200px]">
+                    <div class="modal-header">
+                        <h3 class="modal-title flex items-center gap-2"><svg class="w-6 h-6 text-indigo-600" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg> 학습 가이드</h3>
+                        <button id="closeHelpBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="guide-block">
+                            <h4 class="guide-title mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg> 콘텐츠 소개</h4>
+                            <p class="guide-desc" id="guide-intro-modal">로딩 중...</p>
+                        </div>
+                        <div class="guide-block">
+                            <h4 class="guide-title mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg> 사용 방법</h4>
+                            <ol class="guide-desc list-decimal pl-5 space-y-1.5 marker:text-slate-400 marker:font-bold"
+                                id="guide-steps-modal"><!-- JS 자동 주입 --></ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 개념 정리 모달 -->
+            <div id="conceptBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-left">
+                <div class="modal-container max-w-2xl min-h-[200px]">
+                    <div class="modal-header">
+                        <h3 class="modal-title">개념 정리</h3>
+                        <button id="closeConceptBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="modal-body" id="conceptContent"><!-- JS CONTENT_CONFIG.concept 자동 주입 --></div>
+                </div>
+            </div>
+
+            <!-- 확인 퀴즈 모달 -->
+            <div id="quizBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-center">
+                <div class="modal-container max-w-2xl min-h-[200px] lg:min-h-[480px] max-h-[70dvh] overflow-hidden">
+                    <div class="modal-header">
+                        <div class="flex items-center gap-3">
+                            <h3 class="modal-title">확인 퀴즈</h3>
+                            <span id="quizStep" class="quiz-step px-3 py-1 rounded-full">질문 1 / N</span>
+                        </div>
+                        <button id="closeQuizBtn" class="modal-close-btn transition-colors" aria-label="닫기"><svg
+                                class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="flex-1 flex flex-col min-h-0">
+                        <div class="flex-1 overflow-y-auto px-5 pt-5 flex flex-col gap-2 min-h-0">
+                            <p id="questionText" class="quiz-question flex-none"></p>
+                            <div id="answerArea" class="flex-1 flex flex-col justify-center min-h-0 py-4">
+                                <button id="showAnswerBtn"
+                                    class="quiz-btn-check w-full max-w-sm mx-auto py-3 rounded-xl transition-colors">정답
+                                    확인하기</button>
+                                <div id="answerText" class="quiz-answer-box hidden p-4 rounded-xl border w-full">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="quizNav" class="flex justify-center gap-4 flex-none py-4 px-5 mt-2">
+                            <button id="prevQuizBtn" class="nav-btn">←</button>
+                            <button id="nextQuizBtn" class="nav-btn">→</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🚫 [수정 금지] 전체화면 딤처리 UI -->
+            <div id="fullscreen-exit-ui"
+                class="hidden fixed top-0 left-0 w-full h-12 z-[60] transition-opacity duration-300 opacity-0 pointer-events-none">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent"></div>
+            </div>
+        </main>
+
+        <!-- 🚫 [수정 금지] 푸터 -->
+        <footer class="flex-none flex justify-center p-1">
+            <p class="text-[10px] text-slate-400 font-medium">copyright© 2026 by chunjae co.ltd all rights reserved.</p>
+        </footer>
+    </div>
+
+
+    <script>
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE A — CONTENT CONFIG (텍스트/콘텐츠 설정)              ████
+           ████   이 블록의 값만 수정하면 제목·가이드·개념·퀴즈가 모두 반영됩니다.  ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        const CONTENT_CONFIG = {
+
+            /** 브라우저 탭 제목 + 헤더 제목 */
+            title: "끓는점과 녹는점",
+
+            /** 캔버스·패널 환경 변수 레이블 */
+            envLabel: "끓는점·녹는점 시뮬레이터",
+            envLabelpanel: "실험 설정 및 제어",
+
+            /** 학습 가이드 — intro 1문장('~다' 체), steps 3~5개('~한다' 체) */
+            guide: {
+                intro: "물질의 종류와 양을 바꾸어 가열하며 끓는점과 녹는점이 물질의 특성임을 확인할 수 있다.",
+                steps: [
+                    "'끓는점' 또는 '녹는점·어는점' 모드를 고른다.",
+                    "물질과 물질의 양(적음 / 많음)을 고른다.",
+                    "가열을 시작하고 온도(℃)-가열 시간(분) 그래프에서 온도가 일정하게 유지되는 구간을 관찰한다.",
+                    "녹는점·어는점 모드에서는 시료가 다 녹은 뒤 '냉각'을 선택하여 가열냉각 곡선을 완성한다.",
+                    "'겹쳐 그리기'에서 양 비교와 종류 비교를 골라 수평 구간의 온도와 나타나는 시각을 비교한다."
+                ]
+            },
+
+            /** 개념 정리 카드 목록(1~4장, '~입니다' 체) — color: 'orange' | 'green' | 'blue' | 'purple' */
+            concept: [
+                {
+                    color: "orange",
+                    title: "물질의 특성, 끓는점과 녹는점",
+                    desc: "끓는점은 액체가 끓어 기체로 변하는 동안 일정하게 유지되는 온도이고, 녹는점은 고체가 녹아 액체로 변하는 동안 일정하게 유지되는 온도입니다. 1 기압에서 물의 끓는점은 100 ℃, 에탄올의 끓는점은 78.2 ℃이고, 팔미트산의 녹는점은 62.5 ℃, 로르산의 녹는점은 43.8 ℃입니다. 압력이 같을 때 물질마다 일정한 값을 가지므로 끓는점과 녹는점은 물질의 특성입니다."
+                },
+                {
+                    color: "green",
+                    title: "물질의 양에 관계없이 일정",
+                    desc: "같은 물질은 양이 많아도 끓는점과 녹는점이 높아지지 않습니다. 같은 세기로 가열할 때 양이 많으면 끓는점이나 녹는점에 도달하는 시간과 상태 변화가 끝날 때까지 걸리는 시간만 길어집니다. 끓고 있는 물에 불을 더 세게 해도 물의 온도는 100 ℃보다 높아지지 않습니다. 끓을 때까지 걸리는 시간과 끓는 온도를 구별해야 합니다."
+                },
+                {
+                    color: "blue",
+                    title: "상태가 변하는 동안 온도는 일정",
+                    desc: "물질을 가열하면 온도가 점점 오르다가, 끓거나 녹는 동안에는 계속 가열해도 온도가 거의 일정하게 유지됩니다. 이때 그래프에는 수평 구간이 나타나며, 이 수평 구간의 온도가 끓는점 또는 녹는점입니다. 상태 변화가 모두 끝나면 다시 온도가 변합니다."
+                },
+                {
+                    color: "purple",
+                    title: "녹는점과 어는점, 그래프로 물질 구별",
+                    desc: "순물질에서 같은 압력일 때 같은 물질의 녹는점과 어는점은 같습니다. 팔미트산의 가열냉각 곡선에서 녹을 때와 얼 때의 수평 구간은 모두 62.5 ℃에 나타나므로 어는점도 물질의 특성입니다. 양이 같아도 물질의 종류가 다르면 수평 구간의 온도가 다르므로, 그래프의 끓는점과 녹는점으로 물질을 구별할 수 있습니다."
+                }
+            ],
+
+            /** 확인 퀴즈 목록(3문항 이상) — a는 "정답:"으로 시작하고 "해설:"을 포함 */
+            quizzes: [
+                {
+                    q: "1 기압에서 로르산 적음(A)과 많음(B)을 같은 세기로 가열한 그래프를 겹쳐 그렸다. 옳은 것은?\n\n① A의 수평 구간이 B보다 높은 온도에 나타난다.\n② B의 수평 구간이 A보다 높은 온도에 나타난다.\n③ 두 수평 구간은 43.8 ℃로 같고, B가 더 늦게 나타난다.\n④ 두 수평 구간은 43.8 ℃로 같고, A가 더 늦게 나타난다.",
+                    a: "정답: ③ 두 수평 구간은 43.8 ℃로 같고, B가 더 늦게 나타난다.\n\n해설: 같은 물질은 양에 관계없이 녹는점이 같으므로 수평 구간의 높이가 같습니다. 양이 많은 B는 녹는점에 도달하는 데 시간이 더 오래 걸립니다."
+                },
+                {
+                    q: "1 기압에서 같은 양의 물과 에탄올을 가열하여 겹쳐 그렸더니, (가)는 100 ℃, (나)는 78.2 ℃에서 수평 구간이 나타났다. (가)와 (나)를 옳게 짝지은 것은?\n\n① (가) 물, (나) 에탄올\n② (가) 에탄올, (나) 물\n③ (가) 물, (나) 물\n④ (가) 에탄올, (나) 에탄올",
+                    a: "정답: ① (가) 물, (나) 에탄올\n\n해설: 1 기압에서 물의 끓는점은 100 ℃, 에탄올의 끓는점은 78.2 ℃입니다. 양이 같아도 종류가 다르면 끓는점이 다르므로 끓는점으로 물질을 구별할 수 있습니다."
+                },
+                {
+                    q: "어떤 액체를 1 기압에서 가열하였더니 78.2 ℃에서 온도가 일정하게 유지되었다. 같은 액체를 2배의 양으로 같은 세기로 가열할 때 옳은 것은?\n\n① 78.2 ℃보다 높은 온도에서 끓는다.\n② 78.2 ℃보다 낮은 온도에서 끓는다.\n③ 78.2 ℃에서 끓고, 끓을 때까지 걸리는 시간이 길어진다.\n④ 78.2 ℃에서 끓고, 끓을 때까지 걸리는 시간이 짧아진다.",
+                    a: "정답: ③ 78.2 ℃에서 끓고, 끓을 때까지 걸리는 시간이 길어진다.\n\n해설: 끓는점은 물질의 양에 관계없이 일정합니다. 양이 많으면 끓는점에 도달하는 데 걸리는 시간만 길어집니다."
+                },
+                {
+                    q: "1 기압에서 팔미트산을 가열하여 다 녹인 뒤 냉각하였다. 냉각할 때 온도가 일정하게 유지되는 수평 구간의 온도는?\n\n① 0 ℃   ② 43.8 ℃   ③ 62.5 ℃   ④ 100 ℃",
+                    a: "정답: ③ 62.5 ℃\n\n해설: 같은 물질의 녹는점과 어는점은 같습니다. 팔미트산의 녹는점이 62.5 ℃이므로 얼 때의 수평 구간도 62.5 ℃에 나타납니다."
+                },
+                {
+                    q: "1 기압에서 끓는점에 대한 설명으로 옳은 것만을 고른 것은?\n\nㄱ. 물의 양이 많으면 물의 끓는점이 높아진다.\nㄴ. 끓고 있는 물에 불을 더 세게 해도 물의 온도는 100 ℃보다 높아지지 않는다.\nㄷ. 물 20 mL와 물 40 mL는 같은 온도에서 끓는다.\n\n① ㄱ   ② ㄴ   ③ ㄱ, ㄷ   ④ ㄴ, ㄷ",
+                    a: "정답: ④ ㄴ, ㄷ\n\n해설: 끓는점은 물질의 양에 관계없이 일정하므로 ㄱ은 틀리고 ㄷ은 옳습니다. 불을 세게 하면 끓는점에 빨리 도달하고 기화가 빨라질 뿐, 끓는 동안의 온도(끓는점)는 변하지 않으므로 ㄴ은 옳습니다."
+                }
+            ]
+        };
+        /* ████ ZONE A 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE B — SIM CONFIG (시뮬레이션 파라미터 설정)             ████
+           ████   슬라이더 범위, 초기 객체 크기 등 수치 설정을 여기서 변경하세요.   ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        const SIM_CONFIG = {
+            /* 이 단원은 슬라이더를 쓰지 않는다 (코어 호환용 기본값) */
+            slider: {
+                min: 0,
+                max: 100,
+                step: 1,
+                initialValue: 50,
+                unit: ""
+            },
+            /* 1 기압 기준값(℃) — 01_spec.json formula_or_source 그대로 */
+            point: { water: 100, ethanol: 78.2, palmitic: 62.5, lauric: 43.8 },
+            /* 이하 시간 진행은 정성 모델(시뮬레이션 설정값). 모든 조건은 같은 세기로 가열한다. */
+            startTemp: 20,                  /* 처음 온도(℃) */
+            /* '많음'은 '적음'의 몇 배인가 (물 20/40 mL, 에탄올 10/20 mL, 팔미트산 100/200 g, 로르산 100/150 g) */
+            amountFactor: { water: 2, ethanol: 2, palmitic: 2, lauric: 1.5 },
+            boil: {
+                reach: { water: 4, ethanol: 3.5 },   /* '적음'이 끓기 시작할 때까지 걸리는 시간(분) */
+                after: 1                             /* 끓기 시작한 뒤 더 측정하는 시간(분) */
+            },
+            melt: {
+                rise: 4,          /* '적음'이 녹는점에 도달할 때까지(분) */
+                melt: 4,          /* 녹는 동안(분) */
+                liquid: 2,        /* 다 녹은 뒤 더 가열하는 시간(분) */
+                liquidRise: 12,   /* 그동안 오르는 온도(℃), 냉각 속도도 같은 비율 */
+                freeze: 4,        /* 어는 동안(분) */
+                afterFreeze: 2    /* 다 언 뒤 더 측정하는 시간(분) */
+            },
+            speed: { boil: 0.9, melt: 1.8 },  /* 화면 1초 동안 지나는 그래프 시간(분) */
+            axis: {
+                boil: { yMax: 110, yStep: 20 },
+                meltLow: { yMax: 60, yStep: 10 },
+                meltHigh: { yMax: 100, yStep: 20 }
+            },
+            /* 시작 버튼·캔버스 안내 문구 (코어 updateUIState가 사용) */
+            labels: {
+                start: "▶ 시작",
+                pause: "일시정지",
+                helperIdle: "조건을 고르고 시작을 누르세요.",
+                helperRunning: "측정 중",
+                helperPaused: "일시정지됨 - 시작을 누르면 이어서 측정해요."
+            }
+        };
+        /* ████ ZONE B 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE C — SIM STATE (동적 상태 변수)                       ████
+           ████   시뮬레이션 진행 중 변하는 값들을 여기에 추가·수정하세요.         ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        let simData = {
+            value1: SIM_CONFIG.slider.initialValue,
+            mode: 'boil',            /* 'boil' | 'melt' */
+            boilSub: 'water',        /* 'water' | 'ethanol' */
+            meltSub: 'palmitic',     /* 'palmitic' | 'lauric' */
+            amount: 'small',         /* 'small' | 'large' */
+            overlay: 'off',          /* 'off' | 'amount' | 'kind' */
+            showGrid: true,
+            showState: true,
+            showRef: true,
+            E: 0,                    /* 측정이 진행된 시간(분) */
+            Ec: null,                /* 냉각을 고른 때의 E (없으면 null) */
+            bubbles: [],
+            frame: 0,
+            lastTs: 0
+        };
+
+        /* 탭별 상태 저장소 (탭을 쓰는 단원만 탭 이름과 일치시켜 관리) */
+        const tabStates = {};
+        /* ████ ZONE C 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE D — CORE ENGINE (수정 금지)
+           캔버스·상태·사운드·DOM캐시 등 엔진 코어 초기화
+           ════════════════════════════════════════════════════════════════════════ */
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        const container = document.getElementById('canvas-container');
+
+        const varSlider1 = document.getElementById('varSlider1');
+        const varDisplay1 = document.getElementById('varDisplay1');
+
+        const sysState = {
+            isStarted: false, isPaused: false, isDragging: false, isLooping: false,
+            zoomLevel: 1.0, offsetX: 0, offsetY: 0, lastX: 0, lastY: 0,
+            currentQuizIndex: 0, canvasLogicalWidth: 0, canvasLogicalHeight: 0
+        };
+
+        const DOM = {}; /* DOM 요소 캐시 */
+
+        const debounce = (func, delay) => {
+            let id;
+            return (...args) => { clearTimeout(id); id = setTimeout(() => func.apply(this, args), delay); };
+        };
+
+        const bindEvent = (id, type, handler) => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener(type, handler);
+        };
+
+        /* CONTENT_CONFIG → DOM 주입 */
+        function renderContent() {
+            const C = CONTENT_CONFIG;
+
+            /* 제목 */
+            document.title = C.title;
+            const titleEl = document.getElementById('sim-title-el');
+            if (titleEl) titleEl.textContent = C.title;
+
+            /* 환경 변수 레이블 */
+            ['env-label-canvas', 'env-label-panel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.envLabel;
+            });
+
+            /* 제어패널 환경 변수 레이블 */
+            ['env-label-panel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.envLabelpanel;
+            });
+
+            /* 가이드 — 소개 */
+            ['guide-intro-desktop', 'guide-intro-modal'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.guide.intro;
+            });
+
+            /* 가이드 — 단계 (모달: 단순 주입) */
+            const stepsHTML = CONTENT_CONFIG.guide.steps.map(s => `<li>${s}</li>`).join('');
+            const modalSteps = document.getElementById('guide-steps-modal');
+            if (modalSteps) modalSteps.innerHTML = stepsHTML;
+
+            /* 가이드 — 단계 (데스크톱 셔터: 개수에 따라 비율·컬럼 분기) */
+            const steps = CONTENT_CONFIG.guide.steps;
+            const introCol = document.getElementById('guide-intro-col');
+            const stepsCol = document.getElementById('guide-steps-col');
+            const stepsWrap = document.getElementById('guide-steps-wrapper-desktop');
+
+            if (steps.length >= 4) {
+                /* 1:2 비율 적용 */
+                if (introCol) introCol.className = 'flex-1';
+                if (stepsCol) stepsCol.className = 'flex-[2]';
+
+                /* 컬럼 분할: ceil(n/2)개가 왼쪽 */
+                const split = Math.ceil(steps.length / 2);
+                const col1 = steps.slice(0, split);
+                const col2 = steps.slice(split);
+
+                if (stepsWrap) {
+                    stepsWrap.innerHTML = `
+                <div class="flex flex-col lg:flex-row gap-x-8 gap-y-1">
+                    <ol class="guide-desc flex-1 list-decimal pl-5 space-y-1">
+                        ${col1.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                    <ol class="guide-desc flex-1 list-decimal pl-5 space-y-1" start="${split + 1}">
+                        ${col2.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                </div>`;
+                }
+            } else {
+                /* 1:1 비율, 단일 리스트 */
+                if (introCol) introCol.className = 'flex-1';
+                if (stepsCol) stepsCol.className = 'flex-1';
+
+                if (stepsWrap) {
+                    stepsWrap.innerHTML = `
+                <ol class="guide-desc list-decimal pl-5 space-y-1">
+                    ${steps.map(s => `<li>${s}</li>`).join('')}
+                </ol>`;
+                }
+            }
+
+            /* 개념 정리 카드 */
+            const colorMap = {
+                orange: { bg: 'bg-orange-50', border: 'border-orange-500', titleClass: 'concept-title-1', descClass: 'concept-desc' },
+                green: { bg: 'bg-emerald-50', border: 'border-emerald-500', titleClass: 'concept-title-2', descClass: 'concept-desc' },
+                blue: { bg: 'bg-blue-50', border: 'border-blue-500', titleClass: 'concept-title-3', descClass: 'concept-desc' },
+                purple: { bg: 'bg-purple-50', border: 'border-purple-500', titleClass: 'concept-title-4', descClass: 'concept-desc' }
+            };
+            const conceptContent = document.getElementById('conceptContent');
+            if (conceptContent) {
+                conceptContent.innerHTML = C.concept.map(item => {
+                    const col = colorMap[item.color] || colorMap.orange;
+                    return `<div class="p-4 ${col.bg} border-l-4 ${col.border} rounded-r-xl">
+                        <p class="${col.titleClass} mb-1">${item.title}</p>
+                        <p class="${col.descClass}">${item.desc}</p>
+                    </div>`;
+                }).join('');
+            }
+
+            /* KaTeX 수식 렌더링 (콘텐츠 주입 후 실행) */
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '\\[', right: '\\]', display: true }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            /* DOM 캐싱 */
+            DOM.statusIndicator = document.getElementById('statusIndicator');
+            DOM.pauseBtn = document.getElementById('pauseBtn');
+            DOM.helperText = document.getElementById('helperText');
+            DOM.varSlider1 = document.getElementById('varSlider1');
+            DOM.directInputSingle = document.getElementById('directInputSingle');
+            DOM.ratioInputA = document.getElementById('ratioInputA');
+            DOM.ratioInputB = document.getElementById('ratioInputB');
+            DOM.customSelectTrigger = document.getElementById('customSelectTrigger');
+            DOM.customSelectList = document.getElementById('customSelectList');
+            DOM.radioOptions = document.querySelectorAll('input[name="simOption"]');
+
+            /* 콘텐츠 주입 */
+            renderContent();
+
+            /* 슬라이더 초기값 세팅 */
+            if (varSlider1) {
+                varSlider1.min = SIM_CONFIG.slider.min;
+                varSlider1.max = SIM_CONFIG.slider.max;
+                varSlider1.step = SIM_CONFIG.slider.step;
+                varSlider1.value = SIM_CONFIG.slider.initialValue;
+            }
+            if (varDisplay1) varDisplay1.textContent = `${SIM_CONFIG.slider.initialValue} ${SIM_CONFIG.slider.unit}`;
+
+            checkLandscape();
+        });
+
+        const checkLandscape = () => {
+            if (window.matchMedia("(orientation: landscape)").matches && window.innerWidth < 1024) {
+                const sc = document.getElementById('shutter-content');
+                if (sc && sc.classList.contains('is-open')) document.getElementById('shutter-toggle')?.click();
+            }
+        };
+        window.addEventListener('orientationchange', () => setTimeout(checkLandscape, 100));
+
+        if (!document.getElementById('shutter-toggle')) {
+            const helpBtn = document.getElementById('helpBtn');
+            if (helpBtn) helpBtn.classList.remove('desktop-only:md:hidden');
+        }
+        /* ════ ZONE D 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE E — SOUND MANAGER (수정 금지) (삭제시 uiSound 관련 코드 모두 삭제) - REMOVED
+           ════════════════════════════════════════════════════════════════════════ */
+
+
+        /* ███████████████████████████████████████████████████████████████████████
+           ████                                                               ████
+           ████   ✏️  ZONE F — SIMULATION LOGIC (시뮬레이션 핵심 로직)         ████
+           ████   draw()와 updatePhysics()에 시뮬레이션 코드를 작성하세요.       ████
+           ████                                                               ████
+           ███████████████████████████████████████████████████████████████████████ */
+
+        /* ── 공통 상수 ─────────────────────────────────────────────── */
+        const FONT = '"Noto Sans KR", sans-serif';
+        const COLORS = {
+            text: '#334155', sub: '#64748b', light: '#94a3b8', primary: '#4f46e5', bg: '#ffffff',
+            obs: '#ea580c', axis: '#64748b', grid: '#e2e8f0', ref: '#a16207', leader: '#94a3b8'
+        };
+        const GLASS = {
+            line: '#94a3b8', fill: 'rgba(241, 245, 249, 0.55)', hi: 'rgba(255, 255, 255, 0.85)',
+            metal: '#e2e8f0', metalDark: '#cbd5e1', metalLine: '#64748b', base: '#f8fafc'
+        };
+        const BANNER_STYLE = {
+            info: { bg: 'rgba(255, 255, 255, 0.94)', border: '#cbd5e1', text: '#334155' },
+            success: { bg: 'rgba(236, 253, 245, 0.96)', border: '#10b981', text: '#047857' },
+            warn: { bg: 'rgba(255, 247, 237, 0.96)', border: '#fb923c', text: '#c2410c' }
+        };
+        /* 물질 (이름은 교과서 표기). 그래프 색은 화면 구별용 */
+        const SUB = {
+            water: { name: '물', type: 'boil', color: '#2563eb', fill: 'rgba(56, 189, 248, 0.34)', line: '#0284c7' },
+            ethanol: { name: '에탄올', type: 'boil', color: '#db2777', fill: 'rgba(196, 181, 253, 0.42)', line: '#7c3aed' },
+            palmitic: { name: '팔미트산', type: 'melt', color: '#0891b2', fill: 'rgba(253, 230, 138, 0.62)', line: '#ca8a04' },
+            lauric: { name: '로르산', type: 'melt', color: '#d97706', fill: 'rgba(253, 230, 138, 0.62)', line: '#ca8a04' }
+        };
+        const PAIR = { water: 'ethanol', ethanol: 'water', palmitic: 'lauric', lauric: 'palmitic' };
+        const AMT_NAME = { small: '적음', large: '많음' };
+        const BATH = { fill: 'rgba(56, 189, 248, 0.22)', line: '#0284c7' };
+        const SOLID = { fill: '#f8fafc', line: '#cbd5e1', grain: '#cbd5e1' };
+        const STATE_STYLE = {
+            liquid: { bg: '#e0f2fe', text: '#0369a1' }, boiling: { bg: '#fee2e2', text: '#b91c1c' },
+            solid: { bg: '#f1f5f9', text: '#334155' }, mix: { bg: '#fef3c7', text: '#b45309' }
+        };
+        const ETHANOL_NOTE = '에탄올은 불이 붙기 쉬워 물중탕으로 가열한다.';
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+        /* 캔버스 크기 비례 배율 (design.md 4장): 1440×900 화면의 캔버스가 기준(≈1).
+           글자·상자·라벨·선 굵기·점·간격은 모두 기준값 × UI로 그린다. draw()에서 매번 다시 구한다. */
+        let UI = 1;
+        const computeUI = (w, h) => clamp(Math.min(w / 1080, h / 700), 0.75, 1.5);
+        const uiFont = base => Math.max(10, Math.round(base * UI));   /* 너무 작아지지 않게 아래만 막는다 */
+        const fmt =v => (Math.abs(v - Math.round(v)) < 1e-9 ? String(Math.round(v)) : v.toFixed(1));
+
+        /* ── 곡선 모델 ───────────────────────────────────────────────
+           기준 온도(끓는점·녹는점)는 SIM_CONFIG.point(1 기압)로 고정하고,
+           양은 도달 시간과 상태 변화가 끝날 때까지 걸리는 시간만 늘린다 (정성 모델). */
+        function makeCurve(sub, amt, role) {
+            const type = SUB[sub].type;
+            const F = amt === 'large' ? SIM_CONFIG.amountFactor[sub] : 1;
+            const c = { sub, amt, role, type, F, T0: SIM_CONFIG.startTemp, Tp: SIM_CONFIG.point[sub] };
+            if (type === 'boil') {
+                c.reach = SIM_CONFIG.boil.reach[sub] * F;
+                c.end = c.reach + SIM_CONFIG.boil.after;
+            } else {
+                const M = SIM_CONFIG.melt;
+                c.rise = M.rise * F;
+                c.meltEnd = c.rise + M.melt * F;
+                c.heatEnd = c.meltEnd + M.liquid * F;
+                c.cap = c.Tp + M.liquidRise;
+                c.rate = M.liquidRise / (M.liquid * F);
+                c.freeze = M.freeze * F;
+                c.after = M.afterFreeze * F;
+            }
+            return c;
+        }
+        function heatTemp(c, t) {
+            if (c.type === 'boil') return t < c.reach ? c.T0 + (c.Tp - c.T0) * t / c.reach : c.Tp;
+            if (t < c.rise) return c.T0 + (c.Tp - c.T0) * t / c.rise;
+            if (t < c.meltEnd) return c.Tp;
+            if (t < c.heatEnd) return c.Tp + c.rate * (t - c.meltEnd);
+            return c.cap;
+        }
+        /* 냉각: 액체 온도 하강 → 어는점(= 녹는점)에서 수평 → 고체 온도 하강 */
+        function coolPlan(c, cs) {
+            const Tc = heatTemp(c, cs);
+            const fs = cs + (Tc - c.Tp) / c.rate;
+            const fe = fs + c.freeze;
+            return { cs, Tc, fs, fe, end: fe + c.after };
+        }
+        function tempAt(c, t, plan) {
+            if (!plan || t <= plan.cs) return heatTemp(c, t);
+            if (t < plan.fs) return plan.Tc - c.rate * (t - plan.cs);
+            if (t < plan.fe) return c.Tp;
+            return c.Tp - c.rate * (t - plan.fe);
+        }
+        function curvePlan(c) {
+            if (c.type !== 'melt' || simData.Ec === null) return null;
+            const tc = Math.min(simData.Ec, c.heatEnd);
+            return coolPlan(c, tc >= c.meltEnd ? tc : c.heatEnd);
+        }
+        /* 곡선마다 자기 시계: 다 녹아 가열을 마치면 냉각을 고를 때까지 멈춘다 */
+        function curveClock(c, plan) {
+            const E = simData.E;
+            if (c.type === 'boil') return Math.min(E, c.end);
+            if (!plan || E <= simData.Ec) return Math.min(E, c.heatEnd);
+            return Math.min(Math.min(simData.Ec, c.heatEnd) + (E - simData.Ec), plan.end);
+        }
+        function stateAt(c, t, plan) {
+            if (c.type === 'boil') return t < c.reach ? { key: 'liquid', label: '액체', solid: 0 } : { key: 'boiling', label: '끓는 중', solid: 0 };
+            if (plan && t > plan.cs) {
+                if (t < plan.fs) return { key: 'liquid', label: '액체', solid: 0 };
+                if (t < plan.fe) return { key: 'mix', label: '어는 중', solid: (t - plan.fs) / c.freeze };
+                return { key: 'solid', label: '고체', solid: 1 };
+            }
+            if (t < c.rise) return { key: 'solid', label: '고체', solid: 1 };
+            if (t < c.meltEnd) return { key: 'mix', label: '녹는 중', solid: 1 - (t - c.rise) / (c.meltEnd - c.rise) };
+            return { key: 'liquid', label: '액체', solid: 0 };
+        }
+        /* 그래프 구간 (상태 라벨·녹는점/어는점 표시용) */
+        function segsOf(c, plan) {
+            if (c.type === 'boil') {
+                return [
+                    { a: [0, c.T0], b: [c.reach, c.Tp], label: '액체' },
+                    { a: [c.reach, c.Tp], b: [c.end, c.Tp], label: '끓는 중', flat: true }
+                ];
+            }
+            let segs = [
+                { a: [0, c.T0], b: [c.rise, c.Tp], label: '고체' },
+                { a: [c.rise, c.Tp], b: [c.meltEnd, c.Tp], label: '고체 + 액체', flat: true, tag: '녹는점' },
+                { a: [c.meltEnd, c.Tp], b: [c.heatEnd, c.cap], label: '액체' }
+            ];
+            if (plan) {
+                segs = segs.filter(s => s.a[0] < plan.cs - 1e-9)
+                    .map(s => (s.b[0] > plan.cs ? Object.assign({}, s, { b: [plan.cs, heatTemp(c, plan.cs)] }) : s));
+                segs.push(
+                    { a: [plan.cs, plan.Tc], b: [plan.fs, c.Tp], label: '액체' },
+                    { a: [plan.fs, c.Tp], b: [plan.fe, c.Tp], label: '고체 + 액체', flat: true, tag: '어는점' },
+                    { a: [plan.fe, c.Tp], b: [plan.end, c.Tp - c.rate * c.after], label: '고체' }
+                );
+            }
+            return segs.filter(s => s.b[0] - s.a[0] > 1e-6);
+        }
+        function getCurves() {
+            const sub = simData.mode === 'boil' ? simData.boilSub : simData.meltSub;
+            const list = [makeCurve(sub, simData.amount, 'main')];
+            if (simData.overlay === 'amount') list.push(makeCurve(sub, simData.amount === 'small' ? 'large' : 'small', 'cmp'));
+            else if (simData.overlay === 'kind') list.push(makeCurve(PAIR[sub], simData.amount, 'cmp'));
+            list.forEach(c => {
+                c.plan = curvePlan(c);
+                c.t = curveClock(c, c.plan);
+                c.T = tempAt(c, c.t, c.plan);
+                c.stop = c.type === 'boil' ? c.end : (c.plan ? c.plan.end : c.heatEnd);
+                c.done = c.t >= c.stop - 1e-9;
+            });
+            return list;
+        }
+        const allDone = curves => curves.every(c => c.done);
+        function heatingActive(m) {
+            if (m.type === 'boil') return m.t < m.end;
+            return m.plan ? m.t < m.plan.cs : m.t < m.heatEnd;
+        }
+        function canCool(m) {
+            return simData.mode === 'melt' && simData.Ec === null && m.t >= m.meltEnd - 1e-9;
+        }
+        const curveLabel = c => `${SUB[c.sub].name} ${AMT_NAME[c.amt]}`;
+        const dashOf = c => (simData.overlay === 'amount' && c.amt === 'large' ? [7, 5] : []);
+
+        /* ── 그리기 도우미 ─────────────────────────────────────────── */
+        function rrect(x, y, w, h, r) {
+            r = Math.max(0, Math.min(r, w / 2, h / 2));
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+        function wrapLines(text, maxW) {
+            const words = text.split(' ');
+            const lines = [];
+            let cur = '';
+            words.forEach(wd => {
+                const t = cur ? cur + ' ' + wd : wd;
+                if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = wd; }
+                else cur = t;
+            });
+            if (cur) lines.push(cur);
+            return lines;
+        }
+        function haloText(text, x, y) {
+            ctx.save();
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 3 * UI;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
+            ctx.strokeText(text, x, y);
+            ctx.restore();
+            ctx.fillText(text, x, y);
+        }
+        function pill(text, x, y, style, fs, align) {
+            ctx.save();
+            ctx.font = `700 ${fs}px ${FONT}`;
+            const w = ctx.measureText(text).width + 12 * UI, h = fs + 8 * UI;
+            const x0 = align === 'center' ? x - w / 2 : x;
+            rrect(x0, y - h / 2, w, h, h / 2);
+            ctx.fillStyle = style.bg; ctx.fill();
+            ctx.fillStyle = style.text; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(text, x0 + w / 2, y + 0.5);
+            ctx.restore();
+        }
+
+        /* ── 비커 (밀도 단원과 같은 그림, 설계 단위 201 × 248) ── */
+        const BK = { w: 201, h: 248, cx: 103, rimY: 20, rimRy: 10, bot: 228, ry: 10, base: 240, inset: 1.8 };
+        function bkWall(v, inset) {
+            const t = (v - BK.rimY) / (BK.bot - BK.rimY);
+            return { l: 17 + t * 6 + inset, r: 189 - t * 6 - inset };
+        }
+        function mkBox(x0, y0, k) { return { k, x0, y0, x: u => x0 + u * k, y: v => y0 + v * k }; }
+        function beakerPath(B, vTop, inset) {
+            const a = bkWall(vTop, inset), b = bkWall(BK.bot, inset);
+            ctx.beginPath();
+            ctx.moveTo(B.x(a.l), B.y(vTop));
+            ctx.lineTo(B.x(b.l), B.y(BK.bot));
+            ctx.ellipse(B.x((b.l + b.r) / 2), B.y(BK.bot), (b.r - b.l) / 2 * B.k, Math.max(1, BK.ry - inset * 0.5) * B.k, 0, Math.PI, 0, true);
+            ctx.lineTo(B.x(a.r), B.y(vTop));
+            ctx.closePath();
+        }
+        function surfaceEllipse(B, v, color) {
+            if (v > BK.bot - 3) return;
+            const s = bkWall(v, BK.inset);
+            ctx.strokeStyle = color; ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.ellipse(B.x((s.l + s.r) / 2), B.y(v), (s.r - s.l) / 2 * B.k, 4 * B.k, 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        function drawBeakerBack(B) {
+            ctx.save();
+            beakerPath(B, BK.rimY, 0);
+            ctx.fillStyle = GLASS.fill; ctx.fill();
+            const b = bkWall(BK.bot, 0);
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)'; ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.ellipse(B.x((b.l + b.r) / 2), B.y(BK.bot), (b.r - b.l) / 2 * B.k, BK.ry * B.k, 0, Math.PI, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+        }
+        function drawBeakerFront(B) {
+            const a = bkWall(BK.rimY, 0), b = bkWall(BK.bot, 0);
+            const lw = Math.max(1.2, Math.min(2, 1.6 * B.k + 0.4));
+            ctx.save();
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.strokeStyle = GLASS.hi; ctx.lineWidth = Math.max(1.5, 4 * B.k);
+            ctx.beginPath(); ctx.moveTo(B.x(bkWall(50, 0).l + 12), B.y(50)); ctx.lineTo(B.x(bkWall(200, 0).l + 12), B.y(200)); ctx.stroke();
+            ctx.lineWidth = Math.max(1, 2 * B.k);
+            ctx.beginPath(); ctx.moveTo(B.x(bkWall(60, 0).l + 22), B.y(60)); ctx.lineTo(B.x(bkWall(140, 0).l + 22), B.y(140)); ctx.stroke();
+            ctx.strokeStyle = GLASS.line; ctx.lineWidth = lw;
+            ctx.beginPath();
+            ctx.moveTo(B.x(a.l), B.y(BK.rimY)); ctx.lineTo(B.x(b.l), B.y(BK.bot));
+            ctx.moveTo(B.x(a.r), B.y(BK.rimY)); ctx.lineTo(B.x(b.r), B.y(BK.bot));
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.ellipse(B.x((b.l + b.r) / 2), B.y(BK.bot), (b.r - b.l) / 2 * B.k, BK.ry * B.k, 0, 0, Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.ellipse(B.x((a.l + a.r) / 2), B.y(BK.rimY), (a.r - a.l) / 2 * B.k, BK.rimRy * B.k, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.lineWidth = Math.max(1, lw * 0.6);
+            ctx.beginPath();
+            ctx.ellipse(B.x((a.l + a.r) / 2), B.y(BK.rimY + 2), (a.r - a.l) / 2 * B.k - 3 * B.k, (BK.rimRy - 1.5) * B.k, 0, 0, Math.PI);
+            ctx.stroke();
+            ctx.lineWidth = lw;
+            ctx.beginPath();
+            ctx.moveTo(B.x(a.l + 14), B.y(BK.rimY - 8));
+            ctx.quadraticCurveTo(B.x(a.l - 4), B.y(BK.rimY - 9), B.x(a.l - 9), B.y(BK.rimY - 3));
+            ctx.quadraticCurveTo(B.x(a.l - 4), B.y(BK.rimY + 3), B.x(a.l + 2), B.y(BK.rimY + 6));
+            ctx.stroke();
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.8)'; ctx.lineWidth = 1;
+            for (let v = 90; v <= 210; v += 30) {
+                const r = bkWall(v, 0).r;
+                ctx.beginPath(); ctx.moveTo(B.x(r - 30), B.y(v)); ctx.lineTo(B.x(r - 12), B.y(v)); ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        /* ── 실험 장치 (설계 단위 500 × 434, 위 끝 y = 22) ─────────── */
+        const SCENE = { w: 500, h: 434, y0: 22 };
+        const APP = {
+            cx: 275, plateTop: 389, tableY: 450, rodX: 44, sensorArmY: 104, tubeArmY: 178,
+            beakerK: 0.85, waterV: { small: 175, large: 125 }, bathV: 58,
+            tube: { top: 150, bottom: 350, hw: 16, wall: 2 }, sampleH: { boil: 44, melt: 48 },
+            labelX: 158
+        };
+        const BX0 = APP.cx - BK.cx * APP.beakerK;
+        const BY0 = APP.plateTop + 1 - BK.base * APP.beakerK;
+
+        /* 시료 자리 (설계 단위) */
+        function sampleGeom(m) {
+            if (m.sub === 'water') {
+                const k = APP.beakerK, v = APP.waterV[m.amt];
+                const w = bkWall(BK.bot, BK.inset);
+                return {
+                    kind: 'beaker', v, surface: BY0 + v * k, bottom: BY0 + (BK.bot + BK.ry * 0.6) * k,
+                    left: BX0 + w.l * k + 6, right: BX0 + w.r * k - 6
+                };
+            }
+            const T = APP.tube, inner = T.hw - T.wall, bottom = T.bottom + inner;
+            const h = APP.sampleH[m.type] * m.F;
+            return { kind: 'tube', surface: bottom - h, bottom, left: APP.cx - inner + 2, right: APP.cx + inner - 2 };
+        }
+
+        function drawStandBase(L) {
+            const X = L.X, Y = L.Y, S = L.S;
+            ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(X(0), Y(APP.tableY)); ctx.lineTo(X(SCENE.w), Y(APP.tableY)); ctx.stroke();
+            ctx.lineWidth = 1.2;
+            ctx.fillStyle = GLASS.metalDark; ctx.strokeStyle = GLASS.metalLine;
+            rrect(X(14), Y(438), 150 * S, 12 * S, 3 * S); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = GLASS.metal; ctx.strokeStyle = GLASS.line;
+            rrect(X(APP.rodX), Y(28), 9 * S, 412 * S, 3 * S); ctx.fill(); ctx.stroke();
+        }
+        function drawClampArm(L, y, xEnd) {
+            const X = L.X, Y = L.Y, S = L.S;
+            ctx.lineWidth = 1.2;
+            ctx.fillStyle = GLASS.metal; ctx.strokeStyle = GLASS.line;
+            rrect(X(APP.rodX), Y(y - 3.5), (xEnd - APP.rodX) * S, 7 * S, 2 * S); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = GLASS.metalDark; ctx.strokeStyle = GLASS.metalLine;
+            rrect(X(APP.rodX - 7), Y(y - 11), 23 * S, 22 * S, 3 * S); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.arc(X(APP.rodX + 4.5), Y(y), 4 * S, 0, Math.PI * 2); ctx.stroke();
+        }
+        /* 핫플레이트: 납작한 본체 + 위 원판, 켜지면 원판 테두리만 옅은 주황 */
+        function drawHotplate(L, on) {
+            const X = L.X, Y = L.Y, S = L.S;
+            ctx.save();
+            ctx.lineWidth = 1.5;
+            ctx.fillStyle = '#94a3b8';
+            rrect(X(184), Y(444), 16 * S, 6 * S, 2 * S); ctx.fill();
+            rrect(X(350), Y(444), 16 * S, 6 * S, 2 * S); ctx.fill();
+            ctx.fillStyle = '#f8fafc'; ctx.strokeStyle = GLASS.line;
+            rrect(X(168), Y(398), 214 * S, 47 * S, 9 * S); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#eef2f6';
+            rrect(X(178), Y(410), 194 * S, 27 * S, 6 * S); ctx.fill();
+            ctx.fillStyle = '#334155';
+            ctx.beginPath(); ctx.arc(X(214), Y(423.5), 9 * S, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = Math.max(1, 1.5 * S);
+            ctx.beginPath(); ctx.moveTo(X(214), Y(423.5)); ctx.lineTo(X(214), Y(416)); ctx.stroke();
+            ctx.fillStyle = on ? '#ef4444' : '#cbd5e1';
+            ctx.beginPath(); ctx.arc(X(344), Y(423.5), 3.5 * S, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#64748b';
+            ctx.strokeStyle = on ? '#fdba74' : '#475569';
+            ctx.lineWidth = on ? Math.max(2, 3.2 * S) : 1.2;
+            rrect(X(182), Y(APP.plateTop), 186 * S, 10 * S, 4 * S); ctx.fill(); ctx.stroke();
+            ctx.restore();
+        }
+        function drawChip(L, x, y) {
+            const X = L.X, Y = L.Y;
+            ctx.fillStyle = '#f8fafc'; ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(X(x - 4), Y(y + 2)); ctx.lineTo(X(x - 2), Y(y - 3)); ctx.lineTo(X(x + 3), Y(y - 2.5)); ctx.lineTo(X(x + 4), Y(y + 2));
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+        }
+        function drawGrains(L, x0, x1, y0, y1) {
+            ctx.strokeStyle = SOLID.grain; ctx.lineWidth = 1;
+            for (let i = 0; i < 16; i++) {
+                const gx = x0 + ((i * 37) % 97) / 97 * Math.max(0, x1 - x0 - 4);
+                const gy = y0 + 2 + ((i * 61) % 89) / 89 * Math.max(0, y1 - y0 - 6);
+                ctx.beginPath(); ctx.moveTo(L.X(gx), L.Y(gy)); ctx.lineTo(L.X(gx + 3), L.Y(gy + 1.5)); ctx.stroke();
+            }
+        }
+        /* 시험관 경로 (inset > 0이면 안쪽) */
+        function tubePath(L, inset) {
+            const T = APP.tube, hw = T.hw - inset;
+            ctx.beginPath();
+            ctx.moveTo(L.X(APP.cx - hw), L.Y(T.top));
+            ctx.lineTo(L.X(APP.cx - hw), L.Y(T.bottom));
+            ctx.arc(L.X(APP.cx), L.Y(T.bottom), hw * L.S, Math.PI, 0, true);
+            ctx.lineTo(L.X(APP.cx + hw), L.Y(T.top));
+        }
+        function drawBubbles(L, color) {
+            ctx.lineWidth = 1;
+            simData.bubbles.forEach(b => {
+                ctx.beginPath(); ctx.arc(L.X(b.x), L.Y(b.y), Math.max(0.8, b.r * L.S), 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'; ctx.fill();
+                ctx.strokeStyle = color; ctx.stroke();
+            });
+        }
+        /* 온도 센서: 가는 막대 + 끝 금속 탐침, 위에 측정 장치(온도 표시) */
+        function drawProbe(L, tipY) {
+            const X = L.X, Y = L.Y, S = L.S, cx = APP.cx;
+            ctx.lineWidth = 1;
+            ctx.fillStyle = GLASS.metal; ctx.strokeStyle = GLASS.metalLine;
+            rrect(X(cx - 2.2), Y(96), 4.4 * S, (tipY - 96) * S, 2 * S); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#94a3b8';
+            rrect(X(cx - 2.2), Y(tipY - 14), 4.4 * S, 14 * S, 2 * S); ctx.fill();
+        }
+        function drawSensorHead(L, T) {
+            const X = L.X, Y = L.Y, S = L.S, cx = APP.cx;
+            drawClampArm(L, APP.sensorArmY, cx - 9);
+            ctx.fillStyle = GLASS.metalDark; ctx.strokeStyle = GLASS.metalLine; ctx.lineWidth = 1.2;
+            rrect(X(cx - 10), Y(APP.sensorArmY - 8), 20 * S, 16 * S, 3 * S); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#e0f2fe'; ctx.strokeStyle = '#0369a1'; ctx.lineWidth = 1.4;
+            rrect(X(cx - 18), Y(34), 36 * S, 62 * S, 7 * S); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#0f172a';
+            rrect(X(cx - 14), Y(42), 28 * S, 16 * S, 2.5 * S); ctx.fill();
+            ctx.fillStyle = '#86efac';
+            ctx.font = `700 ${Math.max(6, 9 * S)}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(T.toFixed(1), X(cx), Y(50.5));
+            ctx.strokeStyle = '#0369a1'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.arc(X(cx), Y(74), 6 * S, 0, Math.PI * 2); ctx.stroke();
+        }
+        function drawSteam(L) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(203, 213, 225, 0.55)'; ctx.lineWidth = Math.max(1.5, 3 * L.S); ctx.lineCap = 'round';
+            for (let i = 0; i < 3; i++) {
+                const x0 = APP.cx - 42 + i * 38, ph = simData.frame * 0.05 + i * 2;
+                ctx.beginPath();
+                for (let k = 0; k <= 10; k++) {
+                    const y = 196 - k * 5.5, x = x0 + Math.sin(ph + k * 0.6) * 5;
+                    if (k === 0) ctx.moveTo(L.X(x), L.Y(y)); else ctx.lineTo(L.X(x), L.Y(y));
+                }
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+        /* 시험관 속 시료: 액체 / 고체 / 녹는 중·어는 중(고체 덩어리 + 액체) */
+        function drawTubeSample(L, m, g, st) {
+            const X = L.X, Y = L.Y, S = L.S, s = SUB[m.sub];
+            ctx.save();
+            tubePath(L, APP.tube.wall); ctx.closePath(); ctx.clip();
+            const h = g.bottom - g.surface;
+            if (st.solid < 1) {
+                ctx.fillStyle = s.fill;
+                ctx.fillRect(X(APP.cx - APP.tube.hw), Y(g.surface), 2 * APP.tube.hw * S, (h + 4) * S);
+            }
+            if (st.solid >= 1) {
+                ctx.fillStyle = SOLID.fill;
+                ctx.fillRect(X(APP.cx - APP.tube.hw), Y(g.surface), 2 * APP.tube.hw * S, (h + 4) * S);
+                drawGrains(L, g.left, g.right, g.surface, g.bottom);
+            } else if (st.solid > 0) {
+                const fullW = g.right - g.left + 4;
+                const ch = h * (0.15 + 0.8 * st.solid), cw = fullW * (0.45 + 0.55 * st.solid);
+                ctx.fillStyle = SOLID.fill; ctx.strokeStyle = SOLID.line; ctx.lineWidth = 1;
+                rrect(X(APP.cx - cw / 2), Y(g.bottom - ch), cw * S, (ch + 6) * S, 5 * S); ctx.fill(); ctx.stroke();
+                drawGrains(L, APP.cx - cw / 2, APP.cx + cw / 2, g.bottom - ch, g.bottom);
+            }
+            if (m.sub === 'ethanol') { drawChip(L, APP.cx - 6, g.bottom - 4); drawChip(L, APP.cx + 6, g.bottom - 3); }
+            if (m.type === 'boil') drawBubbles(L, s.line);
+            ctx.restore();
+            ctx.strokeStyle = st.solid >= 1 ? SOLID.line : s.line; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(X(g.left - 2), Y(g.surface)); ctx.lineTo(X(g.right + 2), Y(g.surface)); ctx.stroke();
+        }
+        function drawTubeGlass(L, back) {
+            const X = L.X, Y = L.Y, S = L.S, T = APP.tube;
+            if (back) { tubePath(L, 0); ctx.closePath(); ctx.fillStyle = 'rgba(255, 255, 255, 0.75)'; ctx.fill(); return; }
+            ctx.strokeStyle = GLASS.line; ctx.lineWidth = Math.max(1.2, 1.6 * S);
+            tubePath(L, 0); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(X(APP.cx - T.hw - 3), Y(T.top)); ctx.lineTo(X(APP.cx - T.hw), Y(T.top));
+            ctx.moveTo(X(APP.cx + T.hw), Y(T.top)); ctx.lineTo(X(APP.cx + T.hw + 3), Y(T.top));
+            ctx.stroke();
+            ctx.strokeStyle = GLASS.hi; ctx.lineWidth = Math.max(1, 2.5 * S);
+            ctx.beginPath(); ctx.moveTo(X(APP.cx - T.hw + 5), Y(T.top + 12)); ctx.lineTo(X(APP.cx - T.hw + 5), Y(T.bottom - 6)); ctx.stroke();
+        }
+        /* 에탄올: 가지 달린 시험관의 고무마개, 가지 + 고무관, 찬물 속 시험관 */
+        function drawEthanolParts(L) {
+            const X = L.X, Y = L.Y, S = L.S, cx = APP.cx, T = APP.tube;
+            ctx.fillStyle = '#fca5a5'; ctx.strokeStyle = '#b91c1c'; ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(X(cx - 21), Y(T.top - 12)); ctx.lineTo(X(cx + 21), Y(T.top - 12));
+            ctx.lineTo(X(cx + 15), Y(T.top + 10)); ctx.lineTo(X(cx - 15), Y(T.top + 10));
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            /* 가지 */
+            const ax = cx + T.hw, ay = 186, ex = cx + T.hw + 32, ey = 174;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = GLASS.line; ctx.lineWidth = Math.max(3, 7 * S);
+            ctx.beginPath(); ctx.moveTo(X(ax - 1), Y(ay)); ctx.lineTo(X(ex), Y(ey)); ctx.stroke();
+            ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = Math.max(1.5, 4 * S);
+            ctx.beginPath(); ctx.moveTo(X(ax - 1), Y(ay)); ctx.lineTo(X(ex), Y(ey)); ctx.stroke();
+            /* 찬물 속 시험관 */
+            const k = 0.36, cbx = 448;
+            const SB = mkBox(X(cbx - BK.cx * k), Y(APP.tableY - BK.base * k), k * S);
+            drawBeakerBack(SB);
+            ctx.save(); beakerPath(SB, 70, BK.inset); ctx.fillStyle = BATH.fill; ctx.fill(); ctx.restore();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'; ctx.strokeStyle = '#bae6fd'; ctx.lineWidth = 1;
+            rrect(X(426), Y(392), 10 * S, 10 * S, 2 * S); ctx.fill(); ctx.stroke();
+            rrect(X(461), Y(396), 10 * S, 10 * S, 2 * S); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.75)'; ctx.strokeStyle = GLASS.line; ctx.lineWidth = Math.max(1, 1.3 * S);
+            ctx.beginPath();
+            ctx.moveTo(X(cbx - 8), Y(352)); ctx.lineTo(X(cbx - 8), Y(426));
+            ctx.arc(X(cbx), Y(426), 8 * S, Math.PI, 0, true);
+            ctx.lineTo(X(cbx + 8), Y(352));
+            ctx.fill(); ctx.stroke();
+            drawBeakerFront(SB);
+            /* 고무관 + 유리관 */
+            ctx.strokeStyle = 'rgba(217, 119, 6, 0.6)'; ctx.lineWidth = Math.max(3, 6 * S);
+            ctx.beginPath(); ctx.moveTo(X(ex - 2), Y(ey)); ctx.bezierCurveTo(X(392), Y(150), X(cbx), Y(240), X(cbx), Y(334)); ctx.stroke();
+            ctx.strokeStyle = GLASS.line; ctx.lineWidth = Math.max(1.5, 3 * S);
+            ctx.beginPath(); ctx.moveTo(X(cbx), Y(332)); ctx.lineTo(X(cbx), Y(410)); ctx.stroke();
+            ctx.lineCap = 'butt';
+        }
+        /* 부품 이름 (왼쪽, 지시선) */
+        function drawPartLabels(L, items, fs) {
+            ctx.save();
+            ctx.font = `500 ${fs}px ${FONT}`; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+            const tx = L.X(APP.labelX);
+            let prev = -Infinity;
+            items.slice().sort((a, b) => a.y - b.y).forEach(it => {
+                const ty = Math.max(L.Y(it.y), prev + fs + 5 * UI);
+                prev = ty;
+                ctx.strokeStyle = COLORS.leader; ctx.lineWidth = UI;
+                ctx.beginPath(); ctx.moveTo(tx + 4 * UI, ty); ctx.lineTo(L.X(it.x), L.Y(it.y)); ctx.stroke();
+                ctx.fillStyle = COLORS.leader;
+                ctx.beginPath(); ctx.arc(L.X(it.x), L.Y(it.y), 2 * UI, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = COLORS.text;
+                haloText(it.text, tx, ty);
+            });
+            ctx.restore();
+        }
+
+        function drawApparatus(L, m) {
+            const X = L.X, Y = L.Y, S = L.S, s = SUB[m.sub];
+            const g = sampleGeom(m);
+            const st = stateAt(m, m.t, m.plan);
+            const running = sysState.isStarted && !sysState.isPaused;
+            const heaterOn = running && simData.E > 0 && heatingActive(m);
+            const boilingNow = m.type === 'boil' && st.key === 'boiling' && !m.done;
+            const tipY = (g.surface + g.bottom) / 2;
+            const fs = uiFont(13);
+            ctx.save();
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            drawStandBase(L);
+            drawHotplate(L, heaterOn);
+            const B = mkBox(X(BX0), Y(BY0), APP.beakerK * S);
+            drawBeakerBack(B);
+            const labels = [{ text: '온도 센서', x: APP.cx - 18, y: 64 }, { text: '핫플레이트', x: 170, y: 420 }];
+            if (m.sub === 'water') {
+                ctx.save(); beakerPath(B, g.v, BK.inset); ctx.fillStyle = s.fill; ctx.fill(); ctx.clip();
+                drawChip(L, 238, 375); drawChip(L, 252, 377); drawChip(L, 302, 376);
+                drawBubbles(L, s.line);
+                ctx.restore();
+                drawProbe(L, tipY);
+                surfaceEllipse(B, g.v, s.line);
+                drawBeakerFront(B);
+                if (boilingNow && running) drawSteam(L);
+                labels.push({ text: '물', x: 222, y: (g.surface + g.bottom) / 2 - 8 }, { text: '끓임쪽', x: 236, y: 376 });
+            } else {
+                ctx.save(); beakerPath(B, APP.bathV, BK.inset); ctx.fillStyle = BATH.fill; ctx.fill(); ctx.restore();
+                drawTubeGlass(L, true);
+                drawTubeSample(L, m, g, st);
+                drawProbe(L, tipY);
+                drawTubeGlass(L, false);
+                if (m.sub === 'ethanol') drawEthanolParts(L);
+                surfaceEllipse(B, APP.bathV, BATH.line);
+                drawBeakerFront(B);
+                /* 시험관 집게 */
+                drawClampArm(L, APP.tubeArmY, APP.cx - APP.tube.hw - 4);
+                ctx.fillStyle = 'rgba(203, 213, 225, 0.92)'; ctx.strokeStyle = GLASS.metalLine; ctx.lineWidth = 1.2;
+                rrect(X(APP.cx - APP.tube.hw - 5), Y(APP.tubeArmY - 7), (2 * APP.tube.hw + 10) * S, 14 * S, 3 * S); ctx.fill(); ctx.stroke();
+                labels.push({ text: s.name, x: APP.cx - 12, y: (g.surface + g.bottom) / 2 });
+                if (m.sub === 'ethanol') labels.push({ text: '가지 달린 시험관', x: APP.cx - APP.tube.hw, y: 212 }, { text: '물', x: 224, y: 262 });
+                else labels.push({ text: '시험관', x: APP.cx - APP.tube.hw, y: 212 }, { text: '뜨거운 물', x: 224, y: 252 });
+            }
+            drawSensorHead(L, m.T);
+            if (L.showLabels) drawPartLabels(L, labels, fs);
+            if (simData.showState) {
+                const key = st.key === 'boiling' ? (m.done ? 'liquid' : 'boiling') : st.key;
+                const label = st.key === 'boiling' && m.done ? '액체' : st.label;
+                const my = Y((g.surface + g.bottom) / 2);
+                if (L.showLabels) pill(label, m.sub === 'water' ? X(352) : X(APP.cx + APP.tube.hw + 5), my, STATE_STYLE[key], fs, 'left');
+                else pill(label, X(APP.cx), my, STATE_STYLE[key], uiFont(10), 'center');
+            }
+            ctx.restore();
+        }
+
+        /* ── 시간-온도 그래프 ─────────────────────────────────────── */
+        function niceAxis(maxV) {
+            const v = Math.max(1, maxV * 1.05);
+            const step = [1, 2, 5, 10, 20].find(s => v / s <= 10) || 20;
+            return { max: Math.ceil(v / step) * step, step };
+        }
+        function yAxisFor(curves) {
+            const A = SIM_CONFIG.axis;
+            if (simData.mode === 'boil') return A.boil;
+            return curves.some(c => c.sub === 'palmitic') ? A.meltHigh : A.meltLow;
+        }
+        function drawGraph(G, curves) {
+            const m = curves[0];
+            const u = UI;
+            if (G.w < 120 || G.h < 120) return;
+            const fs = uiFont(12.4);
+            const tight = G.w < 340 * u;
+            ctx.save();
+            rrect(G.x, G.y, G.w, G.h, 12 * u);
+            ctx.fillStyle = COLORS.bg; ctx.fill();
+            ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1.2 * u; ctx.stroke();
+
+            /* 머리: 측정 온도 + '1 기압에서' (좁으면 '측정 온도' 글자 생략) */
+            const pad = 14 * u;
+            const hy = G.y + pad + fs / 2;
+            ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+            ctx.font = `600 ${fs}px ${FONT}`; ctx.fillStyle = COLORS.sub;
+            let x = G.x + pad;
+            if (!tight) {
+                ctx.fillText('측정 온도', x, hy);
+                x += ctx.measureText('측정 온도').width + 8 * u;
+            }
+            ctx.font = `700 ${Math.round(fs * 1.25)}px ${FONT}`; ctx.fillStyle = COLORS.obs;
+            const tTxt = `${m.T.toFixed(1)} ℃`;
+            ctx.fillText(tTxt, x, hy);
+            x += ctx.measureText(tTxt).width + 8 * u;
+            ctx.font = `500 ${fs}px ${FONT}`; ctx.fillStyle = COLORS.sub;
+            ctx.fillText(`${m.t.toFixed(1)}분`, x, hy);
+            ctx.font = `700 ${fs}px ${FONT}`;
+            const chip = '1 기압에서', cw = ctx.measureText(chip).width + 16 * u, chH = fs + 10 * u;
+            const cx0 = G.x + G.w - 12 * u - cw;
+            rrect(cx0, hy - chH / 2, cw, chH, chH / 2);
+            ctx.fillStyle = '#eef2ff'; ctx.fill(); ctx.strokeStyle = '#c7d2fe'; ctx.lineWidth = u; ctx.stroke();
+            ctx.fillStyle = COLORS.primary; ctx.textAlign = 'center';
+            ctx.fillText(chip, cx0 + cw / 2, hy + 0.5 * u);
+
+            /* 범례 */
+            ctx.font = `600 ${fs}px ${FONT}`; ctx.textAlign = 'left';
+            const rowH = fs + 8 * u;
+            const lx0 = G.x + pad, seg = 22 * u;
+            let lx = lx0, ly = hy + fs + 12 * u;
+            curves.forEach(c => {
+                const label = curveLabel(c);
+                const iw = seg + 6 * u + ctx.measureText(label).width + 16 * u;
+                if (lx + iw > G.x + G.w - 8 * u && lx > lx0) { lx = lx0; ly += rowH; }
+                ctx.strokeStyle = SUB[c.sub].color; ctx.lineWidth = (c.role === 'main' ? 3 : 2.2) * u;
+                ctx.setLineDash(dashOf(c));
+                ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + seg, ly); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = COLORS.text; ctx.fillText(label, lx + seg + 6 * u, ly);
+                lx += iw;
+            });
+
+            /* 축 */
+            const ax = yAxisFor(curves);
+            const xa = niceAxis(Math.max(...curves.map(c => c.stop)));
+            ctx.font = `500 ${fs}px ${FONT}`;
+            const topTick = ax.yMax - (ax.yMax % ax.yStep);
+            const numW = ctx.measureText(String(topTick)).width;
+            const px0 = G.x + 12 * u + fs + 8 * u + numW + 6 * u;
+            const px1 = G.x + G.w - 26 * u;
+            const py0 = ly + rowH / 2 + 14 * u;
+            const py1 = G.y + G.h - (2 * fs + 22 * u);
+            if (px1 - px0 < 50 || py1 - py0 < 40) { ctx.restore(); return; }
+            const sx = t => px0 + (t / xa.max) * (px1 - px0);
+            const sy = T => py1 - (T / ax.yMax) * (py1 - py0);
+
+            if (simData.showGrid) {
+                ctx.strokeStyle = COLORS.grid; ctx.lineWidth = u;
+                ctx.beginPath();
+                for (let t = xa.step; t <= xa.max + 1e-9; t += xa.step) { ctx.moveTo(sx(t), py0); ctx.lineTo(sx(t), py1); }
+                for (let T = ax.yStep; T <= ax.yMax + 1e-9; T += ax.yStep) { ctx.moveTo(px0, sy(T)); ctx.lineTo(px1, sy(T)); }
+                ctx.stroke();
+            }
+            ctx.strokeStyle = COLORS.axis; ctx.fillStyle = COLORS.axis; ctx.lineWidth = 1.5 * u;
+            ctx.beginPath(); ctx.moveTo(px0, py1); ctx.lineTo(px0, py0 - 10 * u); ctx.moveTo(px0, py1); ctx.lineTo(px1 + 12 * u, py1); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(px0, py0 - 15 * u); ctx.lineTo(px0 - 4 * u, py0 - 7 * u); ctx.lineTo(px0 + 4 * u, py0 - 7 * u); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(px1 + 17 * u, py1); ctx.lineTo(px1 + 9 * u, py1 - 4 * u); ctx.lineTo(px1 + 9 * u, py1 + 4 * u); ctx.closePath(); ctx.fill();
+
+            ctx.fillStyle = COLORS.sub; ctx.font = `500 ${fs}px ${FONT}`;
+            ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+            for (let T = 0; T <= ax.yMax + 1e-9; T += ax.yStep) ctx.fillText(String(T), px0 - 6 * u, sy(T));
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            for (let t = xa.step; t <= xa.max + 1e-9; t += xa.step) ctx.fillText(String(t), sx(t), py1 + 5 * u);
+            ctx.font = `600 ${fs}px ${FONT}`; ctx.fillStyle = COLORS.text;
+            ctx.textAlign = 'right';
+            ctx.fillText(curves.some(c => c.plan) ? '시간(분)' : '가열 시간(분)', px1 + 14 * u, py1 + fs + 10 * u);
+            ctx.save();
+            ctx.translate(G.x + 12 * u + fs / 2, (py0 + py1) / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('온도(℃)', 0, 0);
+            ctx.restore();
+
+            /* 기준선 (상태 변화 온도에 도달한 뒤 표시) */
+            if (simData.showRef) {
+                const seen = {};
+                curves.forEach(c => {
+                    const reached = c.t >= (c.type === 'boil' ? c.reach : c.rise) - 1e-9;
+                    if (!reached || seen[c.Tp]) return;
+                    seen[c.Tp] = true;
+                    const y = sy(c.Tp);
+                    ctx.save();
+                    ctx.setLineDash([5 * u, 4 * u]); ctx.strokeStyle = COLORS.ref; ctx.globalAlpha = 0.85; ctx.lineWidth = 1.2 * u;
+                    ctx.beginPath(); ctx.moveTo(px0, y); ctx.lineTo(px1, y); ctx.stroke();
+                    ctx.restore();
+                    let txt;
+                    if (c.type === 'boil') txt = `끓는점 ${fmt(c.Tp)} ℃`;
+                    else {
+                        const fz = curves.some(d => d.Tp === c.Tp && d.plan && d.t >= d.plan.fs - 1e-9);
+                        txt = fz ? `녹는점 = 어는점 ${fmt(c.Tp)} ℃` : `녹는점 ${fmt(c.Tp)} ℃`;
+                    }
+                    ctx.font = `700 ${fs}px ${FONT}`; ctx.fillStyle = COLORS.ref;
+                    ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+                    haloText(txt, px0 + 6 * u, y - 3 * u);
+                });
+            }
+
+            /* 곡선 (비교 곡선 먼저, 선택한 곡선을 위에) */
+            ctx.save();
+            ctx.beginPath(); ctx.rect(px0, py0 - 8 * u, px1 - px0 + 8 * u, py1 - py0 + 10 * u); ctx.clip();
+            curves.slice().reverse().forEach(c => {
+                ctx.strokeStyle = SUB[c.sub].color;
+                ctx.lineWidth = (c.role === 'main' ? 3 : 2.2) * u;
+                ctx.globalAlpha = c.role === 'main' ? 1 : 0.85;
+                ctx.setLineDash(dashOf(c));
+                ctx.beginPath(); ctx.moveTo(sx(0), sy(c.T0));
+                for (const s of segsOf(c, c.plan)) {
+                    if (c.t >= s.b[0]) ctx.lineTo(sx(s.b[0]), sy(s.b[1]));
+                    else { if (c.t > s.a[0]) ctx.lineTo(sx(c.t), sy(c.T)); break; }
+                }
+                ctx.stroke();
+                ctx.setLineDash([]); ctx.globalAlpha = 1;
+            });
+            ctx.restore();
+            curves.forEach(c => {
+                ctx.beginPath(); ctx.arc(sx(c.t), sy(c.T), (c.role === 'main' ? 4.5 : 3.5) * u, 0, Math.PI * 2);
+                ctx.fillStyle = SUB[c.sub].color; ctx.fill();
+                ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5 * u; ctx.stroke();
+            });
+
+            /* 상태 라벨 · 녹는점/어는점 표시 (선택한 곡선) */
+            const segs = segsOf(m, m.plan);
+            const fsS = Math.round(fs * 0.92);
+            if (simData.showState) {
+                ctx.font = `600 ${fsS}px ${FONT}`; ctx.fillStyle = COLORS.sub;
+                segs.forEach(s => {
+                    const tm = (s.a[0] + s.b[0]) / 2;
+                    if (m.t < tm) return;
+                    const Tm = (s.a[1] + s.b[1]) / 2;
+                    if (s.flat) { ctx.textAlign = 'center'; ctx.textBaseline = 'top'; haloText(s.label, sx(tm), sy(Tm) + 6 * u); }
+                    else { ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; haloText(s.label, sx(tm) + 8 * u, sy(Tm) + (s.b[1] >= s.a[1] ? 7 : -7) * u); }
+                });
+            }
+            if (simData.showRef && m.type === 'melt') {
+                segs.forEach(s => {
+                    if (!s.tag) return;
+                    const tm = (s.a[0] + s.b[0]) / 2;
+                    if (m.t < tm) return;
+                    pill(s.tag, sx(tm), sy(s.a[1]) - fs - 4 * u, STATE_STYLE.mix, fsS, 'center');
+                });
+            }
+            ctx.restore();
+        }
+
+        /* ── 안내 문장 ─────────────────────────────────────────────── */
+        function compareText(m) {
+            if (simData.overlay === 'amount') {
+                return m.type === 'boil'
+                    ? ' 양이 많아도 끓는점은 같고, 끓기 시작할 때까지 걸리는 시간만 길다.'
+                    : ' 양이 많아도 녹는점은 같고, 녹는점에 도달하는 시간과 다 녹을 때까지 걸리는 시간만 길다.';
+            }
+            if (simData.overlay === 'kind') {
+                return m.type === 'boil'
+                    ? ' 물질의 종류가 다르면 끓는점이 달라 끓는점으로 물질을 구별할 수 있다.'
+                    : ' 물질의 종류가 다르면 녹는점이 달라 녹는점으로 물질을 구별할 수 있다.';
+            }
+            return '';
+        }
+        function currentMessage(curves) {
+            const m = curves[0], nm = SUB[m.sub].name, Tp = fmt(m.Tp);
+            const cmp = allDone(curves) ? compareText(m) : '';
+            const info = text => ({ kind: 'info', text });
+            const ok = text => ({ kind: 'success', text });
+            if (simData.E <= 0) {
+                if (m.sub === 'water') return info(`시작을 누르면 핫플레이트로 ${nm}을 가열하며 온도 센서로 온도를 측정한다.`);
+                if (m.sub === 'ethanol') return info(`시작을 누르면 ${nm}을 물중탕으로 가열하며 온도 센서로 온도를 측정한다.`);
+                return info(`시작을 누르면 시험관 속 고체 ${nm}을 물중탕으로 가열하며 온도 센서로 온도를 측정한다.`);
+            }
+            if (m.type === 'boil') {
+                if (m.t < m.reach) return info(`${nm}의 온도가 올라가고 있다.`);
+                if (!m.done) return ok(`${nm}이 끓고 있다. 끓는 동안 온도가 ${Tp} ℃로 일정하다.`);
+                return ok(`끓기 시작한 뒤 1분 더 측정하고 가열을 멈췄다. ${nm}의 끓는점은 ${Tp} ℃이다.${cmp}`);
+            }
+            if (!m.plan) {
+                if (m.t < m.rise) return info(`고체 ${nm}의 온도가 올라가고 있다.`);
+                if (m.t < m.meltEnd) return ok(`${nm}이 녹는 동안 온도가 ${Tp} ℃로 일정하다. 이 온도가 녹는점이다.`);
+                if (m.t < m.heatEnd) return info(`${nm}이 모두 녹아 액체가 되자 온도가 다시 올라간다. 이제 '진행'에서 '냉각'을 고를 수 있다.`);
+                return { kind: 'warn', text: `${nm}이 모두 녹아 가열을 멈췄다. '진행'에서 '냉각'을 골라 같은 그래프에 이어서 측정하자.${cmp}` };
+            }
+            if (m.t < m.plan.fs) return info(`냉각 중: 액체 ${nm}의 온도가 내려가고 있다.`);
+            if (m.t < m.plan.fe) return ok(`${nm}이 어는 동안 온도가 ${Tp} ℃로 일정하다. 이 온도가 어는점이며 녹는점과 같다.`);
+            if (!m.done) return info(`${nm}이 모두 얼어 고체가 되자 온도가 다시 내려간다.`);
+            return ok(`가열냉각 곡선 완성: ${nm}의 녹는점과 어는점은 모두 ${Tp} ℃로 같다.${cmp}`);
+        }
+        function bannerSize(msg, w) {
+            if (!msg) return { lines: [], bw: 0, bh: 0, fs: 12, lh: 16 };
+            const fs = Math.max(12, Math.round(14 * UI));
+            const p = 12 * UI;
+            ctx.save();
+            ctx.font = `600 ${fs}px ${FONT}`;
+            /* 오른쪽 아래 초기화 버튼(DOM, 템플릿 크기) 자리는 비운다 */
+            const maxW = Math.max(160, Math.min(w - 32 - (w < 640 ? 52 : 150), 680 * UI));
+            const lines = wrapLines(msg.text, maxW - 2 * p);
+            const lh = fs * 1.45;
+            const bw = Math.min(maxW, Math.max(...lines.map(l => ctx.measureText(l).width)) + 2 * p);
+            ctx.restore();
+            return { lines, bw, bh: lines.length * lh + 16 * UI, fs, lh, p };
+        }
+        function drawBanner(msg, b, h) {
+            if (!msg) return;
+            ctx.save();
+            ctx.font = `600 ${b.fs}px ${FONT}`;
+            const x = 16, y = h - 16 - b.bh;
+            const st = BANNER_STYLE[msg.kind] || BANNER_STYLE.info;
+            rrect(x, y, b.bw, b.bh, 10 * UI);
+            ctx.fillStyle = st.bg; ctx.fill();
+            ctx.strokeStyle = st.border; ctx.lineWidth = 1.5 * UI; ctx.stroke();
+            ctx.fillStyle = st.text; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            b.lines.forEach((l, i) => ctx.fillText(l, x + b.p, y + 8 * UI + b.lh * (i + 0.5)));
+            ctx.restore();
+        }
+        function noteSize(maxW) {
+            const fs = uiFont(12);
+            const p = 12 * UI;
+            ctx.save();
+            ctx.font = `600 ${fs}px ${FONT}`;
+            const lines = wrapLines(ETHANOL_NOTE, Math.max(80, maxW - 2 * p));
+            const w = Math.min(maxW, Math.max(...lines.map(l => ctx.measureText(l).width)) + 2 * p);
+            ctx.restore();
+            const lh = fs * 1.45;
+            return { lines, w, h: lines.length * lh + 12 * UI, fs, lh, p };
+        }
+        function drawNote(n, pos) {
+            ctx.save();
+            const st = BANNER_STYLE.warn;
+            rrect(pos.x, pos.y, n.w, n.h, 8 * UI);
+            ctx.fillStyle = st.bg; ctx.fill(); ctx.strokeStyle = st.border; ctx.lineWidth = 1.2 * UI; ctx.stroke();
+            ctx.font = `600 ${n.fs}px ${FONT}`; ctx.fillStyle = st.text; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            n.lines.forEach((l, i) => ctx.fillText(l, pos.x + n.p, pos.y + 6 * UI + n.lh * (i + 0.5)));
+            ctx.restore();
+        }
+
+        /* ── 배치: 넓으면 왼쪽 장치 · 오른쪽 그래프, 좁으면 위아래. 각 영역 안에서 가운데 정렬 ── */
+        function computeLayout(w, h, banner) {
+            const narrow = w < 640;
+            /* 메시지 바 자리(아래 ~70px + 측정 높이)를 먼저 비운다 */
+            const top = narrow ? 54 : 58, bottom = h - Math.max(70, 16 + banner.bh + 10 * UI);
+            const left = narrow ? 10 : 16, RW = w - 2 * left, RH = Math.max(60, bottom - top);
+            const side = RW >= RH * 1.15 && RW >= 520;
+            const isEthanol = simData.mode === 'boil' && simData.boilSub === 'ethanol';
+            let appR, grR, thumb = false;
+            if (side) {
+                /* 장치 + 그래프를 한 묶음으로: 높이에 맞춰 함께 키우고, 간격은 고정, 묶음 전체를 가운데에 */
+                const gap = 40 * UI;
+                /* 묶음 최대 폭: 1440×900 화면의 묶음(약 1050px) × UI → 전체화면에서도 약 1.5배 이내 */
+                const maxTotal = Math.min(RW, 1050 * UI);
+                const appMaxW = (maxTotal - gap) * 0.45;
+                const padEst = isEthanol ? noteSize(Math.min(appMaxW, 420)).h + 6 : 0;
+                const appS = Math.max(0.15, Math.min((RH - padEst) / SCENE.h, appMaxW / SCENE.w));
+                const appW = SCENE.w * appS;
+                const gw = Math.max(200, Math.min(maxTotal - gap - appW, RH * 1.3));
+                const gx = left + Math.max(0, (RW - (appW + gap + gw)) / 2);
+                appR = { x: gx, y: top, w: appW, h: RH };
+                grR = { x: gx + appW + gap, y: top, w: gw, h: RH };
+            } else if (narrow) {
+                /* 좁은 화면: 그래프 우선 (캔버스 높이의 55% 이상), 장치는 남는 자리 또는 옆 썸네일 */
+                const gH = Math.min(RH, Math.max(h * 0.55, 240));
+                const rest = RH - gH - 8;
+                if (rest >= 110) {
+                    appR = { x: left, y: top, w: RW, h: rest };
+                    grR = { x: left, y: top + rest + 8, w: RW, h: RH - rest - 8 };
+                } else {
+                    thumb = true;
+                    const tw = Math.round(clamp(RW * 0.3, 96, 140));
+                    appR = { x: left, y: top, w: tw, h: RH };
+                    grR = { x: left + tw + 8, y: top, w: RW - tw - 8, h: RH };
+                }
+            } else {
+                const ah = Math.round(RH * 0.46);
+                appR = { x: left, y: top, w: RW, h: ah };
+                grR = { x: left, y: top + ah + 10, w: RW, h: RH - ah - 10 };
+            }
+            const note = isEthanol ? noteSize(Math.min(appR.w, 420)) : null;
+            const padTop = note ? note.h + 6 : 0;
+            const capS = side ? 4 : 1.4;
+            /* 장치가 작으면 부품 이름을 숨기고 왼쪽 이름 자리를 잘라 그림을 키운다 */
+            const fitS = cut => Math.max(0.12, Math.min(appR.w / (SCENE.w - cut), (appR.h - padTop) / SCENE.h, capS));
+            let cutX = 0, S = fitS(0);
+            const showLabels = !thumb && S >= 0.42;
+            if (!showLabels) { cutX = 10; S = fitS(cutX); }
+            const sw = (SCENE.w - cutX) * S, sh = SCENE.h * S;
+            const by = appR.y + Math.max(0, (appR.h - padTop - sh) / 2);
+            const X0 = appR.x + (appR.w - sw) / 2 - cutX * S, Y0 = by + padTop - SCENE.y0 * S;
+            const L = { S, X0, Y0, X: u => X0 + u * S, Y: v => Y0 + v * S, showLabels, compact: narrow };
+            L.note = note;
+            L.notePos = note ? { x: appR.x + (appR.w - note.w) / 2, y: by } : null;
+            const gw = side ? grR.w : Math.min(grR.w, 760);
+            const gh = Math.max(0, Math.min(grR.h, side ? Math.max(280 * UI, gw * 0.85) : grR.h));
+            L.G = { x: grR.x + (grR.w - gw) / 2, y: grR.y + (grR.h - gh) / 2, w: gw, h: gh };
+            return L;
+        }
+
+        /* ── 실험 상태 ─────────────────────────────────────────────── */
+        function updateControls(curves) {
+            const m = curves[0];
+            const cooling = simData.mode === 'melt' && simData.Ec !== null;
+            const heat = document.querySelector('input[name="phaseOpt"][value="heat"]');
+            const cool = document.querySelector('input[name="phaseOpt"][value="cool"]');
+            if (cool) { cool.disabled = !(cooling || canCool(m)); cool.checked = cooling; }
+            if (heat) { heat.disabled = cooling; heat.checked = !cooling; }
+        }
+        function syncPanel() {
+            const setRadio = (name, val) => {
+                const r = document.querySelector(`input[name="${name}"][value="${val}"]`);
+                if (r) r.checked = true;
+            };
+            setRadio('modeOpt', simData.mode);
+            setRadio('boilSubOpt', simData.boilSub);
+            setRadio('meltSubOpt', simData.meltSub);
+            setRadio('amountOpt', simData.amount);
+            setRadio('overlayOpt', simData.overlay);
+            const setChk = (id, v) => { const el = document.getElementById(id); if (el) el.checked = v; };
+            setChk('chkGrid', simData.showGrid);
+            setChk('chkState', simData.showState);
+            setChk('chkRef', simData.showRef);
+            document.querySelectorAll('[data-mode-block]').forEach(el => {
+                el.classList.toggle('hidden', el.getAttribute('data-mode-block') !== simData.mode);
+            });
+            updateControls(getCurves());
+        }
+        function resetExperiment() {
+            simData.E = 0;
+            simData.Ec = null;
+            simData.bubbles = [];
+            simData.frame = 0;
+            simData.lastTs = 0;
+            syncPanel();
+        }
+        function stopRun() {
+            sysState.isStarted = false;
+            sysState.isPaused = false;
+            stopLoop();
+            updateUIState();
+        }
+        function ensureRunning() {
+            if (!sysState.isStarted || sysState.isPaused) {
+                sysState.isStarted = true;
+                sysState.isPaused = false;
+                startLoop();
+                updateUIState();
+            }
+        }
+
+        /* 시뮬레이션 초기화 — 초기화 버튼과 첫 실행 때 호출된다 (코어가 호출, 이름 유지) */
+        function initSimulation() {
+            simData.mode = 'boil';
+            simData.boilSub = 'water';
+            simData.meltSub = 'palmitic';
+            simData.amount = 'small';
+            simData.overlay = 'off';
+            simData.showGrid = true;
+            simData.showState = true;
+            simData.showRef = true;
+            resetExperiment();
+
+            sysState.isStarted = false;
+            sysState.isPaused = false;
+            sysState.zoomLevel = 1.0;
+            sysState.offsetX = 0;
+            sysState.offsetY = 0;
+
+            stopLoop();
+            updateUIState();
+            draw();
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           ✏️  draw() — 매 프레임 캔버스를 그리는 함수 (코어가 호출, 이름 유지)
+           ctx와 simData 값을 이용해 원하는 도형을 그리세요.
+           ───────────────────────────────────────────────────────────── */
+        function draw() {
+            if (!ctx) return;
+            const w = sysState.canvasLogicalWidth, h = sysState.canvasLogicalHeight;
+            if (!w || !h) return;
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = COLORS.bg;
+            ctx.fillRect(0, 0, w, h);
+            UI = computeUI(w, h);
+            const curves = getCurves();
+            const msg = currentMessage(curves);
+            const banner = bannerSize(msg, w);
+            const L = computeLayout(w, h, banner);
+            drawApparatus(L, curves[0]);
+            if (L.note) drawNote(L.note, L.notePos);
+            drawGraph(L.G, curves);
+            drawBanner(msg, banner, h);
+            updateControls(curves);
+        }
+
+        /* 끓는 동안 기포가 바닥에서 생겨 떠오른다 (설계 단위) */
+        function updateBubbles(m, dt) {
+            const g = sampleGeom(m);
+            const boiling = m.type === 'boil' && m.t >= m.reach && !m.done;
+            if (boiling) {
+                const n = g.kind === 'beaker' ? 3 : 1;
+                const p = g.kind === 'beaker' ? 0.7 : 0.45;
+                for (let i = 0; i < n; i++) {
+                    if (Math.random() < p) {
+                        simData.bubbles.push({
+                            x: g.left + Math.random() * (g.right - g.left), y: g.bottom - 3,
+                            r: 1.2 + Math.random() * 1.6, vy: 50 + Math.random() * 50, ph: Math.random() * 6.28
+                        });
+                    }
+                }
+            }
+            simData.bubbles.forEach(b => {
+                b.y -= b.vy * dt;
+                b.r = Math.min(b.r + dt * 2.2, g.kind === 'beaker' ? 5 : 3.5);
+                b.x = clamp(b.x + Math.sin(simData.frame * 0.15 + b.ph) * 0.25, g.left, g.right);
+            });
+            simData.bubbles = simData.bubbles.filter(b => b.y > g.surface + b.r * 0.5).slice(-160);
+        }
+
+        /* 프레임별 물리 연산 — 시작 버튼을 누르면 매 프레임 호출된다 (코어가 호출, 이름 유지) */
+        function updatePhysics() {
+            const now = performance.now();
+            let dt = simData.lastTs ? (now - simData.lastTs) / 1000 : 1 / 60;
+            if (!(dt > 0) || dt > 0.1) dt = 1 / 60;
+            simData.lastTs = now;
+            simData.frame++;
+            let curves = getCurves();
+            if (!allDone(curves)) {
+                simData.E += dt * SIM_CONFIG.speed[simData.mode];
+                curves = getCurves();
+            }
+            updateBubbles(curves[0], dt);
+            if (allDone(curves) && simData.bubbles.length === 0) stopRun();
+        }
+
+        /* 캔버스 포인터 조작 — type: 'down' | 'move' | 'up', pos: 캔버스 논리 좌표 {x, y} (코어 ZONE J가 호출) */
+        function onCanvasPointer(type, pos, e) {
+            /* 이 단원은 제어 패널로만 조작한다 */
+        }
+        /* ████ ZONE F 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE G — LOOP & TAB STATE MANAGER (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        function startLoop() { if (!sysState.isLooping) { sysState.isLooping = true; updateLoop(); } }
+        function stopLoop() { sysState.isLooping = false; }
+        function updateLoop() {
+            if (!sysState.isLooping) return;
+            updatePhysics(); draw();
+            requestAnimationFrame(updateLoop);
+        }
+
+        function saveTabState(shape) {
+            const selectedRadio = document.querySelector('input[name="simOption"]:checked')?.value;
+            const selectedVal = DOM.customSelectTrigger?.getAttribute('data-selected-value') || null;
+            tabStates[shape] = {
+                ...simData,
+                isStarted: sysState.isStarted, isPaused: sysState.isPaused,
+                zoomLevel: sysState.zoomLevel, offsetX: sysState.offsetX, offsetY: sysState.offsetY,
+                selectVal: selectedVal, radioVal: selectedRadio
+            };
+        }
+
+        function loadTabState(shape) {
+            const state = tabStates[shape];
+            if (state) {
+                Object.assign(simData, state);
+                sysState.isStarted = state.isStarted; sysState.isPaused = state.isPaused;
+                sysState.zoomLevel = state.zoomLevel || 1.0;
+                sysState.offsetX = state.offsetX || 0;
+                sysState.offsetY = state.offsetY || 0;
+
+                const csvEl = document.getElementById('customSelectValue');
+                if (state.selectVal) {
+                    const li = document.querySelector(`#customSelectList li[data-value="${state.selectVal}"]`);
+                    if (li && csvEl) { csvEl.innerHTML = li.innerHTML; DOM.customSelectTrigger?.setAttribute('data-selected-value', state.selectVal); }
+                } else {
+                    if (csvEl) csvEl.textContent = '학습 내용을 선택하세요';
+                    DOM.customSelectTrigger?.removeAttribute('data-selected-value');
+                }
+                const radio = document.querySelector(`input[name="simOption"][value="${state.radioVal}"]`);
+                if (radio) radio.checked = true;
+            } else {
+                simData.value1 = SIM_CONFIG.slider.initialValue;
+                simData.diameter = SIM_CONFIG.object.radius * 2;
+                simData.radius = SIM_CONFIG.object.radius;
+                simData.ratioA = 1; simData.ratioB = 1;
+                sysState.isStarted = false; sysState.isPaused = false;
+                sysState.zoomLevel = 1.0; sysState.offsetX = 0; sysState.offsetY = 0;
+                if (canvas) { simData.x = sysState.canvasLogicalWidth / 2; simData.y = sysState.canvasLogicalHeight / 2; }
+                const csvEl = document.getElementById('customSelectValue');
+                if (csvEl) csvEl.textContent = '학습 내용을 선택하세요';
+                DOM.customSelectTrigger?.removeAttribute('data-selected-value');
+                const dr = document.querySelector('input[name="simOption"][value="parallel"]');
+                if (dr) dr.checked = true;
+            }
+
+            if (varSlider1) varSlider1.value = simData.value1;
+            if (varDisplay1) varDisplay1.textContent = `${simData.value1} ${SIM_CONFIG.slider.unit}`;
+            if (DOM.directInputSingle) DOM.directInputSingle.value = simData.diameter;
+            if (DOM.ratioInputA) DOM.ratioInputA.value = simData.ratioA;
+            if (DOM.ratioInputB) DOM.ratioInputB.value = simData.ratioB;
+
+            sysState.isStarted && !sysState.isPaused ? startLoop() : stopLoop();
+            updateUIState(); draw();
+        }
+
+        function updateUIState() {
+            const { statusIndicator, pauseBtn, helperText } = DOM;
+            if (!statusIndicator || !pauseBtn || !helperText) return;
+            const isRunning = sysState.isStarted && !sysState.isPaused;
+            const isPaused = sysState.isPaused;
+            const lock = false; /* 동작 중 입력 잠금 해제 (실시간 상호작용 지원) */
+
+            if (DOM.varSlider1) DOM.varSlider1.disabled = lock;
+            if (DOM.directInputSingle) DOM.directInputSingle.disabled = lock;
+            if (DOM.ratioInputA) DOM.ratioInputA.disabled = lock;
+            if (DOM.ratioInputB) DOM.ratioInputB.disabled = lock;
+            if (DOM.customSelectTrigger) {
+                DOM.customSelectTrigger.disabled = lock;
+                if (lock && DOM.customSelectList && !DOM.customSelectList.classList.contains('hidden')) {
+                    DOM.customSelectList.classList.add('hidden');
+                    DOM.customSelectTrigger.setAttribute('aria-expanded', 'false');
+                }
+            }
+            if (DOM.radioOptions) DOM.radioOptions.forEach(r => r.disabled = lock);
+
+            const helperBoxWrapper = document.getElementById('helperBoxWrapper');
+            if (isRunning) {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-rose-500 border border-rose-300 animate-pulse translate-y-[1px]";
+                pauseBtn.className = "btn-action-pause col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = SIM_CONFIG.labels.pause;
+                helperText.textContent = SIM_CONFIG.labels.helperRunning;
+                helperText.className = "helper-text-running whitespace-nowrap transition-colors";
+                if (helperBoxWrapper) helperBoxWrapper.classList.add('hidden');
+            } else if (isPaused) {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-amber-400 border border-amber-300 translate-y-[1px]";
+                pauseBtn.className = "btn-action-start col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = SIM_CONFIG.labels.start;
+                helperText.textContent = SIM_CONFIG.labels.helperPaused;
+                helperText.className = "helper-text-paused whitespace-nowrap transition-colors";
+                if (helperBoxWrapper) helperBoxWrapper.classList.remove('hidden');
+            } else {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-emerald-500 border border-emerald-300 translate-y-[1px]";
+                pauseBtn.className = "btn-action-start col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = SIM_CONFIG.labels.start;
+                helperText.textContent = SIM_CONFIG.labels.helperIdle;
+                helperText.className = "helper-text-default whitespace-nowrap transition-colors";
+                if (helperBoxWrapper) helperBoxWrapper.classList.remove('hidden');
+            }
+        }
+        /* ════ ZONE G 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE H — CANVAS RESIZE (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        function limitOffset() {
+            if (!canvas) return;
+            if (sysState.zoomLevel <= 1.0) {
+                sysState.offsetX = 0;
+                sysState.offsetY = 0;
+                return;
+            }
+            const maxOffset = Math.min(sysState.canvasLogicalWidth, sysState.canvasLogicalHeight) * 0.5 * (sysState.zoomLevel - 1.0);
+            sysState.offsetX = Math.max(-maxOffset, Math.min(maxOffset, sysState.offsetX));
+            sysState.offsetY = Math.max(-maxOffset, Math.min(maxOffset, sysState.offsetY));
+        }
+
+        function resizeCanvas() {
+            if (!container || !canvas || !ctx) return;
+            const dpr = window.devicePixelRatio || 1;
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+            canvas.style.width = `${rect.width}px`; canvas.style.height = `${rect.height}px`;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            sysState.canvasLogicalWidth = rect.width;
+            sysState.canvasLogicalHeight = rect.height;
+            simData.x = rect.width / 2; simData.y = rect.height / 2;
+            for (const k in tabStates) { if (tabStates[k]) { tabStates[k].x = rect.width / 2; tabStates[k].y = rect.height / 2; } }
+
+            // 초기화 버튼 동적 스타일 조정 (높이가 270px 이하일 때)
+            const resetBtn = document.getElementById('resetBtn');
+            const resetBtnText = document.getElementById('resetBtnText');
+            if (resetBtn && resetBtnText) {
+                if (rect.height <= 400) {
+                    resetBtnText.style.display = 'none';
+                    resetBtn.style.padding = '0';
+                    resetBtn.style.width = '2.5rem';
+                    resetBtn.style.height = '2.5rem';
+                    resetBtn.style.justifyContent = 'center';
+                } else {
+                    resetBtnText.style.display = '';
+                    resetBtn.style.padding = '';
+                    resetBtn.style.width = '';
+                    resetBtn.style.height = '';
+                    resetBtn.style.justifyContent = '';
+                }
+            }
+
+            limitOffset(); draw();
+        }
+
+        const isFullscreenActive = () =>
+            !!(document.fullscreenElement || document.webkitFullscreenElement);
+        const FULLSCREEN_HISTORY_KEY = '__templateFullscreen';
+        const FULLSCREEN_HISTORY_CLEANUP_DELAY = 400;
+        const isNaverInAppBrowser = () => /NAVER\s*\((?:inapp|higgs);/i.test(navigator.userAgent);
+        let fullscreenHistoryToken = null;
+        let fullscreenExitFromHistory = false;
+        let fullscreenHistoryCleanup = false;
+        let fullscreenHistoryCleanupTimer = null;
+        let previousScrollRestoration = null;
+
+        const addFullscreenHistoryToken = stateValue => {
+            if (!fullscreenHistoryToken) return stateValue;
+            return { ...stateValue, [FULLSCREEN_HISTORY_KEY]: fullscreenHistoryToken };
+        };
+
+        const clearFullscreenHistoryTracking = () => {
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = null;
+            if (previousScrollRestoration !== null && 'scrollRestoration' in history) {
+                history.scrollRestoration = previousScrollRestoration;
+            }
+            previousScrollRestoration = null;
+            fullscreenHistoryToken = null;
+            fullscreenExitFromHistory = false;
+            fullscreenHistoryCleanup = false;
+        };
+
+        const pushFullscreenHistoryEntry = () => {
+            if (!isNaverInAppBrowser() || fullscreenHistoryToken) return;
+            const token = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+            try {
+                if ('scrollRestoration' in history && previousScrollRestoration === null) {
+                    previousScrollRestoration = history.scrollRestoration;
+                    history.scrollRestoration = 'manual';
+                }
+                history.pushState({ [FULLSCREEN_HISTORY_KEY]: token }, '');
+                fullscreenHistoryToken = token;
+            } catch (_) {
+                clearFullscreenHistoryTracking();
+            }
+        };
+
+        const restoreFullscreenHistoryEntry = () => {
+            const shouldRestore = isFullscreenActive();
+            clearFullscreenHistoryTracking();
+            if (shouldRestore) pushFullscreenHistoryEntry();
+        };
+
+        const exitFullscreenFromHistory = () => {
+            const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+            if (!exitFullscreen) {
+                restoreFullscreenHistoryEntry();
+                return;
+            }
+            const token = fullscreenHistoryToken;
+            const restoreEntry = () => {
+                if (fullscreenHistoryToken === token) restoreFullscreenHistoryEntry();
+            };
+            fullscreenExitFromHistory = true;
+            try {
+                const result = exitFullscreen.call(document);
+                if (result && typeof result.catch === 'function') result.catch(restoreEntry);
+            } catch (_) {
+                restoreEntry();
+            }
+        };
+
+        const cleanupFullscreenHistoryEntry = () => {
+            const token = fullscreenHistoryToken;
+            if (!token || !history.state || history.state[FULLSCREEN_HISTORY_KEY] !== token) {
+                clearFullscreenHistoryTracking();
+                return;
+            }
+            fullscreenHistoryCleanup = true;
+            history.back();
+        };
+
+        const scheduleFullscreenHistoryCleanup = () => {
+            const token = fullscreenHistoryToken;
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = setTimeout(() => {
+                if (fullscreenHistoryToken !== token || isFullscreenActive()) return;
+                const state = history.state;
+                if (!state || state[FULLSCREEN_HISTORY_KEY] !== token) {
+                    clearFullscreenHistoryTracking();
+                    return;
+                }
+                if (Object.keys(state).length === 1) cleanupFullscreenHistoryEntry();
+            }, FULLSCREEN_HISTORY_CLEANUP_DELAY);
+        };
+
+        window.addEventListener('popstate', event => {
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = null;
+            const token = fullscreenHistoryToken;
+            if (!token) return;
+            const sameFullscreenEntry = !!(
+                event.state && event.state[FULLSCREEN_HISTORY_KEY] === token
+            );
+            if (fullscreenHistoryCleanup) {
+                if (sameFullscreenEntry) history.back();
+                else clearFullscreenHistoryTracking();
+                return;
+            }
+            if (sameFullscreenEntry) {
+                if (!isFullscreenActive()) scheduleFullscreenHistoryCleanup();
+                return;
+            }
+            if (isFullscreenActive()) exitFullscreenFromHistory();
+            else clearFullscreenHistoryTracking();
+        });
+
+        function toggleFullScreen() {
+            const workspace = document.getElementById('workspace');
+            if (!workspace) return;
+
+            if (!isFullscreenActive()) {
+                if (workspace.requestFullscreen) workspace.requestFullscreen().catch(e => console.error(e));
+                else if (workspace.webkitRequestFullscreen) workspace.webkitRequestFullscreen();
+                else alert("현재 브라우저는 전체화면을 지원하지 않습니다.");
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            }
+        }
+
+        const resetFullscreenButtonFeedback = () => {
+            ['fullscreen-btn', 'fullscreen-btn-mobile'].forEach(id => {
+                const button = document.getElementById(id);
+                if (!button) return;
+                clearTimeout(button._tapFeedbackTimer);
+                button.classList.remove('is-tap-feedback', 'is-pen-hover');
+                button.blur();
+            });
+        };
+
+        const showSimulationToast = message => {
+            document.getElementById('sim-toast')?.remove();
+            const toast = document.createElement('div');
+            toast.id = 'sim-toast';
+            toast.setAttribute('role', 'status');
+            toast.className = 'fixed top-30 left-1/2 transform -translate-x-1/2 bg-slate-800/90 backdrop-blur-sm text-white px-6 py-3 rounded-full shadow-lg z-[9999] font-bold text-[0.95rem] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-2';
+            toast.innerHTML = '<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
+            toast.appendChild(document.createTextNode(message));
+            (document.getElementById('workspace') || document.body).appendChild(toast);
+            setTimeout(() => toast.classList.remove('opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 1500);
+        };
+
+        let fullscreenExitForNumberInput = false;
+        let fullscreenNumberExitResetTimer = null;
+
+        const resetFullscreenNumberExitTracking = () => {
+            clearTimeout(fullscreenNumberExitResetTimer);
+            fullscreenNumberExitResetTimer = null;
+            fullscreenExitForNumberInput = false;
+        };
+
+        const markFullscreenNumberInputPress = event => {
+            if (!isIPadDevice || !isFullscreenActive()) return;
+            const input = event.target.closest?.('#workspace input[type="number"]');
+            if (!input || input.disabled) return;
+            fullscreenExitForNumberInput = true;
+            clearTimeout(fullscreenNumberExitResetTimer);
+            fullscreenNumberExitResetTimer = setTimeout(resetFullscreenNumberExitTracking, 2000);
+        };
+
+        const fullscreenNumberPressEvent = window.PointerEvent ? 'pointerdown' : 'touchstart';
+        document.addEventListener(fullscreenNumberPressEvent, markFullscreenNumberInputPress, {
+            capture: true,
+            passive: true
+        });
+
+        const handleFullscreenChange = () => {
+            if (!isFullscreenActive() && fullscreenExitForNumberInput) {
+                resetFullscreenNumberExitTracking();
+                showSimulationToast('숫자 입력을 위해 전체화면이 종료되었습니다.');
+            }
+            if (isFullscreenActive()) {
+                pushFullscreenHistoryEntry();
+            } else if (fullscreenHistoryToken) {
+                if (fullscreenExitFromHistory) clearFullscreenHistoryTracking();
+                else scheduleFullscreenHistoryCleanup();
+            }
+            if (!isFullscreenActive()) resetFullscreenButtonFeedback();
+            requestAnimationFrame(() => {
+                if (!isFullscreenActive()) resetFullscreenButtonFeedback();
+                resizeCanvas();
+            });
+
+            const exitUI = document.getElementById('fullscreen-exit-ui');
+            if (!exitUI) return;
+            if (isFullscreenActive()) {
+                exitUI.classList.remove('hidden', 'opacity-100');
+                exitUI.classList.add('opacity-0');
+            } else {
+                exitUI.classList.add('hidden', 'opacity-0');
+                exitUI.classList.remove('opacity-100');
+            }
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        /* ════ ZONE H 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                               ████
+           ████   ✏️  ZONE I — INPUT EVENT HANDLERS (입력 이벤트 핸들러)       ████
+           ████   폼 변경 시 simData를 어떻게 업데이트할지 여기서 작성하세요.     ████
+           ████                                                               ████
+           ████████████████████████████████████████████████████████████████████████ */
+        function bindInputEvents() {
+            const onRadio = (name, handler) => {
+                document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                    r.addEventListener('change', () => { if (r.checked) handler(r.value); });
+                });
+            };
+            /* 측정 조건이 바뀌면 처음부터 다시 측정 (시작 전 상태) */
+            const restart = () => { stopRun(); resetExperiment(); draw(); };
+
+            onRadio('modeOpt', v => { simData.mode = v; restart(); });
+            onRadio('boilSubOpt', v => { simData.boilSub = v; restart(); });
+            onRadio('meltSubOpt', v => { simData.meltSub = v; restart(); });
+            onRadio('amountOpt', v => { simData.amount = v; restart(); });
+
+            /* 진행: 다 녹은 뒤에만 냉각을 고를 수 있다 */
+            onRadio('phaseOpt', v => {
+                if (v === 'cool' && canCool(getCurves()[0])) {
+                    simData.Ec = simData.E;
+                    ensureRunning();
+                }
+                updateControls(getCurves());
+                if (!sysState.isLooping) draw();
+            });
+
+            /* 겹쳐 그리기: 같은 측정 시간으로 비교 곡선을 그린다 */
+            onRadio('overlayOpt', v => {
+                simData.overlay = v;
+                if (simData.E > 0 && !sysState.isPaused && !allDone(getCurves())) ensureRunning();
+                if (!sysState.isLooping) draw();
+            });
+
+            /* 표시 요소 */
+            const bindChk = (id, key) => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', () => { simData[key] = el.checked; if (!sysState.isLooping) draw(); });
+            };
+            bindChk('chkGrid', 'showGrid');
+            bindChk('chkState', 'showState');
+            bindChk('chkRef', 'showRef');
+
+            /* 다시 측정: 고른 조건은 그대로 두고 측정만 처음으로 */
+            const retryBtn = document.getElementById('retryBtn');
+            if (retryBtn) retryBtn.addEventListener('click', restart);
+        }
+        /* ████ ZONE I 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE J — CORE EVENT BINDING (수정 금지)
+           전체화면·모달·셔터·캔버스 드래그·줌·탭·토스트 이벤트 처리
+           ════════════════════════════════════════════════════════════════════════ */
+        function bindCoreEvents() {
+
+            /* 동작 중 입력 차단 토스트 */
+            const interceptInteraction = (e) => {
+                // 실시간 상호작용을 허용하므로 아무런 차단도 수행하지 않음
+            };
+
+            /* 손가락·펜 입력 피드백 */
+            const TAP_FEEDBACK_SELECTOR = 'button, [role="button"], .radio-label, label:has(input[type="checkbox"])';
+            const isFeedbackDisabled = control =>
+                control.matches(':disabled, [aria-disabled="true"]') || !!control.querySelector(':disabled');
+            document.addEventListener('pointerdown', e => {
+                if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || isFeedbackDisabled(control)) return;
+                control.classList.add('is-tap-feedback');
+                clearTimeout(control._tapFeedbackTimer);
+                control._tapFeedbackTimer = setTimeout(() => {
+                    control.classList.remove('is-tap-feedback');
+                    control.blur();
+                }, 250);
+            });
+            document.addEventListener('pointerover', e => {
+                if (e.pointerType !== 'pen' || e.buttons !== 0) return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || isFeedbackDisabled(control)) return;
+                control.classList.add('is-pen-hover');
+            });
+            document.addEventListener('pointerout', e => {
+                if (e.pointerType !== 'pen') return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || control.contains(e.relatedTarget)) return;
+                control.classList.remove('is-pen-hover');
+            });
+            document.addEventListener('pointerup', e => {
+                if (e.pointerType !== 'pen' || matchMedia('(any-hover: hover)').matches) return;
+                e.target.closest?.(TAP_FEEDBACK_SELECTOR)?.classList.remove('is-pen-hover');
+            });
+
+            /* 모바일 메뉴 */
+            const moreMenuBtn = document.getElementById('moreMenuBtn');
+            const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+            if (moreMenuBtn && mobileMenuPanel) {
+                const close = () => { mobileMenuPanel.classList.remove('w-[84px]', 'opacity-100'); mobileMenuPanel.classList.add('w-0', 'opacity-0'); };
+                const toggle = () => {
+                    const isOpen = mobileMenuPanel.classList.contains('w-[84px]');
+                    if (!isOpen) { mobileMenuPanel.classList.remove('w-0', 'opacity-0'); mobileMenuPanel.classList.add('w-[84px]', 'opacity-100'); }
+                    else { close(); }
+                };
+                moreMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+                window.addEventListener('resize', () => {
+                    if (isFullscreenActive()) return;
+                    if (getComputedStyle(moreMenuBtn).display === 'none' && mobileMenuPanel.classList.contains('w-[84px]')) close();
+                });
+                window.addEventListener('click', (e) => {
+                    if (!moreMenuBtn.contains(e.target) && !mobileMenuPanel.contains(e.target) && mobileMenuPanel.classList.contains('w-[84px]')) close();
+                });
+            }
+
+            /* 전체화면 */
+            bindEvent('fullscreen-btn', 'click', toggleFullScreen);
+            bindEvent('fullscreen-btn-mobile', 'click', toggleFullScreen);
+
+            /* 모달 */
+            const toggleModal = (id, show) => {
+                const modal = document.getElementById(id); if (!modal) return;
+                if (show) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; history.pushState(addFullscreenHistoryToken({ modalOpen: id }), ''); }
+                else { modal.classList.add('hidden'); document.body.style.overflow = ''; if (history.state?.modalOpen === id) history.back(); }
+            };
+            window.addEventListener('popstate', () => {
+                ['helpBox', 'conceptBox', 'quizBox'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+                document.body.style.overflow = '';
+            });
+            document.addEventListener('keydown', event => {
+                if (event.key !== 'Escape') return;
+                const openModalId = ['helpBox', 'conceptBox', 'quizBox'].find(id => {
+                    const modal = document.getElementById(id);
+                    return modal && !modal.classList.contains('hidden');
+                });
+                if (!openModalId) return;
+                event.preventDefault();
+                toggleModal(openModalId, false);
+            });
+            bindEvent('helpBtn', 'click', () => toggleModal('helpBox', true));
+            bindEvent('help-Btn', 'click', () => toggleModal('helpBox', true));
+            bindEvent('closeHelpBtn', 'click', () => toggleModal('helpBox', false));
+            bindEvent('conceptBtn', 'click', () => toggleModal('conceptBox', true));
+            bindEvent('closeConceptBtn', 'click', () => toggleModal('conceptBox', false));
+            bindEvent('closeQuizBtn', 'click', () => toggleModal('quizBox', false));
+
+            /* 셔터 */
+            const shutterToggle = document.getElementById('shutter-toggle');
+            const shutterContent = document.getElementById('shutter-content');
+            const shutterIcon = document.getElementById('shutter-icon');
+            if (shutterToggle && shutterContent) {
+                const shutterText = shutterToggle.querySelector('span');
+                shutterToggle.addEventListener('click', () => {
+                    const isOpen = shutterContent.classList.toggle('is-open');
+                    shutterToggle.classList.toggle('is-open', isOpen);
+                    if (shutterIcon) shutterIcon.classList.toggle('rotate-180', isOpen);
+                    if (shutterText) shutterText.textContent = isOpen ? '학습 가이드 닫기' : '학습 가이드 보기';
+                });
+            }
+
+            /* 시작/일시정지 */
+            bindEvent('pauseBtn', 'click', () => {
+                if (!sysState.isStarted) { sysState.isStarted = true; sysState.isPaused = false; startLoop(); }
+                else { sysState.isPaused = !sysState.isPaused; sysState.isPaused ? stopLoop() : startLoop(); }
+                updateUIState(); draw();
+            });
+
+            /* 리셋 */
+            bindEvent('resetBtn', 'click', () => { initSimulation(); });
+
+            /* 퀴즈 */
+            function stabilizeQuizLayout() {
+                if (!CONTENT_CONFIG.quizzes?.length) return;
+                const quizBox = document.getElementById('quizBox');
+                const modal = quizBox?.querySelector('.modal-container');
+                const qEl = document.getElementById('questionText');
+                const answerArea = document.getElementById('answerArea');
+                const aEl = document.getElementById('answerText');
+                const showBtn = document.getElementById('showAnswerBtn');
+                if (!quizBox || quizBox.classList.contains('hidden') || !modal || !qEl || !answerArea || !aEl || !showBtn) return;
+
+                const currentQuestion = qEl.textContent;
+                const currentAnswer = aEl.textContent;
+                const answerWasHidden = aEl.classList.contains('hidden');
+                const buttonWasHidden = showBtn.classList.contains('hidden');
+                modal.style.height = '';
+                qEl.style.height = '';
+                answerArea.style.height = '';
+                answerArea.style.flex = '';
+                answerArea.style.minHeight = '';
+
+                let maxQuestionHeight = 0;
+                CONTENT_CONFIG.quizzes.forEach(({ q }) => {
+                    qEl.textContent = q;
+                    maxQuestionHeight = Math.max(maxQuestionHeight, qEl.getBoundingClientRect().height);
+                });
+                showBtn.classList.add('hidden');
+                aEl.classList.remove('hidden');
+                let maxAnswerHeight = 0;
+                CONTENT_CONFIG.quizzes.forEach(({ a }) => {
+                    aEl.textContent = a;
+                    maxAnswerHeight = Math.max(maxAnswerHeight, aEl.getBoundingClientRect().height);
+                });
+                showBtn.classList.remove('hidden');
+                maxAnswerHeight = Math.max(maxAnswerHeight, showBtn.getBoundingClientRect().height);
+                qEl.style.height = `${Math.ceil(maxQuestionHeight)}px`;
+                const answerStyle = getComputedStyle(answerArea);
+                const answerPadding = (parseFloat(answerStyle.paddingTop) || 0) + (parseFloat(answerStyle.paddingBottom) || 0);
+                answerArea.style.minHeight = `${Math.ceil(maxAnswerHeight + answerPadding)}px`;
+                const fixedModalHeight = Math.ceil(modal.getBoundingClientRect().height);
+
+                qEl.textContent = currentQuestion;
+                aEl.textContent = currentAnswer;
+                aEl.classList.toggle('hidden', answerWasHidden);
+                showBtn.classList.toggle('hidden', buttonWasHidden);
+                qEl.style.height = '';
+                answerArea.style.minHeight = '';
+                modal.style.height = `${fixedModalHeight}px`;
+            }
+
+            function updateQuizUI() {
+                if (!CONTENT_CONFIG.quizzes?.length) return;
+                const q = CONTENT_CONFIG.quizzes[sysState.currentQuizIndex];
+                const stepEl = document.getElementById('quizStep');
+                const qEl = document.getElementById('questionText');
+                const aEl = document.getElementById('answerText');
+                const showBtn = document.getElementById('showAnswerBtn');
+                const prevBtn = document.getElementById('prevQuizBtn');
+                const nextBtn = document.getElementById('nextQuizBtn');
+                if (stepEl) stepEl.textContent = `질문 ${sysState.currentQuizIndex + 1} / ${CONTENT_CONFIG.quizzes.length}`;
+                if (qEl) qEl.textContent = q.q;  /* 줄바꿈은 CSS pre-wrap으로 (innerText는 높이 맞춤 때 줄바꿈이 사라짐) */
+                if (aEl) { aEl.textContent = q.a; aEl.classList.add('hidden'); }
+                if (showBtn) showBtn.classList.remove('hidden');
+                if (prevBtn) prevBtn.disabled = sysState.currentQuizIndex === 0;
+                if (nextBtn) nextBtn.disabled = sysState.currentQuizIndex === CONTENT_CONFIG.quizzes.length - 1;
+            }
+            bindEvent('quizBtn', 'click', () => { sysState.currentQuizIndex = 0; updateQuizUI(); toggleModal('quizBox', true); requestAnimationFrame(stabilizeQuizLayout); });
+            bindEvent('showAnswerBtn', 'click', () => { document.getElementById('answerText')?.classList.remove('hidden'); document.getElementById('showAnswerBtn')?.classList.add('hidden'); });
+            bindEvent('nextQuizBtn', 'click', () => { if (sysState.currentQuizIndex < CONTENT_CONFIG.quizzes.length - 1) { sysState.currentQuizIndex++; updateQuizUI(); } });
+            bindEvent('prevQuizBtn', 'click', () => { if (sysState.currentQuizIndex > 0) { sysState.currentQuizIndex--; updateQuizUI(); } });
+            window.addEventListener('resize', debounce(stabilizeQuizLayout, 100));
+
+            /* 캔버스 포인터 — 단원별 조작은 ZONE F의 onCanvasPointer(type, pos, e)에서 처리 */
+            if (canvas) {
+                const getPos = (clientX, clientY) => {
+                    const r = canvas.getBoundingClientRect();
+                    return {
+                        x: (clientX - r.left) * (sysState.canvasLogicalWidth / r.width),
+                        y: (clientY - r.top) * (sysState.canvasLogicalHeight / r.height)
+                    };
+                };
+                const emit = (type, e) => {
+                    if (typeof onCanvasPointer === 'function') onCanvasPointer(type, getPos(e.clientX, e.clientY), e);
+                };
+                canvas.addEventListener('pointerdown', (e) => { canvas.setPointerCapture(e.pointerId); emit('down', e); });
+                canvas.addEventListener('pointermove', (e) => emit('move', e));
+                const pointerUp = (e) => {
+                    if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+                    emit('up', e);
+                    updateUIState();
+                };
+                canvas.addEventListener('pointerup', pointerUp);
+                canvas.addEventListener('pointercancel', pointerUp);
+            }
+
+            /* 캔버스 상단 탭 */
+            const shapeTabsDOM = document.getElementById('shapeTabs');
+            if (shapeTabsDOM) {
+                const updateTabScrollIndicators = () => {
+                    const leftInd = document.getElementById('tabScrollLeft');
+                    const rightInd = document.getElementById('tabScrollRight');
+                    if (!leftInd || !rightInd) return;
+                    const maxSL = shapeTabsDOM.scrollWidth - shapeTabsDOM.clientWidth;
+                    leftInd.classList.toggle('opacity-0', shapeTabsDOM.scrollLeft <= 1);
+                    leftInd.classList.toggle('pointer-events-none', shapeTabsDOM.scrollLeft <= 1);
+                    leftInd.classList.toggle('opacity-100', shapeTabsDOM.scrollLeft > 1);
+                    rightInd.classList.toggle('opacity-0', Math.ceil(shapeTabsDOM.scrollLeft) >= maxSL - 1 || maxSL <= 0);
+                    rightInd.classList.toggle('pointer-events-none', Math.ceil(shapeTabsDOM.scrollLeft) >= maxSL - 1 || maxSL <= 0);
+                    rightInd.classList.toggle('opacity-100', Math.ceil(shapeTabsDOM.scrollLeft) < maxSL - 1 && maxSL > 0);
+                };
+                shapeTabsDOM.addEventListener('scroll', updateTabScrollIndicators);
+                window.addEventListener('resize', debounce(updateTabScrollIndicators, 100));
+                setTimeout(updateTabScrollIndicators, 150);
+
+                bindEvent('btnScrollLeft', 'click', () => { shapeTabsDOM.scrollBy({ left: -120, behavior: 'smooth' }); });
+                bindEvent('btnScrollRight', 'click', () => { shapeTabsDOM.scrollBy({ left: 120, behavior: 'smooth' }); });
+
+                let isDownTab = false, startXTab = 0, scrollLeftTab = 0;
+                shapeTabsDOM.addEventListener('mousedown', (e) => { isDownTab = true; startXTab = e.pageX - shapeTabsDOM.offsetLeft; scrollLeftTab = shapeTabsDOM.scrollLeft; });
+                shapeTabsDOM.addEventListener('mouseleave', () => isDownTab = false);
+                shapeTabsDOM.addEventListener('mouseup', () => isDownTab = false);
+                shapeTabsDOM.addEventListener('mousemove', (e) => { if (!isDownTab) return; e.preventDefault(); shapeTabsDOM.scrollLeft = scrollLeftTab - (e.pageX - shapeTabsDOM.offsetLeft - startXTab) * 1.5; });
+
+                const tabBtns = shapeTabsDOM.querySelectorAll('.tab-btn');
+                shapeTabsDOM.addEventListener('click', (e) => {
+                    const target = e.target.closest('.tab-btn');
+                    if (!target || (sysState.isStarted && !sysState.isPaused)) return;
+                    const newShape = target.getAttribute('data-shape');
+                    if (simData.shape === newShape) return;
+                    saveTabState(simData.shape);
+                    tabBtns.forEach(b => { b.classList.remove('border-indigo-600', 'text-indigo-600', 'bg-white'); b.classList.add('border-transparent', 'text-slate-500', 'bg-transparent', 'desktop-only:hover:bg-slate-200/50'); });
+                    target.classList.remove('border-transparent', 'text-slate-500', 'bg-transparent', 'desktop-only:hover:bg-slate-200/50');
+                    target.classList.add('border-indigo-600', 'text-indigo-600', 'bg-white');
+                    simData.shape = newShape;
+                    loadTabState(simData.shape);
+                });
+            }
+
+            /* 전체화면 마우스 오버 */
+            let fullscreenHoverTimer;
+            document.addEventListener('mousemove', (e) => {
+                if (!document.fullscreenElement) return;
+                const exitUI = document.getElementById('fullscreen-exit-ui'); if (!exitUI) return;
+                if (e.clientY < 80) { exitUI.classList.remove('opacity-0'); exitUI.classList.add('opacity-100'); clearTimeout(fullscreenHoverTimer); }
+                else { clearTimeout(fullscreenHoverTimer); fullscreenHoverTimer = setTimeout(() => { exitUI.classList.remove('opacity-100'); exitUI.classList.add('opacity-0'); }, 10); }
+            });
+        }
+        /* ════ ZONE J 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE K — 초기 실행 (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        const resizeObserver = new ResizeObserver(() => resizeCanvas());
+
+        window.addEventListener('load', () => {
+            if (container) resizeObserver.observe(container);
+            bindCoreEvents();   /* 🚫 코어 이벤트 바인딩 */
+            bindInputEvents();  /* ✏️ 입력 이벤트 바인딩 (ZONE I) */
+            initSimulation();   /* ✏️ 시뮬레이션 초기화  (ZONE F) */
+        });
+        /* ════ ZONE K 끝 ════════════════════════════════════════════════════════ */
+    </script>
+</body>
+
+</html>

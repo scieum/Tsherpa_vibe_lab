@@ -1,0 +1,2886 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>빛의 반사와 굴절</title><!-- JS의 CONTENT_CONFIG.title로 자동 변경됩니다 -->
+
+    <!-- ════════════════════════════════════════════════════════
+         🚫 [수정 금지] 핵심 라이브러리 — KaTeX · Tailwind CSS
+         ════════════════════════════════════════════════════════ -->
+    <link rel="icon" href="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_short.png"
+        type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ════════════════════════════════════════════════════════
+         ⚙️  [선택 수정] Tailwind 테마 — 브랜드 색상·폰트만 변경
+         ════════════════════════════════════════════════════════ -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: { 'desktop-only': { 'raw': '(hover: hover) and (pointer: fine)' } },
+                    colors: { primary: '#4f46e5' },   /* ✏️ 브랜드 색상 */
+                    fontFamily: { sans: ['Noto Sans KR', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script>
+        /* 모바일에서 생략되는 number 스피너만 보완하고 PC 네이티브 UI는 유지 */
+        const isIPadDevice =
+            /iPad/i.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isMobileNumberUI =
+            navigator.userAgentData?.mobile === true ||
+            /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+            isIPadDevice;
+        if (isMobileNumberUI) document.documentElement.classList.add('mobile-number-controls');
+    </script>
+
+    <style>
+        html,
+        body,
+        button,
+        input,
+        select,
+        textarea {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        /* ════════════════════════════════════════════════════════
+           ⚙️  [선택 수정] CSS 변수 — 전체 색상·폰트 크기 일괄 조정
+           ════════════════════════════════════════════════════════ */
+        :root {
+            /* 폰트 크기 */
+            --font-size-title: 1.275rem;
+            --font-size-modal: 1.15rem;
+            --font-size-guide: 1.025rem;
+            --font-size-desc: 1rem;
+            --font-size-small: 0.9rem;
+            --font-size-tiny: 0.75rem;
+
+            /* 텍스트 색상 */
+            --color-text-main: #334155;
+            --color-text-sub: #475569;
+            --color-text-light: #64748b;
+
+            /* 테마 포인트 색상 */
+            --color-primary: #4f46e5;
+            /* ✏️ 메인 포인트 색상 */
+            --color-primary-bg: #e0e7ff;
+            --color-tab-bg: #d8e0ff80;
+            --color-action: #059669;
+            --color-action-hover: #047857;
+            --color-pause: #e11d48;
+            --color-pause-bg: #fff1f2;
+            --color-pause-border: #fecdd3;
+            --color-obs1: #ea580c;
+        }
+
+        /* ════════════════════════════════════════════════════════
+           ⚙️  [선택 수정] 디자인 클래스 매핑 — CSS 변수를 UI 요소에 적용
+           ════════════════════════════════════════════════════════ */
+        .sim-title {
+            font-size: var(--font-size-title);
+            font-weight: 700;
+            color: var(--color-text-main);
+            line-height: 1.25;
+        }
+
+        .guide-on-off {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: var(--color-text-light);
+        }
+
+        .guide-title {
+            font-size: var(--font-size-guide);
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .guide-desc {
+            font-size: var(--font-size-desc);
+            color: var(--color-text-sub);
+        }
+
+        .env-text {
+            font-weight: 700;
+            color: var(--color-text-light);
+            font-size: var(--font-size-tiny);
+        }
+
+        .tab-btn {
+            font-weight: 700;
+            color: var(--color-text-light);
+            font-size: var(--font-size-small);
+        }
+
+        @media (min-width: 768px) {
+            .env-text {
+                font-size: var(--font-size-small);
+            }
+        }
+
+        .helper-text-default {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .helper-text-running {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-pause);
+        }
+
+        .helper-text-paused {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .var-label-control {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-main);
+        }
+
+        .var-label-obs1 {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-obs1);
+        }
+
+        .var-label-obs2 {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-action);
+        }
+
+        .var-label-var {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: var(--color-text-main);
+        }
+
+        .slider-limit-label {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .var-unit-display {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-primary);
+            background-color: var(--color-primary-bg);
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .select-option-text {
+            font-size: var(--font-size-tiny);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .header-button {
+            background-color: #fff;
+            color: var(--color-text-sub);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .header-button:hover {
+                background-color: #f1f5f9;
+            }
+        }
+
+        .btn-action-start {
+            background-color: var(--color-action);
+            color: #fff;
+            border-color: var(--color-action-hover);
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-action-start:hover {
+                background-color: var(--color-action-hover);
+            }
+        }
+
+        .btn-action-pause {
+            background-color: var(--color-pause-bg);
+            color: var(--color-pause);
+            border-color: var(--color-pause-border);
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        .btn-sub {
+            background-color: #fff;
+            color: var(--color-text-main);
+            border-color: #cbd5e1;
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-sub:hover {
+                background-color: #f1f5f9;
+            }
+        }
+
+        .btn-reset-custom {
+            color: var(--color-text-main);
+            border-color: #cbd5e1;
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-reset-custom:hover {
+                color: var(--color-pause);
+                border-color: #fda4af;
+                background-color: var(--color-pause-bg);
+            }
+        }
+
+        .modal-title {
+            font-size: var(--font-size-modal);
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .modal-close-btn {
+            color: #94a3b8;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .modal-close-btn:hover {
+                color: #f43f5e;
+            }
+        }
+
+        .concept-title-1 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #c2410c;
+        }
+
+        .concept-title-2 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #047857;
+        }
+
+        .concept-title-3 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #4338ca;
+        }
+
+        .concept-title-4 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #6e0478;
+        }
+
+        .concept-desc {
+            font-size: var(--font-size-desc);
+            color: var(--color-text-main);
+        }
+
+        .quiz-step {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: #4338ca;
+            background-color: var(--color-primary-bg);
+        }
+
+        .quiz-question {
+            font-size: var(--font-size-modal);
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .quiz-btn-check {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #fff;
+            background-color: #f97316;
+            border: 1px solid #f97316;
+            line-height: 1.5rem;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .quiz-btn-check:hover {
+                background-color: #ea580c;
+                border-color: #ea580c;
+            }
+        }
+
+        .quiz-answer-box {
+            font-size: var(--font-size-guide);
+            font-weight: 700;
+            line-height: 1.5rem;
+            color: var(--color-text-main);
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+        }
+
+        .header-button:is(.is-tap-feedback, .is-pen-hover),
+        .btn-sub:is(.is-tap-feedback, .is-pen-hover),
+        .zoom-btn:is(.is-tap-feedback, .is-pen-hover),
+        .nav-btn:is(.is-tap-feedback, .is-pen-hover),
+        #customSelectTrigger:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #f1f5f9;
+        }
+
+        .btn-action-start:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: var(--color-action-hover);
+        }
+
+        .btn-reset-custom:is(.is-tap-feedback, .is-pen-hover) {
+            color: var(--color-pause);
+            border-color: #fda4af;
+            background-color: var(--color-pause-bg);
+        }
+
+        .modal-close-btn:is(.is-tap-feedback, .is-pen-hover) {
+            color: #f43f5e;
+        }
+
+        .quiz-btn-check:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #ea580c;
+        }
+
+        .tab-btn:not(.border-indigo-600):is(.is-tap-feedback, .is-pen-hover) {
+            background-color: rgb(226 232 240 / 0.5);
+        }
+
+        .radio-label:not(:has(:checked)):is(.is-tap-feedback, .is-pen-hover),
+        .panel-block label:has(input[type="checkbox"]):is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #f8fafc;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .radio-label:not(:has(:checked)):hover {
+                background-color: #f8fafc;
+            }
+        }
+
+        #customSelectList [role="option"]:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #eef2ff;
+        }
+
+        /* PC·모바일에서 동일한 숫자 입력 스피너를 고정 노출 */
+        .ratio-number-field {
+            display: flex;
+            flex: 1 1 0%;
+            min-width: 0;
+            position: relative;
+        }
+
+        .ratio-number-stepper {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            width: 2.5rem;
+            justify-content: center;
+            gap: 0;
+        }
+
+        .ratio-step-btn {
+            display: flex;
+            flex: 1 1 50%;
+            min-height: 0;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 0.15rem;
+            background-color: transparent;
+            color: #737373;
+            line-height: 1;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ratio-step-icon {
+            width: 0.66rem;
+            height: 0.48rem;
+            fill: currentColor;
+        }
+
+        .ratio-step-btn[data-step-direction="up"] .ratio-step-icon {
+            transform: translateY(0.1875rem);
+        }
+
+        .ratio-step-btn[data-step-direction="down"] .ratio-step-icon {
+            transform: translateY(-0.1875rem);
+        }
+
+        .ratio-step-btn:active {
+            background-color: transparent;
+            color: #475569;
+        }
+
+        .ratio-step-btn:focus {
+            background-color: transparent;
+        }
+
+        .ratio-step-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .ratio-number-field>.input-text {
+            appearance: textfield;
+            -moz-appearance: textfield;
+            padding-right: 2.75rem;
+            background-color: transparent;
+            transition: border-color 150ms ease;
+        }
+
+        .ratio-number-field>.input-text::-webkit-inner-spin-button,
+        .ratio-number-field>.input-text::-webkit-outer-spin-button {
+            margin: 0;
+            -webkit-appearance: none;
+        }
+
+        .ratio-number-field:has(>.ratio-number-stepper>.ratio-step-btn:active)>.input-text,
+        .ratio-number-field:has(>.ratio-number-stepper>.ratio-step-btn.is-tap-feedback)>.input-text {
+            border-color: #6366f1;
+        }
+
+        /* iOS Safari는 16px 미만 입력창에 포커스할 때 화면을 자동 확대한다. */
+        @supports (-webkit-touch-callout: none) {
+            html.mobile-number-controls input[type="number"] {
+                font-size: 16px !important;
+            }
+
+            .radio-label>.select-option-text {
+                white-space: nowrap;
+            }
+        }
+
+        /* ════════════════════════════════════════════════════════
+           🚫 [수정 금지] 코어 레이아웃 구조 — 전체화면·캔버스·스크롤
+           ════════════════════════════════════════════════════════ */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        html,
+        body {
+            overscroll-behavior: none;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            font-size: 16px !important;
+        }
+
+        .ui-box {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+        }
+
+        .shutter-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .shutter-wrapper.is-open {
+            grid-template-rows: 1fr;
+        }
+
+        .shutter-inner {
+            overflow: hidden;
+        }
+
+        @media (hover: none),
+        (pointer: coarse) {
+
+            input,
+            textarea,
+            select,
+            button,
+            [role="button"],
+            [contenteditable="true"] {
+                touch-action: manipulation;
+            }
+
+            .nav-btn,
+            .header-button,
+            .btn-sub,
+            .btn-reset-custom,
+            .modal-close-btn {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+
+            .nav-btn:is(:active, .is-tap-feedback),
+            .header-button:is(:active, .is-tap-feedback),
+            .btn-sub:is(:active, .is-tap-feedback) {
+                background-color: #f1f5f9;
+            }
+
+            .btn-reset-custom:is(:active, .is-tap-feedback) {
+                color: var(--color-pause);
+                border-color: #fda4af;
+                background-color: var(--color-pause-bg);
+            }
+
+            .modal-close-btn:is(:active, .is-tap-feedback) {
+                color: #f43f5e;
+            }
+
+            #fullscreen-btn:is(:active, .is-tap-feedback),
+            #fullscreen-btn-mobile:is(:active, .is-tap-feedback) {
+                background-color: #f1f5f9;
+            }
+        }
+
+        canvas {
+            touch-action: none;
+            cursor: default;
+        }
+
+        .bar-track {
+            width: 100%;
+            height: 16px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .popup-overlay {
+            background-color: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(2px);
+        }
+
+        #workspace:fullscreen {
+            background-color: #f8fafc;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        @media (orientation: landscape) {
+            #workspace:fullscreen {
+                padding: 1rem;
+                overflow-y: hidden;
+            }
+        }
+    </style>
+
+    <!-- 🚫 [수정 금지] Tailwind 컴포넌트 추출 -->
+    <style type="text/tailwindcss">
+        @layer components {
+            .panel-block      { @apply flex flex-col gap-2 p-3 border border-slate-200 rounded-lg bg-white; }
+            .modal-container  { @apply bg-white border border-slate-300 rounded-2xl w-full flex flex-col relative shadow-2xl max-h-[70dvh]; }
+            .modal-header     { @apply h-14 lg:h-16 px-6 border-b border-slate-100 flex items-center justify-between flex-none; }
+            .modal-body       { @apply flex-1 overflow-y-auto p-4 lg:p-6 flex flex-col gap-4; }
+            .guide-block      { @apply p-4 bg-slate-50 border border-slate-200 rounded-xl; }
+            .zoom-btn         { @apply w-8 h-8 flex items-center justify-center bg-white border border-slate-300 rounded-full shadow-sm text-slate-600 font-bold desktop-only:hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed desktop-only:disabled:hover:bg-slate-50; }
+            .nav-btn          { @apply w-12 h-12 flex items-center justify-center bg-white border border-slate-300 text-slate-600 rounded-full desktop-only:hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed desktop-only:disabled:hover:bg-slate-50; }
+            .radio-label      { @apply flex items-start gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer transition-colors has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed; }
+            .input-text       { @apply w-full p-2 border border-slate-200 rounded text-center focus:outline-none focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50; }
+        }
+    </style>
+</head>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     🚫 [수정 금지] BODY — 레이아웃 클래스 수정 금지
+     ════════════════════════════════════════════════════════════════════ -->
+
+<body
+    class="bg-slate-100 text-slate-800 font-sans w-full m-0 p-0 box-border select-none overflow-x-hidden md:overflow-hidden landscape:overflow-hidden flex flex-col justify-center md:h-[100dvh] landscape:h-[100dvh]">
+
+    <div
+        class="flex flex-col w-full max-w-[1680px] mx-auto p-2 gap-2 box-border md:h-[100dvh] md:overflow-hidden landscape:h-[100dvh] landscape:overflow-hidden relative">
+
+        <!-- ═══════════════════════════════════════════════════════════════
+         🚫 [수정 금지] 헤더 — 제목은 JS CONTENT_CONFIG.title로 자동 주입
+         ═══════════════════════════════════════════════════════════════ -->
+        <header class="ui-box flex-none px-4 py-2 flex items-center justify-between z-10 bg-white relative">
+            <div class="flex items-center gap-4">
+                <a href="https://www.tsherpa.co.kr" target="_blank"
+                    class="flex items-center flex-none desktop-only:hover:opacity-80 transition-opacity">
+                    <img src="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_black.png"
+                        alt="T셀파"
+                        class="h-7 md:h-8 object-contain draggable-false flex-none hidden [@media(min-width:768px)]:block">
+                    <img src="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_short.png"
+                        alt="T셀파"
+                        class="h-7 md:h-8 object-contain draggable-false flex-none block [@media(min-width:768px)]:hidden">
+                </a>
+                <div class="border-l border-slate-300 pl-4">
+                    <h1 class="sim-title" id="sim-title-el">로딩 중...</h1><!-- CONTENT_CONFIG.title 자동 주입 -->
+                </div>
+            </div>
+            <div class="flex items-center relative">
+                <button id="moreMenuBtn"
+                    class="header-button flex landscape:hidden desktop-only:hidden transition-colors ml-2"
+                    title="메뉴 더보기">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                    </svg>
+                </button>
+                <div class="hidden landscape:flex desktop-only:flex items-center">
+                    <!-- 학습 가이드 -->
+                    <button id="helpBtn" class="header-button desktop-only:md:hidden font-bold text-lg ml-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <!-- 전체화면 | fullscreen -->
+                    <button id="fullscreen-btn" class="header-button flex ml-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="mobileMenuPanel"
+                    class="absolute top-1/2 -translate-y-1/2 right-full z-50 flex items-center gap-2 overflow-hidden transition-all duration-300 w-0 opacity-0">
+                    <button id="help-Btn" class="header-button flex-none flex font-bold text-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <button id="fullscreen-btn-mobile" class="header-button flex-none flex transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ════════════════════════════════════════════════════════
+         🚫 [수정 금지] 메인 워크스페이스 래퍼
+         ════════════════════════════════════════════════════════ -->
+        <main id="workspace"
+            class="flex flex-col md:flex-row landscape:flex-row flex-1 min-h-0 gap-3 relative bg-slate-100 md:bg-transparent">
+
+            <!-- 🚫 [수정 금지] 캔버스 영역 -->
+            <section id="content-area"
+                class="ui-box flex-none h-[50vh] md:h-auto landscape:h-auto md:flex-[3] landscape:flex-[3] flex flex-col min-h-[250px] md:min-h-[400px] landscape:min-h-0 overflow-hidden relative bg-white">
+                <!-- 캔버스 상단 환경변수 및 인디케이터 -->
+                <div class="hidden">
+                    <div class="env-text flex items-center gap-4 flex-none pl-4" id="environment-info">
+                        <span id="env-label-canvas">로딩 중...</span><!-- CONTENT_CONFIG.envLabel 자동 주입 -->
+                    </div>
+                    <div id="statusIndicator"
+                        class="w-3 h-3 rounded-full bg-emerald-500 border border-slate-300 transition-colors duration-200 translate-y-[1px]">
+                    </div>
+                </div>
+
+                <div class="flex-1 w-full relative bg-white overflow-hidden" id="canvas-container">
+                    <!-- 콘텐츠 상태 -->
+                    <div id="helperBoxWrapper"
+                        class="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full border border-slate-200 shadow-sm pointer-events-none">
+                        <p id="helperText" class="helper-text-default whitespace-nowrap transition-colors">로딩 중...</p>
+                    </div>
+                    <canvas id="simCanvas" class="w-full h-full block relative z-0">컨텐츠 영역</canvas>
+                </div>
+                <!-- 초기화 -->
+                <button id="resetBtn"
+                    class="btn-reset-custom flex absolute bottom-4 right-4 z-40 bg-white/95 backdrop-blur border rounded-full px-4 py-2 items-center gap-2 transition-colors shadow-sm">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span id="resetBtnText">초기화</span>
+                </button>
+            </section>
+
+
+            <!-- ╔══════════════════════════════════════════════════════════╗
+             ║  ✏️  EDIT ZONE — 제어 패널 (우측 사이드바)                ║
+             ║  이 <aside> 안의 입력 폼을 자유롭게 추가/수정/삭제하세요.   ║
+             ╚══════════════════════════════════════════════════════════╝ -->
+            <aside id="settings-area"
+                class="ui-box flex-none landscape:max-w-[300px] md:flex-[1] landscape:flex-[1] md:min-w-[250px] landscape:min-w-[250px] flex flex-col min-h-[300px] landscape:min-h-0 overflow-hidden relative">
+                <div class="flex-1 overflow-y-auto relative" id="controlsWrapper">
+                    <div class="p-3 md:p-4 min-h-full flex flex-col justify-between gap-4">
+                        <div class="flex flex-col gap-4">
+
+                            <!-- 환경변수 레이블 삭제됨 -->
+
+                            <!-- ─────────────────────────────────────────────
+                         ✏️  입력 폼 영역 시작 — 아래부터 자유롭게 수정
+                         ───────────────────────────────────────────── -->
+
+                            <!-- 빛의 성질 선택 -->
+                            <div class="panel-block">
+                                <label class="var-label-control">빛의 성질</label>
+                                <div class="flex flex-col gap-2 w-full" id="modeSelectContainer">
+                                    <label class="radio-label">
+                                        <input type="radio" name="simMode" value="reflect"
+                                            class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0"
+                                            checked>
+                                        <span class="select-option-text font-bold">빛의 반사</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="simMode" value="refract"
+                                            class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                        <span class="select-option-text font-bold">빛의 굴절</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 물질 선택 (빛의 굴절에서만 보임) -->
+                            <div id="media-control-section" class="hidden flex flex-col gap-4">
+                                <div class="panel-block">
+                                    <label class="var-label-control" for="select-medium1">상단 물질</label>
+                                    <div class="relative w-full">
+                                        <select id="select-medium1"
+                                            class="w-full h-10 p-2 border rounded bg-white focus:outline-none focus:border-indigo-500 select-option-text font-medium">
+                                            <option value="1.0" selected>공기</option>
+                                            <option value="1.33">물</option>
+                                            <option value="1.5">유리</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="panel-block">
+                                    <label class="var-label-control" for="select-medium2">하단 물질</label>
+                                    <div class="relative w-full">
+                                        <select id="select-medium2"
+                                            class="w-full h-10 p-2 border rounded bg-white focus:outline-none focus:border-indigo-500 select-option-text font-medium">
+                                            <option value="1.0">공기</option>
+                                            <option value="1.33" selected>물</option>
+                                            <option value="1.5">유리</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 표시 요소 -->
+                            <div class="panel-block flex flex-col gap-2">
+                                <label class="var-label-control">표시 요소</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label
+                                        class="flex items-center gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer desktop-only:hover:bg-slate-50 transition-colors select-option-text font-medium">
+                                        <input type="checkbox" id="chk-show-normal" checked
+                                            class="w-4 h-4 text-indigo-600 bg-slate-100 border-slate-300 rounded focus:ring-indigo-500">
+                                        <span>법선</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer desktop-only:hover:bg-slate-50 transition-colors select-option-text font-medium">
+                                        <input type="checkbox" id="chk-show-protractor"
+                                            class="w-4 h-4 text-indigo-600 bg-slate-100 border-slate-300 rounded focus:ring-indigo-500">
+                                        <span>각도기</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer desktop-only:hover:bg-slate-50 transition-colors select-option-text font-medium">
+                                        <input type="checkbox" id="chk-show-values" checked
+                                            class="w-4 h-4 text-indigo-600 bg-slate-100 border-slate-300 rounded focus:ring-indigo-500">
+                                        <span>각도</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer desktop-only:hover:bg-slate-50 transition-colors select-option-text font-medium">
+                                        <input type="checkbox" id="chk-show-boundary" checked
+                                            class="w-4 h-4 text-indigo-600 bg-slate-100 border-slate-300 rounded focus:ring-indigo-500">
+                                        <span>경계선</span>
+                                    </label>
+                                    <label id="lbl-show-partial"
+                                        class="hidden flex items-center gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer desktop-only:hover:bg-slate-50 transition-colors select-option-text font-medium">
+                                        <input type="checkbox" id="chk-show-partial"
+                                            class="w-4 h-4 text-indigo-600 bg-slate-100 border-slate-300 rounded focus:ring-indigo-500">
+                                        <span>일부 반사</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 입사각 슬라이더 (varSlider1 / varDisplay1 id는 코어가 사용하므로 유지) -->
+                            <div class="panel-block">
+                                <div class="flex justify-between items-center">
+                                    <label class="var-label-control" id="varName1">입사각</label>
+                                    <span id="varDisplay1"
+                                        class="var-unit-display min-w-12 text-center font-bold text-indigo-600">45 °</span>
+                                </div>
+                                <input type="range" id="varSlider1" min="0" max="85" step="1" value="45"
+                                    class="w-full accent-indigo-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                <div class="flex justify-between mt-0">
+                                    <span class="slider-limit-label" id="varMinLabel1">0 °</span>
+                                    <span class="slider-limit-label" id="varMaxLabel1">85 °</span>
+                                </div>
+                            </div>
+
+                            <!-- ─────────────────────────────────────────────
+                         ✏️  입력 폼 영역 끝
+                         ───────────────────────────────────────────── -->
+                        </div>
+
+                        <!-- 🚫 [수정 금지] 하단 동작 버튼 (텍스트만 변경 가능) -->
+                        <div class="flex flex-col gap-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button id="pauseBtn"
+                                    class="btn-action-start col-span-2 py-2 border rounded-lg transition-colors">▶
+                                    시작</button>
+                                <button id="conceptBtn"
+                                    class="btn-sub py-2 border rounded-lg transition-colors">개념 정리</button>
+                                <button id="quizBtn"
+                                    class="btn-sub py-2 border rounded-lg transition-colors">확인 퀴즈</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </aside>
+            <!-- ╚══════EDIT ZONE 끝═════════════════════════════════════════╝ -->
+
+
+            <!-- ═════════════════════════════════════════════════════════════
+             🚫 [수정 금지] 팝업 모달 — 내용은 JS CONTENT_CONFIG로 자동 주입
+             ═════════════════════════════════════════════════════════════ -->
+
+            <!-- 학습 가이드 모달 (모바일/태블릿) -->
+            <div id="helpBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-left">
+                <div class="modal-container max-w-4xl min-h-[200px]">
+                    <div class="modal-header">
+                        <h3 class="modal-title flex items-center gap-2"><svg class="w-6 h-6 text-indigo-600" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg> 학습 가이드</h3>
+                        <button id="closeHelpBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="guide-block">
+                            <h4 class="guide-title mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg> 콘텐츠 소개</h4>
+                            <p class="guide-desc" id="guide-intro-modal">로딩 중...</p>
+                        </div>
+                        <div class="guide-block">
+                            <h4 class="guide-title mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg> 사용 방법</h4>
+                            <ol class="guide-desc list-decimal pl-5 space-y-1.5 marker:text-slate-400 marker:font-bold"
+                                id="guide-steps-modal"><!-- JS 자동 주입 --></ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 개념 정리 모달 -->
+            <div id="conceptBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-left">
+                <div class="modal-container max-w-2xl min-h-[200px]">
+                    <div class="modal-header">
+                        <h3 class="modal-title">개념 정리</h3>
+                        <button id="closeConceptBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="modal-body" id="conceptContent"><!-- JS CONTENT_CONFIG.concept 자동 주입 --></div>
+                </div>
+            </div>
+
+            <!-- 확인 퀴즈 모달 -->
+            <div id="quizBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-center">
+                <div class="modal-container max-w-2xl min-h-[200px] lg:min-h-[480px] max-h-[70dvh] overflow-hidden">
+                    <div class="modal-header">
+                        <div class="flex items-center gap-3">
+                            <h3 class="modal-title">확인 퀴즈</h3>
+                            <span id="quizStep" class="quiz-step px-3 py-1 rounded-full">질문 1 / N</span>
+                        </div>
+                        <button id="closeQuizBtn" class="modal-close-btn transition-colors" aria-label="닫기"><svg
+                                class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="flex-1 flex flex-col min-h-0">
+                        <div class="flex-1 overflow-y-auto px-5 pt-5 flex flex-col gap-2 min-h-0">
+                            <p id="questionText" class="quiz-question flex-none"></p>
+                            <div id="answerArea" class="flex-1 flex flex-col justify-center min-h-0 py-4">
+                                <button id="showAnswerBtn"
+                                    class="quiz-btn-check w-full max-w-sm mx-auto py-3 rounded-xl transition-colors">정답
+                                    확인하기</button>
+                                <div id="answerText" class="quiz-answer-box hidden p-4 rounded-xl border w-full">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="quizNav" class="flex justify-center gap-4 flex-none py-4 px-5 mt-2">
+                            <button id="prevQuizBtn" class="nav-btn">←</button>
+                            <button id="nextQuizBtn" class="nav-btn">→</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🚫 [수정 금지] 전체화면 딤처리 UI -->
+            <div id="fullscreen-exit-ui"
+                class="hidden fixed top-0 left-0 w-full h-12 z-[60] transition-opacity duration-300 opacity-0 pointer-events-none">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent"></div>
+            </div>
+        </main>
+
+        <!-- 🚫 [수정 금지] 푸터 -->
+        <footer class="flex-none flex justify-center p-1">
+            <p class="text-[10px] text-slate-400 font-medium">copyright© 2026 by chunjae co.ltd all rights reserved.</p>
+        </footer>
+    </div>
+
+
+    <script>
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE A — CONTENT CONFIG (텍스트/콘텐츠 설정)              ████
+           ████   이 블록의 값만 수정하면 제목·가이드·개념·퀴즈가 모두 반영됩니다.  ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        const CONTENT_CONFIG = {
+            "title": "빛의 반사와 굴절",
+            "envLabel": "빛의 반사와 굴절 시뮬레이터",
+            "envLabelpanel": "실험 설정 및 제어",
+            "guide": {
+                "intro": "레이저 빛의 입사각과 물질을 바꾸며 빛이 경계면에서 반사되고 굴절되는 모습을 확인할 수 있다.",
+                "steps": [
+                    "빛의 성질에서 반사 또는 굴절을 선택한다.",
+                    "굴절을 선택한 경우 상단 물질과 하단 물질을 공기, 물, 유리 중에서 고른다.",
+                    "레이저를 드래그하거나 입사각 슬라이더를 움직여 입사각을 조절한다.",
+                    "표시 요소에서 법선, 각도기, 각도, 경계선, 일부 반사를 켜고 끄며 입사각과 반사각, 굴절각을 확인한다.",
+                    "시작 버튼을 눌러 레이저를 켜고 빛이 나아가는 경로를 관찰한다."
+                ]
+            },
+            "concept": [
+                {
+                    "color": "orange",
+                    "title": "빛의 반사 법칙",
+                    "desc": "빛이 나아가다가 물체의 표면에 부딪혀 되돌아 나오는 현상을 빛의 반사라고 합니다. 경계면에 수직인 선을 법선이라 하고, 입사 광선과 법선이 이루는 각을 입사각, 반사 광선과 법선이 이루는 각을 반사각이라고 합니다. 빛이 반사될 때는 항상 입사각과 반사각의 크기가 같으며, 입사 광선과 반사 광선, 법선은 같은 평면 위에 있습니다."
+                },
+                {
+                    "color": "green",
+                    "title": "빛의 굴절 현상",
+                    "desc": "빛이 한 물질에서 다른 물질로 비스듬히 들어갈 때 경계면에서 진행 방향이 꺾이는 현상을 빛의 굴절이라고 합니다. 굴절 광선과 법선이 이루는 각을 굴절각이라고 합니다. 빛이 공기에서 물이나 유리로 들어갈 때는 법선 쪽으로 꺾여 굴절각이 입사각보다 작고, 반대로 물이나 유리에서 공기로 나올 때는 법선에서 멀어지는 쪽으로 꺾여 굴절각이 입사각보다 큽니다. 빛이 경계면에 수직으로 들어가면 꺾이지 않고 그대로 나아갑니다."
+                },
+                {
+                    "color": "blue",
+                    "title": "물체를 보는 과정",
+                    "desc": "우리가 물체를 볼 수 있는 것은 물체에서 나온 빛이 눈에 들어오기 때문입니다. 전등처럼 스스로 빛을 내는 물체는 그 빛이 직접 눈에 들어오고, 스스로 빛을 내지 못하는 물체는 광원에서 나온 빛이 물체 표면에서 반사되어 눈에 들어옵니다. 이 과정은 광원에서 물체를 거쳐 눈으로 이어지는 화살표로 빛의 경로를 그려 나타낼 수 있습니다."
+                },
+                {
+                    "color": "purple",
+                    "title": "굴절로 달라 보이는 물체",
+                    "desc": "물속에 있는 물체에서 나온 빛은 물에서 공기로 나올 때 경계면에서 꺾인 뒤 눈에 들어옵니다. 사람의 눈은 빛이 곧게 나아온 것으로 인식하므로, 꺾여 들어온 빛을 거꾸로 연장한 곳에 물체가 있는 것처럼 보입니다. 그래서 물속의 동전이 실제보다 떠올라 보이고, 물컵에 꽂은 빨대가 수면에서 꺾여 보입니다."
+                }
+            ],
+            "quizzes": [
+                {
+                    "q": "거울에 빛을 비추었더니 입사각이 35°였다. 이때 반사각의 크기는 얼마인가?\n\n① 35°  ② 55°  ③ 70°  ④ 145°",
+                    "a": "정답: ① 35°\n\n해설: 빛이 반사될 때는 항상 입사각과 반사각의 크기가 같습니다(반사 법칙). 입사각과 반사각은 모두 경계면이 아니라 법선을 기준으로 잰다는 점에 주의합니다."
+                },
+                {
+                    "q": "빛이 공기에서 물로 비스듬히 들어갈 때 일어나는 현상으로 옳은 것은?\n\n① 경계면에서 꺾이지 않고 그대로 나아간다.  ② 법선 쪽으로 꺾여 굴절각이 입사각보다 작다.  ③ 법선에서 멀어지는 쪽으로 꺾여 굴절각이 입사각보다 크다.  ④ 빛이 모두 반사되어 물속으로 들어가지 않는다.",
+                    "a": "정답: ② 법선 쪽으로 꺾여 굴절각이 입사각보다 작다.\n\n해설: 빛이 다른 물질로 비스듬히 들어가면 경계면에서 진행 방향이 꺾입니다. 공기에서 물이나 유리로 들어갈 때는 법선 쪽으로 꺾이므로 굴절각이 입사각보다 작습니다."
+                },
+                {
+                    "q": "스스로 빛을 내지 못하는 책을 우리가 볼 수 있는 과정을 빛의 경로로 바르게 나타낸 것은?\n\n① 눈 → 책  ② 책 → 광원 → 눈  ③ 광원 → 책 → 눈  ④ 눈 → 책 → 광원",
+                    "a": "정답: ③ 광원 → 책 → 눈\n\n해설: 스스로 빛을 내지 못하는 물체는 광원에서 나온 빛이 물체 표면에서 반사되어 눈에 들어오기 때문에 볼 수 있습니다. 빛은 눈에서 나가는 것이 아니라 눈으로 들어옵니다."
+                },
+                {
+                    "q": "물이 담긴 컵 바닥의 동전이 실제 위치보다 떠올라 보이는 까닭으로 옳은 것은?\n\n① 동전에서 나온 빛이 물에서 공기로 나올 때 경계면에서 꺾이기 때문이다.  ② 동전이 스스로 빛을 내기 때문이다.  ③ 빛이 물속에서 곡선으로 휘어 나아가기 때문이다.  ④ 눈에서 나온 빛이 동전에 닿기 때문이다.",
+                    "a": "정답: ① 동전에서 나온 빛이 물에서 공기로 나올 때 경계면에서 꺾이기 때문이다.\n\n해설: 동전에서 반사된 빛은 물에서 공기로 나올 때 경계면에서 법선에서 멀어지는 쪽으로 꺾여 눈에 들어옵니다. 눈은 빛이 곧게 나아온 것으로 인식하므로 꺾인 빛을 거꾸로 연장한 위치, 즉 실제보다 위쪽에 동전이 있는 것처럼 보입니다."
+                }
+            ]
+        };
+        /* ████ ZONE A 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE B — SIM CONFIG (시뮬레이션 파라미터 설정)             ████
+           ████   슬라이더 범위, 초기 객체 크기 등 수치 설정을 여기서 변경하세요.   ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        const SIM_CONFIG = {
+            slider: {
+                min: 0,
+                max: 85,
+                step: 1,
+                initialValue: 45,
+                unit: " °"
+            },
+            /* 시작 버튼·캔버스 안내 문구 (코어 updateUIState가 사용) */
+            labels: {
+                start: "레이저 켜기",
+                pause: "레이저 끄기",
+                helperIdle: "레이저의 위치를 조정하고 레이저 켜기를 누르세요.",
+                helperRunning: "레이저 ON",
+                helperPaused: "레이저의 위치를 조정하고 레이저 켜기를 누르세요."
+            }
+        };
+        /* ████ ZONE B 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE C — SIM STATE (동적 상태 변수)                       ████
+           ████   시뮬레이션 진행 중 변하는 값들을 여기에 추가·수정하세요.         ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        let simData = {
+            angle: SIM_CONFIG.slider.initialValue,   /* 입사각 (°) */
+            mode: 'reflect',                         /* 'reflect' | 'refract' */
+            n1: 1.0,                                 /* 상단 물질 (내부 계산 전용) */
+            n2: 1.33,                                /* 하단 물질 (내부 계산 전용) */
+            showNormal: true,
+            showProtractor: false,
+            showValues: true,
+            showBoundary: true,
+            showPartial: false,
+            lx: undefined, ly: undefined,            /* 레이저 기기 위치 (조준점 기준) */
+            cx: undefined, cy: undefined,            /* 조준점(경계면 중심)의 캔버스 좌표 */
+            isDraggingLaser: false                   /* 레이저 드래그 중 여부 */
+        };
+
+        /* 탭별 상태 저장소 (이 단원은 탭을 쓰지 않음) */
+        const tabStates = {};
+        /* ████ ZONE C 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE D — CORE ENGINE (수정 금지)
+           캔버스·상태·사운드·DOM캐시 등 엔진 코어 초기화
+           ════════════════════════════════════════════════════════════════════════ */
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        const container = document.getElementById('canvas-container');
+
+        const varSlider1 = document.getElementById('varSlider1');
+        const varDisplay1 = document.getElementById('varDisplay1');
+
+        const sysState = {
+            isStarted: false, isPaused: false, isDragging: false, isLooping: false,
+            zoomLevel: 1.0, offsetX: 0, offsetY: 0, lastX: 0, lastY: 0,
+            currentQuizIndex: 0, canvasLogicalWidth: 0, canvasLogicalHeight: 0
+        };
+
+        const DOM = {}; /* DOM 요소 캐시 */
+
+        const debounce = (func, delay) => {
+            let id;
+            return (...args) => { clearTimeout(id); id = setTimeout(() => func.apply(this, args), delay); };
+        };
+
+        const bindEvent = (id, type, handler) => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener(type, handler);
+        };
+
+        /* CONTENT_CONFIG → DOM 주입 */
+        function renderContent() {
+            const C = CONTENT_CONFIG;
+
+            /* 제목 */
+            document.title = C.title;
+            const titleEl = document.getElementById('sim-title-el');
+            if (titleEl) titleEl.textContent = C.title;
+
+            /* 환경 변수 레이블 */
+            ['env-label-canvas', 'env-label-panel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.envLabel;
+            });
+
+            /* 제어패널 환경 변수 레이블 */
+            ['env-label-panel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.envLabelpanel;
+            });
+
+            /* 가이드 — 소개 */
+            ['guide-intro-desktop', 'guide-intro-modal'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.guide.intro;
+            });
+
+            /* 가이드 — 단계 (모달: 단순 주입) */
+            const stepsHTML = CONTENT_CONFIG.guide.steps.map(s => `<li>${s}</li>`).join('');
+            const modalSteps = document.getElementById('guide-steps-modal');
+            if (modalSteps) modalSteps.innerHTML = stepsHTML;
+
+            /* 가이드 — 단계 (데스크톱 셔터: 개수에 따라 비율·컬럼 분기) */
+            const steps = CONTENT_CONFIG.guide.steps;
+            const introCol = document.getElementById('guide-intro-col');
+            const stepsCol = document.getElementById('guide-steps-col');
+            const stepsWrap = document.getElementById('guide-steps-wrapper-desktop');
+
+            if (steps.length >= 4) {
+                /* 1:2 비율 적용 */
+                if (introCol) introCol.className = 'flex-1';
+                if (stepsCol) stepsCol.className = 'flex-[2]';
+
+                /* 컬럼 분할: ceil(n/2)개가 왼쪽 */
+                const split = Math.ceil(steps.length / 2);
+                const col1 = steps.slice(0, split);
+                const col2 = steps.slice(split);
+
+                if (stepsWrap) {
+                    stepsWrap.innerHTML = `
+                <div class="flex flex-col lg:flex-row gap-x-8 gap-y-1">
+                    <ol class="guide-desc flex-1 list-decimal pl-5 space-y-1">
+                        ${col1.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                    <ol class="guide-desc flex-1 list-decimal pl-5 space-y-1" start="${split + 1}">
+                        ${col2.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                </div>`;
+                }
+            } else {
+                /* 1:1 비율, 단일 리스트 */
+                if (introCol) introCol.className = 'flex-1';
+                if (stepsCol) stepsCol.className = 'flex-1';
+
+                if (stepsWrap) {
+                    stepsWrap.innerHTML = `
+                <ol class="guide-desc list-decimal pl-5 space-y-1">
+                    ${steps.map(s => `<li>${s}</li>`).join('')}
+                </ol>`;
+                }
+            }
+
+            /* 개념 정리 카드 */
+            const colorMap = {
+                orange: { bg: 'bg-orange-50', border: 'border-orange-500', titleClass: 'concept-title-1', descClass: 'concept-desc' },
+                green: { bg: 'bg-emerald-50', border: 'border-emerald-500', titleClass: 'concept-title-2', descClass: 'concept-desc' },
+                blue: { bg: 'bg-blue-50', border: 'border-blue-500', titleClass: 'concept-title-3', descClass: 'concept-desc' },
+                purple: { bg: 'bg-purple-50', border: 'border-purple-500', titleClass: 'concept-title-4', descClass: 'concept-desc' }
+            };
+            const conceptContent = document.getElementById('conceptContent');
+            if (conceptContent) {
+                conceptContent.innerHTML = C.concept.map(item => {
+                    const col = colorMap[item.color] || colorMap.orange;
+                    return `<div class="p-4 ${col.bg} border-l-4 ${col.border} rounded-r-xl">
+                        <p class="${col.titleClass} mb-1">${item.title}</p>
+                        <p class="${col.descClass}">${item.desc}</p>
+                    </div>`;
+                }).join('');
+            }
+
+            /* KaTeX 수식 렌더링 (콘텐츠 주입 후 실행) */
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '\\[', right: '\\]', display: true }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            /* DOM 캐싱 */
+            DOM.statusIndicator = document.getElementById('statusIndicator');
+            DOM.pauseBtn = document.getElementById('pauseBtn');
+            DOM.helperText = document.getElementById('helperText');
+            DOM.varSlider1 = document.getElementById('varSlider1');
+            DOM.directInputSingle = document.getElementById('directInputSingle');
+            DOM.ratioInputA = document.getElementById('ratioInputA');
+            DOM.ratioInputB = document.getElementById('ratioInputB');
+            DOM.customSelectTrigger = document.getElementById('customSelectTrigger');
+            DOM.customSelectList = document.getElementById('customSelectList');
+            DOM.radioOptions = document.querySelectorAll('input[name="simOption"]');
+
+            /* 콘텐츠 주입 */
+            renderContent();
+
+            /* 슬라이더 초기값 세팅 */
+            if (varSlider1) {
+                varSlider1.min = SIM_CONFIG.slider.min;
+                varSlider1.max = SIM_CONFIG.slider.max;
+                varSlider1.step = SIM_CONFIG.slider.step;
+                varSlider1.value = SIM_CONFIG.slider.initialValue;
+            }
+            if (varDisplay1) varDisplay1.textContent = `${SIM_CONFIG.slider.initialValue} ${SIM_CONFIG.slider.unit}`;
+
+            checkLandscape();
+        });
+
+        const checkLandscape = () => {
+            if (window.matchMedia("(orientation: landscape)").matches && window.innerWidth < 1024) {
+                const sc = document.getElementById('shutter-content');
+                if (sc && sc.classList.contains('is-open')) document.getElementById('shutter-toggle')?.click();
+            }
+        };
+        window.addEventListener('orientationchange', () => setTimeout(checkLandscape, 100));
+
+        if (!document.getElementById('shutter-toggle')) {
+            const helpBtn = document.getElementById('helpBtn');
+            if (helpBtn) helpBtn.classList.remove('desktop-only:md:hidden');
+        }
+        /* ════ ZONE D 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE E — SOUND MANAGER (수정 금지) (삭제시 uiSound 관련 코드 모두 삭제) - REMOVED
+           ════════════════════════════════════════════════════════════════════════ */
+
+
+        /* ███████████████████████████████████████████████████████████████████████
+           ████                                                               ████
+           ████   ✏️  ZONE F — SIMULATION LOGIC (시뮬레이션 핵심 로직)         ████
+           ████   draw()와 updatePhysics()에 시뮬레이션 코드를 작성하세요.       ████
+           ████                                                               ████
+           ███████████████████████████████████████████████████████████████████████ */
+
+        /* 초기 상태 — 01_spec.json의 initial 값 (빛의 성질: 반사, 상단: 공기, 하단: 물, 입사각 45°, 표시: 법선·각도·경계선) */
+        const INITIAL_STATE = {
+            mode: 'reflect',
+            n1: 1.0,
+            n2: 1.33,
+            showNormal: true,
+            showProtractor: false,
+            showValues: true,
+            showBoundary: true,
+            showPartial: false
+        };
+
+        /* 경계면에서 일부 반사되는 빛의 세기 비율 (시뮬레이션 내부 계산 전용) */
+        function getFresnelReflectance(n1, n2, theta1_rad) {
+            let sinTheta2 = (n1 / n2) * Math.sin(theta1_rad);
+            if (Math.abs(sinTheta2) >= 1.0) {
+                return 1.0; // 전반사
+            }
+            let theta2_rad = Math.asin(sinTheta2);
+            let cos1 = Math.cos(theta1_rad);
+            let cos2 = Math.cos(theta2_rad);
+            let rs = (n1 * cos1 - n2 * cos2) / (n1 * cos1 + n2 * cos2);
+            let rp = (n2 * cos1 - n1 * cos2) / (n2 * cos1 + n1 * cos2);
+            return (rs * rs + rp * rp) / 2;
+        }
+
+        /* 빛의 성질(반사/굴절)에 따라 물질 선택·일부 반사 표시를 보이거나 숨긴다 */
+        function updateModeUI() {
+            const mediaSection = document.getElementById('media-control-section');
+            const lblShowPartial = document.getElementById('lbl-show-partial');
+            const chkPartial = document.getElementById('chk-show-partial');
+            if (simData.mode === 'refract') {
+                if (mediaSection) mediaSection.classList.remove('hidden');
+                if (lblShowPartial) lblShowPartial.classList.remove('hidden');
+            } else {
+                if (mediaSection) mediaSection.classList.add('hidden');
+                if (lblShowPartial) lblShowPartial.classList.add('hidden');
+                if (chkPartial) chkPartial.checked = false;
+                simData.showPartial = false;
+            }
+        }
+
+        /* 시뮬레이션 초기화 — 초기화 버튼과 첫 실행 때 호출된다 (코어가 호출, 이름 유지) */
+        function initSimulation() {
+            /* 상태 초기화 */
+            simData.angle = SIM_CONFIG.slider.initialValue;
+            Object.assign(simData, INITIAL_STATE);
+            simData.lx = undefined;
+            simData.ly = undefined;
+            simData.isDraggingLaser = false;
+
+            /* 입력 UI 초기화 */
+            if (varSlider1) varSlider1.value = SIM_CONFIG.slider.initialValue;
+            if (varDisplay1) varDisplay1.textContent = `${SIM_CONFIG.slider.initialValue}${SIM_CONFIG.slider.unit}`;
+
+            const setChecked = (id, v) => { const el = document.getElementById(id); if (el) el.checked = v; };
+            setChecked('chk-show-normal', simData.showNormal);
+            setChecked('chk-show-protractor', simData.showProtractor);
+            setChecked('chk-show-values', simData.showValues);
+            setChecked('chk-show-boundary', simData.showBoundary);
+            setChecked('chk-show-partial', simData.showPartial);
+
+            const defaultRadio = document.querySelector(`input[name="simMode"][value="${simData.mode}"]`);
+            if (defaultRadio) defaultRadio.checked = true;
+
+            const selMedium1 = document.getElementById('select-medium1');
+            if (selMedium1) selMedium1.value = "1.0";
+            const selMedium2 = document.getElementById('select-medium2');
+            if (selMedium2) selMedium2.value = "1.33";
+
+            updateModeUI();
+
+            /* 엔진 상태 초기화 (레이저 꺼진 상태로 시작) */
+            sysState.isStarted = false;
+            sysState.isPaused = false;
+            sysState.zoomLevel = 1.0;
+            sysState.offsetX = 0;
+            sysState.offsetY = 0;
+            if (canvas) canvas.style.cursor = 'default';
+
+            stopLoop();
+            updateUIState();
+            draw();
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           ✏️  draw() — 매 프레임 캔버스를 그리는 함수 (코어가 호출, 이름 유지)
+           ───────────────────────────────────────────────────────────── */
+        function draw() {
+            if (!ctx || !canvas || !sysState.canvasLogicalWidth || !sysState.canvasLogicalHeight) return;
+            const w = sysState.canvasLogicalWidth;
+            const h = sysState.canvasLogicalHeight;
+
+            // 캔버스 크기에 따른 각도기 반지름 R 및 스케일, 중심점 cy 계산
+            let R = Math.min(w, h) * 0.38;
+
+            // 좌우 영역 침범 방지 (가로 너비 기준 최대 반지름 제한)
+            const maxR_horizontal = w / 2 - 20;
+            if (R > maxR_horizontal) {
+                R = Math.max(65, maxR_horizontal);
+            }
+
+            // R + laserLen + 52 <= h - R - 10 를 만족할 때까지 R을 줄임 (최소 65)
+            const checkVerticalFit = (testR) => {
+                const testScale = Math.max(0.5, Math.min(1.2, testR / 220));
+                const laserLen = 52 * testScale;
+                return (testR + laserLen + 52) <= (h - testR - 10);
+            };
+
+            while (R > 65 && !checkVerticalFit(R)) {
+                R -= 1;
+            }
+            R = Math.max(65, R);
+
+            const standardR = 220;
+            const scale = Math.max(0.5, Math.min(1.2, R / standardR));
+            const laserLen = 52 * scale;
+
+            // 가로/세로 영역에 맞추어 중심점 cy 계산 (상단 52px 마진 확보 및 하단 10px 잘림 방지)
+            const topMargin = Math.max(15, Math.min(52, h * 0.12));
+            const minY = R + laserLen + topMargin;
+            const maxY = h - R - 10;
+            let cy = h / 2;
+            if (minY <= maxY) {
+                cy = Math.max(minY, Math.min(maxY, h / 2));
+            } else {
+                cy = minY;
+            }
+            simData.cx = w / 2;
+            simData.cy = cy;
+            const cx = simData.cx;
+
+            ctx.clearRect(0, 0, w, h);
+            ctx.save();
+
+            // 캔버스 중앙 기준 이동 (동적 중심 cy 적용)
+            ctx.translate(cx, cy);
+
+            const rectW = w * 4;
+            const rectH = h * 4;
+
+            // 1. 물질 공간 배경
+            // 상단 물질 (입사 공간)
+            if (simData.mode === 'refract') {
+                if (simData.n1 === 1.0) {
+                    ctx.fillStyle = '#f8fafc'; // 공기
+                } else if (simData.n1 === 1.33) {
+                    ctx.fillStyle = '#e0f2fe'; // 물
+                } else if (simData.n1 === 1.5) {
+                    ctx.fillStyle = '#f1f5f9'; // 유리
+                    ctx.fillRect(-rectW / 2, -rectH / 2, rectW, rectH / 2);
+                    ctx.fillStyle = 'rgba(129, 140, 248, 0.1)';
+                }
+            } else {
+                ctx.fillStyle = '#f8fafc'; // 반사 모드 상단은 무조건 공기
+            }
+            ctx.fillRect(-rectW / 2, -rectH / 2, rectW, rectH / 2);
+
+            // 하단 물질
+            if (simData.mode === 'reflect') {
+                let grad = ctx.createLinearGradient(0, 0, 0, rectH / 2);
+                grad.addColorStop(0, '#cbd5e1');
+                grad.addColorStop(1, '#94a3b8');
+                ctx.fillStyle = grad;
+                ctx.fillRect(-rectW / 2, 0, rectW, rectH / 2);
+
+                // 거울 해칭 패턴 (물체의 경계 표시 여부와 관계없이 항상 표시)
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1.5;
+                for (let i = -rectW / 2; i < rectW / 2; i += 12) {
+                    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + 8, 8); ctx.stroke();
+                }
+            } else {
+                if (simData.n2 === 1.0) {
+                    ctx.fillStyle = '#f8fafc'; // 공기
+                } else if (simData.n2 === 1.33) {
+                    ctx.fillStyle = '#e0f2fe'; // 물
+                } else if (simData.n2 === 1.5) {
+                    ctx.fillStyle = '#f1f5f9'; // 유리
+                    ctx.fillRect(-rectW / 2, 0, rectW, rectH / 2);
+                    ctx.fillStyle = 'rgba(129, 140, 248, 0.1)';
+                }
+                ctx.fillRect(-rectW / 2, 0, rectW, rectH / 2);
+            }
+
+            // 중앙 경계선
+            if (simData.showBoundary) {
+                ctx.strokeStyle = '#475569';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.moveTo(-rectW / 2, 0); ctx.lineTo(rectW / 2, 0); ctx.stroke();
+            }
+
+            const fontSize = Math.max(8, Math.round(12 * scale));
+            const protoFontSize = Math.max(7, Math.round(9 * scale));
+
+            const drawTextWithOutline = (text, x, y, align, color, isUpper) => {
+                ctx.save();
+                ctx.font = `bold ${fontSize}px Noto Sans KR`;
+                ctx.textAlign = align;
+                ctx.textBaseline = isUpper ? 'bottom' : 'top';
+
+                let bgColor = '#f8fafc'; // Default
+                if (isUpper) {
+                    if (simData.mode === 'refract') {
+                        if (simData.n1 === 1.33) bgColor = '#e0f2fe';
+                        else if (simData.n1 === 1.5) bgColor = '#e6ebf9';
+                    }
+                } else {
+                    if (simData.mode === 'refract') {
+                        if (simData.n2 === 1.33) bgColor = '#e0f2fe';
+                        else if (simData.n2 === 1.5) bgColor = '#e6ebf9';
+                    } else {
+                        bgColor = '#cbd5e1';
+                    }
+                }
+
+                ctx.strokeStyle = bgColor;
+                ctx.lineWidth = 4.5 * scale;
+                ctx.lineJoin = 'round';
+                ctx.strokeText(text, x, y);
+
+                ctx.fillStyle = color;
+                ctx.fillText(text, x, y);
+                ctx.restore();
+            };
+
+            // 물질 이름 레이블 (굴절률 수치는 표시하지 않음)
+            const mediumName = (n) => (n === 1.33 ? "물" : n === 1.5 ? "유리" : "공기");
+            const firstLine1 = simData.mode === 'reflect' ? "공기" : `물질: ${mediumName(simData.n1)}`;
+            const secondLine1 = simData.mode === 'reflect' ? "거울" : `물질: ${mediumName(simData.n2)}`;
+
+            ctx.save();
+            ctx.fillStyle = '#64748b';
+            ctx.font = `bold ${fontSize}px Noto Sans KR`;
+            ctx.textAlign = 'left';
+
+            const isMobile = window.innerWidth < 1151 || (window.innerWidth < 1024 && window.innerHeight < 500);
+            const textX = -w / 2 + 20;
+
+            // 상단 물질
+            if (isMobile) {
+                ctx.textBaseline = 'top';
+                ctx.fillText(firstLine1, textX, -cy + 20);
+            } else {
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(firstLine1, textX, -15);
+            }
+
+            // 하단 물질
+            if (isMobile) {
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(secondLine1, textX, h - cy - 20);
+            } else {
+                ctx.textBaseline = 'top';
+                ctx.fillText(secondLine1, textX, 23);
+            }
+            ctx.restore();
+
+            // 2. 각도기
+            if (simData.showProtractor) {
+                ctx.save();
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+                ctx.lineWidth = 1;
+                if (simData.mode === 'reflect') {
+                    ctx.beginPath(); ctx.arc(0, 0, R, Math.PI, 0); ctx.stroke();
+                } else {
+                    ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.stroke();
+                }
+
+                for (let a = 0; a < 360; a += 1) {
+                    if (simData.mode === 'reflect' && (a > 0 && a < 180)) continue;
+                    if (a % 5 !== 0 && a % 10 !== 0) continue;
+                    let isMajor = a % 10 === 0;
+                    let rad = a * Math.PI / 180;
+                    let tickLen = isMajor ? 12 * scale : 7 * scale;
+
+                    ctx.strokeStyle = isMajor ? 'rgba(71, 85, 105, 0.6)' : 'rgba(148, 163, 184, 0.4)';
+                    ctx.lineWidth = isMajor ? 1.5 * scale : 1 * scale;
+                    ctx.beginPath();
+                    ctx.moveTo((R - tickLen) * Math.cos(rad), (R - tickLen) * Math.sin(rad));
+                    ctx.lineTo(R * Math.cos(rad), R * Math.sin(rad));
+                    ctx.stroke();
+
+                    if (isMajor) {
+                        ctx.save();
+                        let textRad = rad;
+                        let textX = R - 22 * scale;
+                        if (a > 90 && a < 270) {
+                            textRad = rad + Math.PI;
+                            textX = -(R - 22 * scale);
+                        }
+                        ctx.rotate(textRad);
+                        ctx.fillStyle = '#475569';
+                        ctx.font = `${protoFontSize}px sans-serif`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+
+                        let angleVal = 0;
+                        if (a <= 90) angleVal = 90 - a;
+                        else if (a <= 180) angleVal = a - 90;
+                        else if (a <= 270) angleVal = 270 - a;
+                        else angleVal = a - 270;
+
+                        ctx.fillText(angleVal.toString(), textX, 0);
+                        ctx.restore();
+                    }
+                }
+                ctx.restore();
+            }
+
+            // 3. 법선
+            if (simData.showNormal) {
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 1.5 * scale;
+                ctx.setLineDash([5 * scale, 4 * scale]);
+                ctx.beginPath(); ctx.moveTo(0, -rectH / 2); ctx.lineTo(0, rectH / 2); ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // 4. 광선 추적
+            const theta1_rad = simData.angle * Math.PI / 180;
+            const lx = -R * Math.sin(theta1_rad);
+            const ly = -R * Math.cos(theta1_rad);
+            simData.lx = lx;
+            simData.ly = ly;
+            const r = R;
+            const rOut = Math.hypot(w, h);
+
+            // 레이저 기기 및 각도기 겹침 감지 및 보정용 헬퍼 함수
+            const checkLaserOverlap = (px, py, align, text, fSize, isUpper) => {
+                const textWidth = ctx.measureText(text).width;
+                const textHeight = fSize;
+                let left = px;
+                if (align === 'right') {
+                    left = px - textWidth;
+                } else if (align === 'center') {
+                    left = px - textWidth / 2;
+                }
+                const right = left + textWidth;
+
+                let top, bottom;
+                if (isUpper) {
+                    top = py - textHeight;
+                    bottom = py;
+                } else {
+                    top = py;
+                    bottom = py + textHeight;
+                }
+
+                const points = [
+                    { x: left, y: top },
+                    { x: right, y: top },
+                    { x: left, y: bottom },
+                    { x: right, y: bottom },
+                    { x: (left + right) / 2, y: (top + bottom) / 2 }
+                ];
+
+                const u = { x: -Math.sin(theta1_rad), y: -Math.cos(theta1_rad) };
+                const v = { x: Math.cos(theta1_rad), y: -Math.sin(theta1_rad) };
+
+                for (const p of points) {
+                    const d_along = p.x * u.x + p.y * u.y;
+                    const d_perp = Math.abs(p.x * v.x + p.y * v.y);
+                    if (d_along >= R - 15 && d_along <= R + 52 * scale + 15 && d_perp <= 10 * scale + 8) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            const checkProtractorOverlap = (px, py, align, text, fSize, isUpper) => {
+                const textWidth = ctx.measureText(text).width;
+                const textHeight = fSize;
+                let left = px;
+                if (align === 'right') {
+                    left = px - textWidth;
+                } else if (align === 'center') {
+                    left = px - textWidth / 2;
+                }
+                const right = left + textWidth;
+
+                let top, bottom;
+                if (isUpper) {
+                    top = py - textHeight;
+                    bottom = py;
+                } else {
+                    top = py;
+                    bottom = py + textHeight;
+                }
+
+                const points = [
+                    { x: left, y: top },
+                    { x: right, y: top },
+                    { x: left, y: bottom },
+                    { x: right, y: bottom },
+                    { x: (left + right) / 2, y: (top + bottom) / 2 }
+                ];
+
+                for (const p of points) {
+                    if (Math.hypot(p.x, p.y) >= R - 20 * scale) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            const getIncLabelPos = (text, targetY) => {
+                let y = targetY;
+                let beamX = y * Math.tan(theta1_rad);
+                let x, align;
+                if (simData.angle > 45) {
+                    x = -95 * scale;
+                    align = 'left';
+                } else {
+                    x = beamX - 15 * scale;
+                    align = 'right';
+                }
+
+                const textWidth = ctx.measureText(text).width;
+                let rightEdge = align === 'left' ? x + textWidth : x;
+                const crossesNormal = rightEdge >= -5 * scale;
+
+                const hasOverlap = checkLaserOverlap(x, y, align, text, fontSize, true) ||
+                    checkProtractorOverlap(x, y, align, text, fontSize, true) ||
+                    crossesNormal;
+
+                if (hasOverlap) {
+                    let flippedX, flippedAlign;
+                    if (simData.angle > 45) {
+                        flippedX = beamX - 15 * scale;
+                        flippedAlign = 'right';
+                    } else {
+                        flippedX = beamX + 15 * scale;
+                        flippedAlign = 'left';
+                    }
+
+                    let flippedRightEdge = flippedAlign === 'left' ? flippedX + textWidth : flippedX;
+                    const flippedCrossesNormal = flippedRightEdge >= -5 * scale;
+
+                    const flippedOverlap = checkLaserOverlap(flippedX, y, flippedAlign, text, fontSize, true) ||
+                        checkProtractorOverlap(flippedX, y, flippedAlign, text, fontSize, true) ||
+                        flippedCrossesNormal;
+
+                    if (!flippedOverlap) {
+                        return { x: flippedX, y, align: flippedAlign, overlap: false };
+                    } else {
+                        return { x, y, align, overlap: true };
+                    }
+                }
+                return { x, y, align, overlap: false };
+            };
+
+            // 입사각 레이블의 y축 거리(targetY)를 반영하여 반사각 레이블의 y축 거리를 일치시킵니다.
+            const getRefLabelPos = (text, targetY) => {
+                let y = targetY;
+                let beamX = Math.abs(y) * Math.tan(theta1_rad);
+                let x, align;
+                if (simData.angle > 45) {
+                    x = 95 * scale;
+                    align = 'right';
+                } else {
+                    x = beamX + 15 * scale;
+                    align = 'left';
+                }
+
+                const textWidth = ctx.measureText(text).width;
+                let leftEdge = align === 'right' ? x - textWidth : x;
+                const crossesNormal = leftEdge <= 5 * scale;
+
+                const hasOverlap = checkProtractorOverlap(x, y, align, text, fontSize, true) ||
+                    crossesNormal;
+
+                if (hasOverlap) {
+                    let flippedX, flippedAlign;
+                    if (simData.angle > 45) {
+                        flippedX = beamX + 15 * scale;
+                        flippedAlign = 'left';
+                    } else {
+                        flippedX = beamX - 15 * scale;
+                        flippedAlign = 'right';
+                    }
+
+                    let flippedLeftEdge = flippedAlign === 'right' ? flippedX - textWidth : flippedX;
+                    const flippedCrossesNormal = flippedLeftEdge <= 5 * scale;
+
+                    const flippedOverlap = checkProtractorOverlap(flippedX, y, flippedAlign, text, fontSize, true) ||
+                        flippedCrossesNormal;
+
+                    if (!flippedOverlap) {
+                        return { x: flippedX, y, align: flippedAlign, overlap: false };
+                    } else {
+                        return { x, y, align, overlap: true };
+                    }
+                }
+                return { x, y, align, overlap: false };
+            };
+
+            // 입사각 레이블의 y축 거리(targetY)를 반영하여 굴절각 레이블의 y축 거리를 일치시킵니다.
+            const getTransLabelPos = (text, t2_rad, t2_deg, targetY) => {
+                let y = targetY;
+                let beamX = y * Math.tan(t2_rad);
+                let x, align;
+                if (t2_deg > 45) {
+                    x = 95 * scale;
+                    align = 'right';
+                } else {
+                    x = beamX + 15 * scale;
+                    align = 'left';
+                }
+
+                const textWidth = ctx.measureText(text).width;
+                let leftEdge = align === 'right' ? x - textWidth : x;
+                const crossesNormal = leftEdge <= 5 * scale;
+
+                const hasOverlap = checkProtractorOverlap(x, y, align, text, fontSize, false) ||
+                    crossesNormal;
+
+                if (hasOverlap) {
+                    let flippedX, flippedAlign;
+                    if (t2_deg > 45) {
+                        flippedX = beamX + 15 * scale;
+                        flippedAlign = 'left';
+                    } else {
+                        flippedX = beamX - 15 * scale;
+                        flippedAlign = 'right';
+                    }
+
+                    let flippedLeftEdge = flippedAlign === 'right' ? flippedX - textWidth : flippedX;
+                    const flippedCrossesNormal = flippedLeftEdge <= 5 * scale;
+
+                    const flippedOverlap = checkProtractorOverlap(flippedX, y, flippedAlign, text, fontSize, false) ||
+                        flippedCrossesNormal;
+
+                    if (!flippedOverlap) {
+                        return { x: flippedX, y, align: flippedAlign, overlap: false };
+                    } else {
+                        return { x, y, align, overlap: true };
+                    }
+                }
+                return { x, y, align, overlap: false };
+            };
+
+            if (sysState.isStarted && !sysState.isPaused) {
+                // 입사광선
+                ctx.save();
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 3.5 * scale;
+                ctx.shadowBlur = 6 * scale; ctx.shadowColor = '#ef4444';
+                ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(0, 0); ctx.stroke();
+                ctx.restore();
+
+                // 반사광선 (기본 반사)
+                if (simData.mode === 'reflect') {
+                    ctx.save();
+                    ctx.strokeStyle = '#ef4444';
+                    ctx.lineWidth = 3.5 * scale;
+                    ctx.shadowBlur = 6 * scale; ctx.shadowColor = '#ef4444';
+                    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(rOut * Math.sin(theta1_rad), -rOut * Math.cos(theta1_rad)); ctx.stroke();
+                    ctx.restore();
+                }
+
+                // 굴절광선
+                if (simData.mode !== 'reflect') {
+                    let n1 = simData.n1;
+                    let n2 = simData.n2;
+                    let sinTheta2 = (n1 / n2) * Math.sin(theta1_rad);
+
+                    if (Math.abs(sinTheta2) <= 1.0) {
+                        let theta2_rad = Math.asin(sinTheta2);
+                        let theta2_deg = theta2_rad * 180 / Math.PI;
+                        if (n1 === n2) {
+                            theta2_deg = simData.angle;
+                            theta2_rad = theta1_rad;
+                        }
+
+                        let rx = rOut * Math.sin(theta2_rad);
+                        let ry = rOut * Math.cos(theta2_rad);
+
+                        let R_coeff = getFresnelReflectance(n1, n2, theta1_rad);
+                        let T_coeff = 1.0 - R_coeff;
+
+                        if (simData.showPartial) {
+                            let R_opacity = Math.pow(R_coeff, 0.5);
+                            ctx.save();
+                            ctx.strokeStyle = `rgba(239, 68, 68, ${R_opacity})`;
+                            ctx.lineWidth = 3.5 * scale;
+                            ctx.shadowBlur = 6 * scale * R_opacity;
+                            ctx.shadowColor = `rgba(239, 68, 68, ${R_opacity})`;
+                            ctx.beginPath();
+                            ctx.moveTo(0, 0);
+                            ctx.lineTo(rOut * Math.sin(theta1_rad), -rOut * Math.cos(theta1_rad));
+                            ctx.stroke();
+                            ctx.restore();
+                        }
+
+                        ctx.save();
+                        let T_opacity = simData.showPartial ? Math.pow(T_coeff, 0.5) : 1.0;
+                        ctx.strokeStyle = `rgba(239, 68, 68, ${T_opacity})`;
+                        ctx.lineWidth = 3.5 * scale;
+                        ctx.shadowBlur = 6 * scale * T_opacity;
+                        ctx.shadowColor = `rgba(239, 68, 68, ${T_opacity})`;
+                        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(rx, ry); ctx.stroke();
+                        ctx.restore();
+
+                        // 수치 각도 표시
+                        if (simData.showValues) {
+                            const text_inc = `입사각 = ${simData.angle} °`;
+                            const text_ref = `굴절각 = ${theta2_deg.toFixed(1)} °`;
+
+                            let d = R * 0.4;
+                            let pos_inc = getIncLabelPos(text_inc, -d);
+                            let pos_ref = getTransLabelPos(text_ref, theta2_rad, theta2_deg, d);
+                            if (pos_inc.overlap || pos_ref.overlap) {
+                                d = R * 0.22;
+                                pos_inc = getIncLabelPos(text_inc, -d);
+                                pos_ref = getTransLabelPos(text_ref, theta2_rad, theta2_deg, d);
+                            }
+
+                            drawTextWithOutline(text_inc, pos_inc.x, pos_inc.y, pos_inc.align, '#0284c7', true);
+                            drawTextWithOutline(text_ref, pos_ref.x, pos_ref.y, pos_ref.align, '#6d28d9', false);
+
+                            // 부채꼴 채우기
+                            ctx.lineWidth = 1 * scale;
+                            ctx.strokeStyle = 'rgba(2, 132, 199, 0.5)';
+                            ctx.fillStyle = 'rgba(2, 132, 199, 0.12)';
+                            ctx.beginPath(); ctx.moveTo(0, 0);
+                            ctx.arc(0, 0, 35 * scale, -Math.PI / 2 - theta1_rad, -Math.PI / 2);
+                            ctx.closePath(); ctx.fill(); ctx.stroke();
+
+                            ctx.strokeStyle = 'rgba(109, 40, 217, 0.5)';
+                            ctx.fillStyle = 'rgba(109, 40, 217, 0.12)';
+                            ctx.beginPath(); ctx.moveTo(0, 0);
+                            ctx.arc(0, 0, 35 * scale, Math.PI / 2 - theta2_rad, Math.PI / 2);
+                            ctx.closePath(); ctx.fill(); ctx.stroke();
+                        }
+                    } else {
+                        // 전반사
+                        ctx.save();
+                        ctx.strokeStyle = '#ef4444';
+                        ctx.lineWidth = 3.5 * scale;
+                        ctx.shadowBlur = 6 * scale; ctx.shadowColor = '#ef4444';
+                        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(rOut * Math.sin(theta1_rad), -rOut * Math.cos(theta1_rad)); ctx.stroke();
+                        ctx.restore();
+
+                        if (simData.showValues) {
+                            const text_inc = `입사각 = ${simData.angle} °`;
+                            const line1 = `반사각 = ${simData.angle} °`;
+                            const line2 = `(전반사)`;
+
+                            let d = R * 0.4;
+                            let pos_inc = getIncLabelPos(text_inc, -d);
+                            let pos_ref = getRefLabelPos(line1, -d);
+                            if (pos_inc.overlap || pos_ref.overlap) {
+                                d = R * 0.22;
+                                pos_inc = getIncLabelPos(text_inc, -d);
+                                pos_ref = getRefLabelPos(line1, -d);
+                            }
+
+                            drawTextWithOutline(text_inc, pos_inc.x, pos_inc.y, pos_inc.align, '#0284c7', true);
+                            drawTextWithOutline(line1, pos_ref.x, pos_ref.y, pos_ref.align, '#ea580c', true);
+
+                            ctx.save();
+                            ctx.font = `bold ${fontSize}px Noto Sans KR`;
+                            const w1 = ctx.measureText(line1).width;
+                            const w2 = ctx.measureText(line2).width;
+                            ctx.restore();
+                            const x2 = pos_ref.align === 'left' ? pos_ref.x + (w1 - w2) / 2 : pos_ref.x - (w1 - w2) / 2;
+                            drawTextWithOutline(line2, x2, pos_ref.y + fontSize + 4, pos_ref.align, '#ea580c', true);
+
+                            // 부채꼴 채우기 (입사각 & 반사각)
+                            ctx.lineWidth = 1 * scale;
+                            ctx.strokeStyle = 'rgba(2, 132, 199, 0.5)';
+                            ctx.fillStyle = 'rgba(2, 132, 199, 0.12)';
+                            ctx.beginPath(); ctx.moveTo(0, 0);
+                            ctx.arc(0, 0, 35 * scale, -Math.PI / 2 - theta1_rad, -Math.PI / 2);
+                            ctx.closePath(); ctx.fill(); ctx.stroke();
+
+                            ctx.strokeStyle = 'rgba(234, 88, 12, 0.5)';
+                            ctx.fillStyle = 'rgba(234, 88, 12, 0.12)';
+                            ctx.beginPath(); ctx.moveTo(0, 0);
+                            ctx.arc(0, 0, 35 * scale, -Math.PI / 2, -Math.PI / 2 + theta1_rad);
+                            ctx.closePath(); ctx.fill(); ctx.stroke();
+                        }
+                    }
+                } else {
+                    // 반사 수치 표시
+                    if (simData.showValues) {
+                        const text_inc = `입사각 = ${simData.angle} °`;
+                        const text_ref = `반사각 = ${simData.angle} °`;
+
+                        let d = R * 0.4;
+                        let pos_inc = getIncLabelPos(text_inc, -d);
+                        let pos_ref = getRefLabelPos(text_ref, -d);
+                        if (pos_inc.overlap || pos_ref.overlap) {
+                            d = R * 0.22;
+                            pos_inc = getIncLabelPos(text_inc, -d);
+                            pos_ref = getRefLabelPos(text_ref, -d);
+                        }
+
+                        drawTextWithOutline(text_inc, pos_inc.x, pos_inc.y, pos_inc.align, '#0284c7', true);
+                        drawTextWithOutline(text_ref, pos_ref.x, pos_ref.y, pos_ref.align, '#ea580c', true);
+
+                        ctx.lineWidth = 1 * scale;
+                        ctx.strokeStyle = 'rgba(2, 132, 199, 0.5)';
+                        ctx.fillStyle = 'rgba(2, 132, 199, 0.12)';
+                        ctx.beginPath(); ctx.moveTo(0, 0);
+                        ctx.arc(0, 0, 35 * scale, -Math.PI / 2 - theta1_rad, -Math.PI / 2);
+                        ctx.closePath(); ctx.fill(); ctx.stroke();
+
+                        ctx.strokeStyle = 'rgba(234, 88, 12, 0.5)';
+                        ctx.fillStyle = 'rgba(234, 88, 12, 0.12)';
+                        ctx.beginPath(); ctx.moveTo(0, 0);
+                        ctx.arc(0, 0, 35 * scale, -Math.PI / 2, -Math.PI / 2 + theta1_rad);
+                        ctx.closePath(); ctx.fill(); ctx.stroke();
+                    }
+                }
+            }
+
+            // 5. 레이저 포인터 기기 외형
+            ctx.save();
+            ctx.translate(lx, ly);
+            ctx.rotate(-theta1_rad);
+
+            // 5.1. 뒤쪽 실버 캡 (Rear Cap - Bevelled)
+            let rearGrad = ctx.createLinearGradient(-10 * scale, 0, 10 * scale, 0);
+            rearGrad.addColorStop(0, '#94a3b8');
+            rearGrad.addColorStop(0.3, '#cbd5e1');
+            rearGrad.addColorStop(0.5, '#f8fafc');
+            rearGrad.addColorStop(0.7, '#cbd5e1');
+            rearGrad.addColorStop(1, '#475569');
+            ctx.fillStyle = rearGrad;
+            ctx.beginPath();
+            ctx.moveTo(-8 * scale, -52 * scale);
+            ctx.lineTo(8 * scale, -52 * scale);
+            ctx.lineTo(10 * scale, -48 * scale);
+            ctx.lineTo(-10 * scale, -48 * scale);
+            ctx.closePath();
+            ctx.fill();
+
+            // 5.2. 메인 바디 (Cylinder Body)
+            let bodyGrad = ctx.createLinearGradient(-10 * scale, 0, 10 * scale, 0);
+            bodyGrad.addColorStop(0, '#000000');
+            bodyGrad.addColorStop(0.15, '#1e293b');
+            bodyGrad.addColorStop(0.35, '#cbd5e1'); // 강한 하이라이트
+            bodyGrad.addColorStop(0.45, '#ffffff'); // 반짝임
+            bodyGrad.addColorStop(0.55, '#1e293b'); // 어두운 반사
+            bodyGrad.addColorStop(0.8, '#475569');  // 중간 톤
+            bodyGrad.addColorStop(1, '#0f172a');    // 반대쪽 어두운 경계
+            ctx.fillStyle = bodyGrad;
+            ctx.fillRect(-10 * scale, -48 * scale, 20 * scale, 38 * scale);
+
+            // 5.3. 앞쪽 실버 돔 (Front Nose Cone)
+            let coneGrad = ctx.createLinearGradient(-10 * scale, 0, 10 * scale, 0);
+            coneGrad.addColorStop(0, '#475569');
+            coneGrad.addColorStop(0.3, '#cbd5e1');
+            coneGrad.addColorStop(0.5, '#f8fafc');
+            coneGrad.addColorStop(0.7, '#94a3b8');
+            coneGrad.addColorStop(1, '#334155');
+            ctx.fillStyle = coneGrad;
+            ctx.beginPath();
+            ctx.moveTo(-10 * scale, -10 * scale);
+            ctx.quadraticCurveTo(-10 * scale, 0, 0, 0);
+            ctx.quadraticCurveTo(10 * scale, 0, 10 * scale, -10 * scale);
+            ctx.closePath();
+            ctx.fill();
+
+            // 검은색 데칼 패턴 (Visor decal on the nose cone)
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+            ctx.beginPath();
+            ctx.moveTo(-8 * scale, -10 * scale);
+            ctx.quadraticCurveTo(-6 * scale, -3 * scale, 0, -2.5 * scale);
+            ctx.quadraticCurveTo(6 * scale, -3 * scale, 8 * scale, -10 * scale);
+            ctx.quadraticCurveTo(0, -6 * scale, -8 * scale, -10 * scale);
+            ctx.closePath();
+            ctx.fill();
+
+            // 5.4. 금속 스위치 버튼 (Metallic Switch Button)
+            // 버튼 베이스 링
+            ctx.fillStyle = '#1e293b';
+            ctx.beginPath();
+            ctx.arc(0, -29 * scale, 3.5 * scale, 0, Math.PI * 2);
+            ctx.fill();
+            // 버튼 자체
+            let btnGrad = ctx.createRadialGradient(-0.5 * scale, -29.5 * scale, 0, 0, -29 * scale, 2.5 * scale);
+            btnGrad.addColorStop(0, '#ffffff');
+            btnGrad.addColorStop(0.5, '#cbd5e1');
+            btnGrad.addColorStop(1, '#475569');
+            ctx.fillStyle = btnGrad;
+            ctx.beginPath();
+            ctx.arc(0, -29 * scale, 2.5 * scale, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 5.5. 앞쪽 사출 렌즈 LED (Emission Lens)
+            let lensGrad = ctx.createRadialGradient(0, 0, 0.5 * scale, 0, 0, 3 * scale);
+            if (sysState.isStarted && !sysState.isPaused) {
+                lensGrad.addColorStop(0, '#ffffff');
+                lensGrad.addColorStop(0.3, '#fca5a5');
+                lensGrad.addColorStop(1, '#dc2626');
+
+                // 렌즈 광 도드라짐 (Glow effect)
+                ctx.save();
+                ctx.shadowBlur = 8 * scale;
+                ctx.shadowColor = '#ef4444';
+                ctx.fillStyle = '#dc2626';
+                ctx.beginPath();
+                ctx.arc(0, 0, 2.5 * scale, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            } else {
+                lensGrad.addColorStop(0, '#ef4444');
+                lensGrad.addColorStop(1, '#7f1d1d');
+                ctx.fillStyle = lensGrad;
+                ctx.beginPath();
+                ctx.arc(0, 0, 2.5 * scale, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        /* 프레임별 물리 연산 — 이 단원은 프레임별 연산이 필요 없음 (코어가 호출, 이름 유지) */
+        function updatePhysics() {
+        }
+
+        /* 레이저 기기 머리(조준점 반대쪽 끝)까지의 거리 */
+        function getLaserHeadDistance(pos) {
+            const cx = simData.cx || (sysState.canvasLogicalWidth / 2);
+            const cy = simData.cy || (sysState.canvasLogicalHeight / 2);
+            const lx = cx + (simData.lx || 0);
+            const ly = cy + (simData.ly || 0);
+            return Math.hypot(pos.x - lx, pos.y - ly);
+        }
+
+        /* 캔버스 포인터 조작 — 레이저를 드래그해 입사각을 바꾼다 (코어 ZONE J가 호출, 이름 유지) */
+        function onCanvasPointer(type, pos, e) {
+            if (!canvas) return;
+            if (type === 'down') {
+                if (e && e.isPrimary === false) return;
+                if (getLaserHeadDistance(pos) < 40) {
+                    simData.isDraggingLaser = true;
+                    canvas.style.cursor = 'grabbing';
+                } else {
+                    simData.isDraggingLaser = false;
+                }
+            } else if (type === 'move') {
+                if (simData.isDraggingLaser) {
+                    const cx = simData.cx || (sysState.canvasLogicalWidth / 2);
+                    const cy = simData.cy || (sysState.canvasLogicalHeight / 2);
+                    // 조준점(경계면 중심) 기준 왼쪽 위 영역 안에서만 이동
+                    let px = pos.x - cx;
+                    let py = pos.y - cy;
+                    if (px > 0) px = 0;
+                    if (py > 0) py = 0;
+
+                    let theta = Math.atan2(-px, -py);
+                    if (theta < 0) theta = 0;
+                    const maxRad = SIM_CONFIG.slider.max * Math.PI / 180;
+                    if (theta > maxRad) theta = maxRad;
+
+                    simData.angle = Math.round(theta * 180 / Math.PI);
+                    if (varSlider1) varSlider1.value = simData.angle;
+                    if (varDisplay1) varDisplay1.textContent = `${simData.angle}${SIM_CONFIG.slider.unit}`;
+                    if (!sysState.isLooping) draw();
+                } else if (!e || e.buttons === 0) {
+                    // 레이저 근처에 올리면 grab 커서
+                    canvas.style.cursor = getLaserHeadDistance(pos) < 40 ? 'grab' : 'default';
+                }
+            } else if (type === 'up') {
+                simData.isDraggingLaser = false;
+                canvas.style.cursor = 'default';
+            }
+        }
+        /* ████ ZONE F 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE G — LOOP & TAB STATE MANAGER (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        function startLoop() { if (!sysState.isLooping) { sysState.isLooping = true; updateLoop(); } }
+        function stopLoop() { sysState.isLooping = false; }
+        function updateLoop() {
+            if (!sysState.isLooping) return;
+            updatePhysics(); draw();
+            requestAnimationFrame(updateLoop);
+        }
+
+        function saveTabState(shape) {
+            const selectedRadio = document.querySelector('input[name="simOption"]:checked')?.value;
+            const selectedVal = DOM.customSelectTrigger?.getAttribute('data-selected-value') || null;
+            tabStates[shape] = {
+                ...simData,
+                isStarted: sysState.isStarted, isPaused: sysState.isPaused,
+                zoomLevel: sysState.zoomLevel, offsetX: sysState.offsetX, offsetY: sysState.offsetY,
+                selectVal: selectedVal, radioVal: selectedRadio
+            };
+        }
+
+        function loadTabState(shape) {
+            const state = tabStates[shape];
+            if (state) {
+                Object.assign(simData, state);
+                sysState.isStarted = state.isStarted; sysState.isPaused = state.isPaused;
+                sysState.zoomLevel = state.zoomLevel || 1.0;
+                sysState.offsetX = state.offsetX || 0;
+                sysState.offsetY = state.offsetY || 0;
+
+                const csvEl = document.getElementById('customSelectValue');
+                if (state.selectVal) {
+                    const li = document.querySelector(`#customSelectList li[data-value="${state.selectVal}"]`);
+                    if (li && csvEl) { csvEl.innerHTML = li.innerHTML; DOM.customSelectTrigger?.setAttribute('data-selected-value', state.selectVal); }
+                } else {
+                    if (csvEl) csvEl.textContent = '학습 내용을 선택하세요';
+                    DOM.customSelectTrigger?.removeAttribute('data-selected-value');
+                }
+                const radio = document.querySelector(`input[name="simOption"][value="${state.radioVal}"]`);
+                if (radio) radio.checked = true;
+            } else {
+                simData.value1 = SIM_CONFIG.slider.initialValue;
+                simData.diameter = SIM_CONFIG.object.radius * 2;
+                simData.radius = SIM_CONFIG.object.radius;
+                simData.ratioA = 1; simData.ratioB = 1;
+                sysState.isStarted = false; sysState.isPaused = false;
+                sysState.zoomLevel = 1.0; sysState.offsetX = 0; sysState.offsetY = 0;
+                if (canvas) { simData.x = sysState.canvasLogicalWidth / 2; simData.y = sysState.canvasLogicalHeight / 2; }
+                const csvEl = document.getElementById('customSelectValue');
+                if (csvEl) csvEl.textContent = '학습 내용을 선택하세요';
+                DOM.customSelectTrigger?.removeAttribute('data-selected-value');
+                const dr = document.querySelector('input[name="simOption"][value="parallel"]');
+                if (dr) dr.checked = true;
+            }
+
+            if (varSlider1) varSlider1.value = simData.value1;
+            if (varDisplay1) varDisplay1.textContent = `${simData.value1} ${SIM_CONFIG.slider.unit}`;
+            if (DOM.directInputSingle) DOM.directInputSingle.value = simData.diameter;
+            if (DOM.ratioInputA) DOM.ratioInputA.value = simData.ratioA;
+            if (DOM.ratioInputB) DOM.ratioInputB.value = simData.ratioB;
+
+            sysState.isStarted && !sysState.isPaused ? startLoop() : stopLoop();
+            updateUIState(); draw();
+        }
+
+        function updateUIState() {
+            const { statusIndicator, pauseBtn, helperText } = DOM;
+            if (!statusIndicator || !pauseBtn || !helperText) return;
+            const isRunning = sysState.isStarted && !sysState.isPaused;
+            const isPaused = sysState.isPaused;
+            const lock = false; /* 동작 중 입력 잠금 해제 (실시간 상호작용 지원) */
+
+            if (DOM.varSlider1) DOM.varSlider1.disabled = lock;
+            if (DOM.directInputSingle) DOM.directInputSingle.disabled = lock;
+            if (DOM.ratioInputA) DOM.ratioInputA.disabled = lock;
+            if (DOM.ratioInputB) DOM.ratioInputB.disabled = lock;
+            if (DOM.customSelectTrigger) {
+                DOM.customSelectTrigger.disabled = lock;
+                if (lock && DOM.customSelectList && !DOM.customSelectList.classList.contains('hidden')) {
+                    DOM.customSelectList.classList.add('hidden');
+                    DOM.customSelectTrigger.setAttribute('aria-expanded', 'false');
+                }
+            }
+            if (DOM.radioOptions) DOM.radioOptions.forEach(r => r.disabled = lock);
+
+            const helperBoxWrapper = document.getElementById('helperBoxWrapper');
+            if (isRunning) {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-rose-500 border border-rose-300 animate-pulse translate-y-[1px]";
+                pauseBtn.className = "btn-action-pause col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = SIM_CONFIG.labels.pause;
+                helperText.textContent = SIM_CONFIG.labels.helperRunning;
+                helperText.className = "helper-text-running whitespace-nowrap transition-colors";
+                if (helperBoxWrapper) helperBoxWrapper.classList.add('hidden');
+            } else if (isPaused) {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-amber-400 border border-amber-300 translate-y-[1px]";
+                pauseBtn.className = "btn-action-start col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = SIM_CONFIG.labels.start;
+                helperText.textContent = SIM_CONFIG.labels.helperPaused;
+                helperText.className = "helper-text-paused whitespace-nowrap transition-colors";
+                if (helperBoxWrapper) helperBoxWrapper.classList.remove('hidden');
+            } else {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-emerald-500 border border-emerald-300 translate-y-[1px]";
+                pauseBtn.className = "btn-action-start col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = SIM_CONFIG.labels.start;
+                helperText.textContent = SIM_CONFIG.labels.helperIdle;
+                helperText.className = "helper-text-default whitespace-nowrap transition-colors";
+                if (helperBoxWrapper) helperBoxWrapper.classList.remove('hidden');
+            }
+        }
+        /* ════ ZONE G 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE H — CANVAS RESIZE (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        function limitOffset() {
+            if (!canvas) return;
+            if (sysState.zoomLevel <= 1.0) {
+                sysState.offsetX = 0;
+                sysState.offsetY = 0;
+                return;
+            }
+            const maxOffset = Math.min(sysState.canvasLogicalWidth, sysState.canvasLogicalHeight) * 0.5 * (sysState.zoomLevel - 1.0);
+            sysState.offsetX = Math.max(-maxOffset, Math.min(maxOffset, sysState.offsetX));
+            sysState.offsetY = Math.max(-maxOffset, Math.min(maxOffset, sysState.offsetY));
+        }
+
+        function resizeCanvas() {
+            if (!container || !canvas || !ctx) return;
+            const dpr = window.devicePixelRatio || 1;
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+            canvas.style.width = `${rect.width}px`; canvas.style.height = `${rect.height}px`;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            sysState.canvasLogicalWidth = rect.width;
+            sysState.canvasLogicalHeight = rect.height;
+            simData.x = rect.width / 2; simData.y = rect.height / 2;
+            for (const k in tabStates) { if (tabStates[k]) { tabStates[k].x = rect.width / 2; tabStates[k].y = rect.height / 2; } }
+
+            // 초기화 버튼 동적 스타일 조정 (높이가 270px 이하일 때)
+            const resetBtn = document.getElementById('resetBtn');
+            const resetBtnText = document.getElementById('resetBtnText');
+            if (resetBtn && resetBtnText) {
+                if (rect.height <= 400) {
+                    resetBtnText.style.display = 'none';
+                    resetBtn.style.padding = '0';
+                    resetBtn.style.width = '2.5rem';
+                    resetBtn.style.height = '2.5rem';
+                    resetBtn.style.justifyContent = 'center';
+                } else {
+                    resetBtnText.style.display = '';
+                    resetBtn.style.padding = '';
+                    resetBtn.style.width = '';
+                    resetBtn.style.height = '';
+                    resetBtn.style.justifyContent = '';
+                }
+            }
+
+            limitOffset(); draw();
+        }
+
+        const isFullscreenActive = () =>
+            !!(document.fullscreenElement || document.webkitFullscreenElement);
+        const FULLSCREEN_HISTORY_KEY = '__templateFullscreen';
+        const FULLSCREEN_HISTORY_CLEANUP_DELAY = 400;
+        const isNaverInAppBrowser = () => /NAVER\s*\((?:inapp|higgs);/i.test(navigator.userAgent);
+        let fullscreenHistoryToken = null;
+        let fullscreenExitFromHistory = false;
+        let fullscreenHistoryCleanup = false;
+        let fullscreenHistoryCleanupTimer = null;
+        let previousScrollRestoration = null;
+
+        const addFullscreenHistoryToken = stateValue => {
+            if (!fullscreenHistoryToken) return stateValue;
+            return { ...stateValue, [FULLSCREEN_HISTORY_KEY]: fullscreenHistoryToken };
+        };
+
+        const clearFullscreenHistoryTracking = () => {
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = null;
+            if (previousScrollRestoration !== null && 'scrollRestoration' in history) {
+                history.scrollRestoration = previousScrollRestoration;
+            }
+            previousScrollRestoration = null;
+            fullscreenHistoryToken = null;
+            fullscreenExitFromHistory = false;
+            fullscreenHistoryCleanup = false;
+        };
+
+        const pushFullscreenHistoryEntry = () => {
+            if (!isNaverInAppBrowser() || fullscreenHistoryToken) return;
+            const token = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+            try {
+                if ('scrollRestoration' in history && previousScrollRestoration === null) {
+                    previousScrollRestoration = history.scrollRestoration;
+                    history.scrollRestoration = 'manual';
+                }
+                history.pushState({ [FULLSCREEN_HISTORY_KEY]: token }, '');
+                fullscreenHistoryToken = token;
+            } catch (_) {
+                clearFullscreenHistoryTracking();
+            }
+        };
+
+        const restoreFullscreenHistoryEntry = () => {
+            const shouldRestore = isFullscreenActive();
+            clearFullscreenHistoryTracking();
+            if (shouldRestore) pushFullscreenHistoryEntry();
+        };
+
+        const exitFullscreenFromHistory = () => {
+            const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+            if (!exitFullscreen) {
+                restoreFullscreenHistoryEntry();
+                return;
+            }
+            const token = fullscreenHistoryToken;
+            const restoreEntry = () => {
+                if (fullscreenHistoryToken === token) restoreFullscreenHistoryEntry();
+            };
+            fullscreenExitFromHistory = true;
+            try {
+                const result = exitFullscreen.call(document);
+                if (result && typeof result.catch === 'function') result.catch(restoreEntry);
+            } catch (_) {
+                restoreEntry();
+            }
+        };
+
+        const cleanupFullscreenHistoryEntry = () => {
+            const token = fullscreenHistoryToken;
+            if (!token || !history.state || history.state[FULLSCREEN_HISTORY_KEY] !== token) {
+                clearFullscreenHistoryTracking();
+                return;
+            }
+            fullscreenHistoryCleanup = true;
+            history.back();
+        };
+
+        const scheduleFullscreenHistoryCleanup = () => {
+            const token = fullscreenHistoryToken;
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = setTimeout(() => {
+                if (fullscreenHistoryToken !== token || isFullscreenActive()) return;
+                const state = history.state;
+                if (!state || state[FULLSCREEN_HISTORY_KEY] !== token) {
+                    clearFullscreenHistoryTracking();
+                    return;
+                }
+                if (Object.keys(state).length === 1) cleanupFullscreenHistoryEntry();
+            }, FULLSCREEN_HISTORY_CLEANUP_DELAY);
+        };
+
+        window.addEventListener('popstate', event => {
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = null;
+            const token = fullscreenHistoryToken;
+            if (!token) return;
+            const sameFullscreenEntry = !!(
+                event.state && event.state[FULLSCREEN_HISTORY_KEY] === token
+            );
+            if (fullscreenHistoryCleanup) {
+                if (sameFullscreenEntry) history.back();
+                else clearFullscreenHistoryTracking();
+                return;
+            }
+            if (sameFullscreenEntry) {
+                if (!isFullscreenActive()) scheduleFullscreenHistoryCleanup();
+                return;
+            }
+            if (isFullscreenActive()) exitFullscreenFromHistory();
+            else clearFullscreenHistoryTracking();
+        });
+
+        function toggleFullScreen() {
+            const workspace = document.getElementById('workspace');
+            if (!workspace) return;
+
+            if (!isFullscreenActive()) {
+                if (workspace.requestFullscreen) workspace.requestFullscreen().catch(e => console.error(e));
+                else if (workspace.webkitRequestFullscreen) workspace.webkitRequestFullscreen();
+                else alert("현재 브라우저는 전체화면을 지원하지 않습니다.");
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            }
+        }
+
+        const resetFullscreenButtonFeedback = () => {
+            ['fullscreen-btn', 'fullscreen-btn-mobile'].forEach(id => {
+                const button = document.getElementById(id);
+                if (!button) return;
+                clearTimeout(button._tapFeedbackTimer);
+                button.classList.remove('is-tap-feedback', 'is-pen-hover');
+                button.blur();
+            });
+        };
+
+        const showSimulationToast = message => {
+            document.getElementById('sim-toast')?.remove();
+            const toast = document.createElement('div');
+            toast.id = 'sim-toast';
+            toast.setAttribute('role', 'status');
+            toast.className = 'fixed top-30 left-1/2 transform -translate-x-1/2 bg-slate-800/90 backdrop-blur-sm text-white px-6 py-3 rounded-full shadow-lg z-[9999] font-bold text-[0.95rem] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-2';
+            toast.innerHTML = '<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
+            toast.appendChild(document.createTextNode(message));
+            (document.getElementById('workspace') || document.body).appendChild(toast);
+            setTimeout(() => toast.classList.remove('opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 1500);
+        };
+
+        let fullscreenExitForNumberInput = false;
+        let fullscreenNumberExitResetTimer = null;
+
+        const resetFullscreenNumberExitTracking = () => {
+            clearTimeout(fullscreenNumberExitResetTimer);
+            fullscreenNumberExitResetTimer = null;
+            fullscreenExitForNumberInput = false;
+        };
+
+        const markFullscreenNumberInputPress = event => {
+            if (!isIPadDevice || !isFullscreenActive()) return;
+            const input = event.target.closest?.('#workspace input[type="number"]');
+            if (!input || input.disabled) return;
+            fullscreenExitForNumberInput = true;
+            clearTimeout(fullscreenNumberExitResetTimer);
+            fullscreenNumberExitResetTimer = setTimeout(resetFullscreenNumberExitTracking, 2000);
+        };
+
+        const fullscreenNumberPressEvent = window.PointerEvent ? 'pointerdown' : 'touchstart';
+        document.addEventListener(fullscreenNumberPressEvent, markFullscreenNumberInputPress, {
+            capture: true,
+            passive: true
+        });
+
+        const handleFullscreenChange = () => {
+            if (!isFullscreenActive() && fullscreenExitForNumberInput) {
+                resetFullscreenNumberExitTracking();
+                showSimulationToast('숫자 입력을 위해 전체화면이 종료되었습니다.');
+            }
+            if (isFullscreenActive()) {
+                pushFullscreenHistoryEntry();
+            } else if (fullscreenHistoryToken) {
+                if (fullscreenExitFromHistory) clearFullscreenHistoryTracking();
+                else scheduleFullscreenHistoryCleanup();
+            }
+            if (!isFullscreenActive()) resetFullscreenButtonFeedback();
+            requestAnimationFrame(() => {
+                if (!isFullscreenActive()) resetFullscreenButtonFeedback();
+                resizeCanvas();
+            });
+
+            const exitUI = document.getElementById('fullscreen-exit-ui');
+            if (!exitUI) return;
+            if (isFullscreenActive()) {
+                exitUI.classList.remove('hidden', 'opacity-100');
+                exitUI.classList.add('opacity-0');
+            } else {
+                exitUI.classList.add('hidden', 'opacity-0');
+                exitUI.classList.remove('opacity-100');
+            }
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        /* ════ ZONE H 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                               ████
+           ████   ✏️  ZONE I — INPUT EVENT HANDLERS (입력 이벤트 핸들러)       ████
+           ████   폼 변경 시 simData를 어떻게 업데이트할지 여기서 작성하세요.     ████
+           ████                                                               ████
+           ████████████████████████████████████████████████████████████████████████ */
+        function bindInputEvents() {
+            /* 입사각 슬라이더 */
+            if (varSlider1) {
+                varSlider1.oninput = function () {
+                    simData.angle = parseInt(this.value, 10);
+                    if (varDisplay1) varDisplay1.textContent = `${simData.angle}${SIM_CONFIG.slider.unit}`;
+                    if (!sysState.isLooping) draw();
+                };
+            }
+
+            /* 빛의 성질 (라디오) */
+            const modeSelectContainer = document.getElementById('modeSelectContainer');
+            if (modeSelectContainer) {
+                modeSelectContainer.addEventListener('change', (e) => {
+                    if (e.target.name !== 'simMode') return;
+                    simData.mode = e.target.value;
+                    updateModeUI();
+                    if (!sysState.isLooping) draw();
+                });
+            }
+
+            /* 상단·하단 물질 (셀렉트) */
+            const selMedium1 = document.getElementById('select-medium1');
+            if (selMedium1) {
+                selMedium1.addEventListener('change', function () {
+                    simData.n1 = parseFloat(this.value);
+                    if (!sysState.isLooping) draw();
+                });
+            }
+            const selMedium2 = document.getElementById('select-medium2');
+            if (selMedium2) {
+                selMedium2.addEventListener('change', function () {
+                    simData.n2 = parseFloat(this.value);
+                    if (!sysState.isLooping) draw();
+                });
+            }
+
+            /* 표시 요소 (체크박스) */
+            const bindCheck = (id, key, after) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('change', function () {
+                    simData[key] = this.checked;
+                    if (after) after(this.checked);
+                    if (!sysState.isLooping) draw();
+                });
+            };
+            bindCheck('chk-show-normal', 'showNormal');
+            bindCheck('chk-show-protractor', 'showProtractor');
+            bindCheck('chk-show-values', 'showValues', (checked) => {
+                /* 각도를 켜면 기준선인 법선도 함께 켠다 */
+                if (!checked) return;
+                simData.showNormal = true;
+                const chkNormal = document.getElementById('chk-show-normal');
+                if (chkNormal) chkNormal.checked = true;
+            });
+            bindCheck('chk-show-boundary', 'showBoundary');
+            bindCheck('chk-show-partial', 'showPartial');
+        }
+        /* ████ ZONE I 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE J — CORE EVENT BINDING (수정 금지)
+           전체화면·모달·셔터·캔버스 드래그·줌·탭·토스트 이벤트 처리
+           ════════════════════════════════════════════════════════════════════════ */
+        function bindCoreEvents() {
+
+            /* 동작 중 입력 차단 토스트 */
+            const interceptInteraction = (e) => {
+                // 실시간 상호작용을 허용하므로 아무런 차단도 수행하지 않음
+            };
+
+            /* 손가락·펜 입력 피드백 */
+            const TAP_FEEDBACK_SELECTOR = 'button, [role="button"], .radio-label, label:has(input[type="checkbox"])';
+            const isFeedbackDisabled = control =>
+                control.matches(':disabled, [aria-disabled="true"]') || !!control.querySelector(':disabled');
+            document.addEventListener('pointerdown', e => {
+                if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || isFeedbackDisabled(control)) return;
+                control.classList.add('is-tap-feedback');
+                clearTimeout(control._tapFeedbackTimer);
+                control._tapFeedbackTimer = setTimeout(() => {
+                    control.classList.remove('is-tap-feedback');
+                    control.blur();
+                }, 250);
+            });
+            document.addEventListener('pointerover', e => {
+                if (e.pointerType !== 'pen' || e.buttons !== 0) return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || isFeedbackDisabled(control)) return;
+                control.classList.add('is-pen-hover');
+            });
+            document.addEventListener('pointerout', e => {
+                if (e.pointerType !== 'pen') return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || control.contains(e.relatedTarget)) return;
+                control.classList.remove('is-pen-hover');
+            });
+            document.addEventListener('pointerup', e => {
+                if (e.pointerType !== 'pen' || matchMedia('(any-hover: hover)').matches) return;
+                e.target.closest?.(TAP_FEEDBACK_SELECTOR)?.classList.remove('is-pen-hover');
+            });
+
+            /* 모바일 메뉴 */
+            const moreMenuBtn = document.getElementById('moreMenuBtn');
+            const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+            if (moreMenuBtn && mobileMenuPanel) {
+                const close = () => { mobileMenuPanel.classList.remove('w-[84px]', 'opacity-100'); mobileMenuPanel.classList.add('w-0', 'opacity-0'); };
+                const toggle = () => {
+                    const isOpen = mobileMenuPanel.classList.contains('w-[84px]');
+                    if (!isOpen) { mobileMenuPanel.classList.remove('w-0', 'opacity-0'); mobileMenuPanel.classList.add('w-[84px]', 'opacity-100'); }
+                    else { close(); }
+                };
+                moreMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+                window.addEventListener('resize', () => {
+                    if (isFullscreenActive()) return;
+                    if (getComputedStyle(moreMenuBtn).display === 'none' && mobileMenuPanel.classList.contains('w-[84px]')) close();
+                });
+                window.addEventListener('click', (e) => {
+                    if (!moreMenuBtn.contains(e.target) && !mobileMenuPanel.contains(e.target) && mobileMenuPanel.classList.contains('w-[84px]')) close();
+                });
+            }
+
+            /* 전체화면 */
+            bindEvent('fullscreen-btn', 'click', toggleFullScreen);
+            bindEvent('fullscreen-btn-mobile', 'click', toggleFullScreen);
+
+            /* 모달 */
+            const toggleModal = (id, show) => {
+                const modal = document.getElementById(id); if (!modal) return;
+                if (show) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; history.pushState(addFullscreenHistoryToken({ modalOpen: id }), ''); }
+                else { modal.classList.add('hidden'); document.body.style.overflow = ''; if (history.state?.modalOpen === id) history.back(); }
+            };
+            window.addEventListener('popstate', () => {
+                ['helpBox', 'conceptBox', 'quizBox'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+                document.body.style.overflow = '';
+            });
+            document.addEventListener('keydown', event => {
+                if (event.key !== 'Escape') return;
+                const openModalId = ['helpBox', 'conceptBox', 'quizBox'].find(id => {
+                    const modal = document.getElementById(id);
+                    return modal && !modal.classList.contains('hidden');
+                });
+                if (!openModalId) return;
+                event.preventDefault();
+                toggleModal(openModalId, false);
+            });
+            bindEvent('helpBtn', 'click', () => toggleModal('helpBox', true));
+            bindEvent('help-Btn', 'click', () => toggleModal('helpBox', true));
+            bindEvent('closeHelpBtn', 'click', () => toggleModal('helpBox', false));
+            bindEvent('conceptBtn', 'click', () => toggleModal('conceptBox', true));
+            bindEvent('closeConceptBtn', 'click', () => toggleModal('conceptBox', false));
+            bindEvent('closeQuizBtn', 'click', () => toggleModal('quizBox', false));
+
+            /* 셔터 */
+            const shutterToggle = document.getElementById('shutter-toggle');
+            const shutterContent = document.getElementById('shutter-content');
+            const shutterIcon = document.getElementById('shutter-icon');
+            if (shutterToggle && shutterContent) {
+                const shutterText = shutterToggle.querySelector('span');
+                shutterToggle.addEventListener('click', () => {
+                    const isOpen = shutterContent.classList.toggle('is-open');
+                    shutterToggle.classList.toggle('is-open', isOpen);
+                    if (shutterIcon) shutterIcon.classList.toggle('rotate-180', isOpen);
+                    if (shutterText) shutterText.textContent = isOpen ? '학습 가이드 닫기' : '학습 가이드 보기';
+                });
+            }
+
+            /* 시작/일시정지 */
+            bindEvent('pauseBtn', 'click', () => {
+                if (!sysState.isStarted) { sysState.isStarted = true; sysState.isPaused = false; startLoop(); }
+                else { sysState.isPaused = !sysState.isPaused; sysState.isPaused ? stopLoop() : startLoop(); }
+                updateUIState(); draw();
+            });
+
+            /* 리셋 */
+            bindEvent('resetBtn', 'click', () => { initSimulation(); });
+
+            /* 퀴즈 */
+            function stabilizeQuizLayout() {
+                if (!CONTENT_CONFIG.quizzes?.length) return;
+                const quizBox = document.getElementById('quizBox');
+                const modal = quizBox?.querySelector('.modal-container');
+                const qEl = document.getElementById('questionText');
+                const answerArea = document.getElementById('answerArea');
+                const aEl = document.getElementById('answerText');
+                const showBtn = document.getElementById('showAnswerBtn');
+                if (!quizBox || quizBox.classList.contains('hidden') || !modal || !qEl || !answerArea || !aEl || !showBtn) return;
+
+                const currentQuestion = qEl.textContent;
+                const currentAnswer = aEl.textContent;
+                const answerWasHidden = aEl.classList.contains('hidden');
+                const buttonWasHidden = showBtn.classList.contains('hidden');
+                modal.style.height = '';
+                qEl.style.height = '';
+                answerArea.style.height = '';
+                answerArea.style.flex = '';
+                answerArea.style.minHeight = '';
+
+                let maxQuestionHeight = 0;
+                CONTENT_CONFIG.quizzes.forEach(({ q }) => {
+                    qEl.textContent = q;
+                    maxQuestionHeight = Math.max(maxQuestionHeight, qEl.getBoundingClientRect().height);
+                });
+                showBtn.classList.add('hidden');
+                aEl.classList.remove('hidden');
+                let maxAnswerHeight = 0;
+                CONTENT_CONFIG.quizzes.forEach(({ a }) => {
+                    aEl.textContent = a;
+                    maxAnswerHeight = Math.max(maxAnswerHeight, aEl.getBoundingClientRect().height);
+                });
+                showBtn.classList.remove('hidden');
+                maxAnswerHeight = Math.max(maxAnswerHeight, showBtn.getBoundingClientRect().height);
+                qEl.style.height = `${Math.ceil(maxQuestionHeight)}px`;
+                const answerStyle = getComputedStyle(answerArea);
+                const answerPadding = (parseFloat(answerStyle.paddingTop) || 0) + (parseFloat(answerStyle.paddingBottom) || 0);
+                answerArea.style.minHeight = `${Math.ceil(maxAnswerHeight + answerPadding)}px`;
+                const fixedModalHeight = Math.ceil(modal.getBoundingClientRect().height);
+
+                qEl.textContent = currentQuestion;
+                aEl.textContent = currentAnswer;
+                aEl.classList.toggle('hidden', answerWasHidden);
+                showBtn.classList.toggle('hidden', buttonWasHidden);
+                qEl.style.height = '';
+                answerArea.style.minHeight = '';
+                modal.style.height = `${fixedModalHeight}px`;
+            }
+
+            function updateQuizUI() {
+                if (!CONTENT_CONFIG.quizzes?.length) return;
+                const q = CONTENT_CONFIG.quizzes[sysState.currentQuizIndex];
+                const stepEl = document.getElementById('quizStep');
+                const qEl = document.getElementById('questionText');
+                const aEl = document.getElementById('answerText');
+                const showBtn = document.getElementById('showAnswerBtn');
+                const prevBtn = document.getElementById('prevQuizBtn');
+                const nextBtn = document.getElementById('nextQuizBtn');
+                if (stepEl) stepEl.textContent = `질문 ${sysState.currentQuizIndex + 1} / ${CONTENT_CONFIG.quizzes.length}`;
+                if (qEl) qEl.innerText = q.q;
+                if (aEl) { aEl.textContent = q.a; aEl.classList.add('hidden'); }
+                if (showBtn) showBtn.classList.remove('hidden');
+                if (prevBtn) prevBtn.disabled = sysState.currentQuizIndex === 0;
+                if (nextBtn) nextBtn.disabled = sysState.currentQuizIndex === CONTENT_CONFIG.quizzes.length - 1;
+            }
+            bindEvent('quizBtn', 'click', () => { sysState.currentQuizIndex = 0; updateQuizUI(); toggleModal('quizBox', true); requestAnimationFrame(stabilizeQuizLayout); });
+            bindEvent('showAnswerBtn', 'click', () => { document.getElementById('answerText')?.classList.remove('hidden'); document.getElementById('showAnswerBtn')?.classList.add('hidden'); });
+            bindEvent('nextQuizBtn', 'click', () => { if (sysState.currentQuizIndex < CONTENT_CONFIG.quizzes.length - 1) { sysState.currentQuizIndex++; updateQuizUI(); } });
+            bindEvent('prevQuizBtn', 'click', () => { if (sysState.currentQuizIndex > 0) { sysState.currentQuizIndex--; updateQuizUI(); } });
+            window.addEventListener('resize', debounce(stabilizeQuizLayout, 100));
+
+            /* 캔버스 포인터 — 단원별 조작은 ZONE F의 onCanvasPointer(type, pos, e)에서 처리 */
+            if (canvas) {
+                const getPos = (clientX, clientY) => {
+                    const r = canvas.getBoundingClientRect();
+                    return {
+                        x: (clientX - r.left) * (sysState.canvasLogicalWidth / r.width),
+                        y: (clientY - r.top) * (sysState.canvasLogicalHeight / r.height)
+                    };
+                };
+                const emit = (type, e) => {
+                    if (typeof onCanvasPointer === 'function') onCanvasPointer(type, getPos(e.clientX, e.clientY), e);
+                };
+                canvas.addEventListener('pointerdown', (e) => { canvas.setPointerCapture(e.pointerId); emit('down', e); });
+                canvas.addEventListener('pointermove', (e) => emit('move', e));
+                const pointerUp = (e) => {
+                    if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+                    emit('up', e);
+                    updateUIState();
+                };
+                canvas.addEventListener('pointerup', pointerUp);
+                canvas.addEventListener('pointercancel', pointerUp);
+            }
+
+            /* 캔버스 상단 탭 */
+            const shapeTabsDOM = document.getElementById('shapeTabs');
+            if (shapeTabsDOM) {
+                const updateTabScrollIndicators = () => {
+                    const leftInd = document.getElementById('tabScrollLeft');
+                    const rightInd = document.getElementById('tabScrollRight');
+                    if (!leftInd || !rightInd) return;
+                    const maxSL = shapeTabsDOM.scrollWidth - shapeTabsDOM.clientWidth;
+                    leftInd.classList.toggle('opacity-0', shapeTabsDOM.scrollLeft <= 1);
+                    leftInd.classList.toggle('pointer-events-none', shapeTabsDOM.scrollLeft <= 1);
+                    leftInd.classList.toggle('opacity-100', shapeTabsDOM.scrollLeft > 1);
+                    rightInd.classList.toggle('opacity-0', Math.ceil(shapeTabsDOM.scrollLeft) >= maxSL - 1 || maxSL <= 0);
+                    rightInd.classList.toggle('pointer-events-none', Math.ceil(shapeTabsDOM.scrollLeft) >= maxSL - 1 || maxSL <= 0);
+                    rightInd.classList.toggle('opacity-100', Math.ceil(shapeTabsDOM.scrollLeft) < maxSL - 1 && maxSL > 0);
+                };
+                shapeTabsDOM.addEventListener('scroll', updateTabScrollIndicators);
+                window.addEventListener('resize', debounce(updateTabScrollIndicators, 100));
+                setTimeout(updateTabScrollIndicators, 150);
+
+                bindEvent('btnScrollLeft', 'click', () => { shapeTabsDOM.scrollBy({ left: -120, behavior: 'smooth' }); });
+                bindEvent('btnScrollRight', 'click', () => { shapeTabsDOM.scrollBy({ left: 120, behavior: 'smooth' }); });
+
+                let isDownTab = false, startXTab = 0, scrollLeftTab = 0;
+                shapeTabsDOM.addEventListener('mousedown', (e) => { isDownTab = true; startXTab = e.pageX - shapeTabsDOM.offsetLeft; scrollLeftTab = shapeTabsDOM.scrollLeft; });
+                shapeTabsDOM.addEventListener('mouseleave', () => isDownTab = false);
+                shapeTabsDOM.addEventListener('mouseup', () => isDownTab = false);
+                shapeTabsDOM.addEventListener('mousemove', (e) => { if (!isDownTab) return; e.preventDefault(); shapeTabsDOM.scrollLeft = scrollLeftTab - (e.pageX - shapeTabsDOM.offsetLeft - startXTab) * 1.5; });
+
+                const tabBtns = shapeTabsDOM.querySelectorAll('.tab-btn');
+                shapeTabsDOM.addEventListener('click', (e) => {
+                    const target = e.target.closest('.tab-btn');
+                    if (!target || (sysState.isStarted && !sysState.isPaused)) return;
+                    const newShape = target.getAttribute('data-shape');
+                    if (simData.shape === newShape) return;
+                    saveTabState(simData.shape);
+                    tabBtns.forEach(b => { b.classList.remove('border-indigo-600', 'text-indigo-600', 'bg-white'); b.classList.add('border-transparent', 'text-slate-500', 'bg-transparent', 'desktop-only:hover:bg-slate-200/50'); });
+                    target.classList.remove('border-transparent', 'text-slate-500', 'bg-transparent', 'desktop-only:hover:bg-slate-200/50');
+                    target.classList.add('border-indigo-600', 'text-indigo-600', 'bg-white');
+                    simData.shape = newShape;
+                    loadTabState(simData.shape);
+                });
+            }
+
+            /* 전체화면 마우스 오버 */
+            let fullscreenHoverTimer;
+            document.addEventListener('mousemove', (e) => {
+                if (!document.fullscreenElement) return;
+                const exitUI = document.getElementById('fullscreen-exit-ui'); if (!exitUI) return;
+                if (e.clientY < 80) { exitUI.classList.remove('opacity-0'); exitUI.classList.add('opacity-100'); clearTimeout(fullscreenHoverTimer); }
+                else { clearTimeout(fullscreenHoverTimer); fullscreenHoverTimer = setTimeout(() => { exitUI.classList.remove('opacity-100'); exitUI.classList.add('opacity-0'); }, 10); }
+            });
+        }
+        /* ════ ZONE J 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE K — 초기 실행 (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        const resizeObserver = new ResizeObserver(() => resizeCanvas());
+
+        window.addEventListener('load', () => {
+            if (container) resizeObserver.observe(container);
+            bindCoreEvents();   /* 🚫 코어 이벤트 바인딩 */
+            bindInputEvents();  /* ✏️ 입력 이벤트 바인딩 (ZONE I) */
+            initSimulation();   /* ✏️ 시뮬레이션 초기화  (ZONE F) */
+        });
+        /* ════ ZONE K 끝 ════════════════════════════════════════════════════════ */
+    </script>
+</body>
+
+</html>

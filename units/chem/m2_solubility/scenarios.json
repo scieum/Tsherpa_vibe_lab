@@ -1,0 +1,271 @@
+{
+  "viewport": [
+    1440,
+    900
+  ],
+  "steps": [
+    {
+      "do": "shot",
+      "name": "0_start"
+    },
+    {
+      "do": "js",
+      "code": "(()=>{const s=document.getElementById('varSlider1'); s.value=20; s.dispatchEvent(new Event('input',{bubbles:true})); s.dispatchEvent(new Event('change',{bubbles:true}));})()"
+    },
+    {
+      "do": "wait",
+      "ms": 800
+    },
+    {
+      "do": "shot",
+      "name": "1_kno3_20g_20c_unsat"
+    },
+    {
+      "do": "js",
+      "code": "(()=>{const s=document.getElementById('varSlider1'); s.value=60; s.dispatchEvent(new Event('input',{bubbles:true})); s.dispatchEvent(new Event('change',{bubbles:true}));})()"
+    },
+    {
+      "do": "wait",
+      "ms": 800
+    },
+    {
+      "do": "shot",
+      "name": "2_kno3_60g_20c_sat"
+    },
+    {
+      "do": "js",
+      "code": "(()=>{const s=document.getElementById('tempSlider'); s.value=60; s.dispatchEvent(new Event('input',{bubbles:true})); s.dispatchEvent(new Event('change',{bubbles:true}));})()"
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "3_kno3_60g_60c_dissolved"
+    },
+    {
+      "do": "click",
+      "id": "pauseBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 500
+    },
+    {
+      "do": "js",
+      "code": "(()=>{const s=document.getElementById('tempSlider'); s.value=10; s.dispatchEvent(new Event('input',{bubbles:true})); s.dispatchEvent(new Event('change',{bubbles:true}));})()"
+    },
+    {
+      "do": "wait",
+      "ms": 6000
+    },
+    {
+      "do": "shot",
+      "name": "4_cooled_crystal"
+    },
+    {
+      "do": "click",
+      "id": "pauseBtn"
+    },
+    {
+      "do": "radio",
+      "name": "soluteOpt",
+      "value": "CuSO4"
+    },
+    {
+      "do": "js",
+      "code": "(()=>{const s=document.getElementById('tempSlider'); s.value=20; s.dispatchEvent(new Event('input',{bubbles:true})); s.dispatchEvent(new Event('change',{bubbles:true}));})()"
+    },
+    {
+      "do": "js",
+      "code": "(()=>{const s=document.getElementById('varSlider1'); s.value=30; s.dispatchEvent(new Event('input',{bubbles:true})); s.dispatchEvent(new Event('change',{bubbles:true}));})()"
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "5_cuso4_sat"
+    },
+    {
+      "do": "js",
+      "code": "(()=>{const c=document.getElementById('chkRegion'); if(c.checked!==true) c.click();})()"
+    },
+    {
+      "do": "wait",
+      "ms": 800
+    },
+    {
+      "do": "shot",
+      "name": "6_region"
+    },
+    {
+      "do": "radio",
+      "name": "soluteOpt",
+      "value": "KNO3"
+    },
+    {
+      "do": "js",
+      "code": "(()=>{const s=document.getElementById('tempSlider'); s.value=90; s.dispatchEvent(new Event('input',{bubbles:true})); s.dispatchEvent(new Event('change',{bubbles:true}));})()"
+    },
+    {
+      "do": "js",
+      "code": "(()=>{const s=document.getElementById('varSlider1'); s.value=200; s.dispatchEvent(new Event('input',{bubbles:true})); s.dispatchEvent(new Event('change',{bubbles:true}));})()"
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "7_kno3_hot_arrow"
+    },
+    {
+      "do": "click",
+      "id": "quizBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 1000
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "shot",
+      "name": "q1"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "shot",
+      "name": "q2"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "shot",
+      "name": "q3"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "shot",
+      "name": "q4"
+    },
+    {
+      "do": "click",
+      "id": "nextQuizBtn"
+    },
+    {
+      "do": "click",
+      "id": "showAnswerBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "shot",
+      "name": "q5"
+    },
+    {
+      "do": "click",
+      "id": "closeQuizBtn"
+    },
+    {
+      "do": "wait",
+      "ms": 400
+    },
+    {
+      "do": "viewport",
+      "size": [
+        2560,
+        1200
+      ]
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "9w_wide"
+    },
+    {
+      "do": "viewport",
+      "size": [
+        2960,
+        1300
+      ]
+    },
+    {
+      "do": "fullscreen",
+      "on": true
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "9f_fullscreen"
+    },
+    {
+      "do": "fullscreen",
+      "on": false
+    },
+    {
+      "do": "viewport",
+      "size": [
+        390,
+        844
+      ]
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "shot",
+      "name": "10_mobile"
+    }
+  ]
+}

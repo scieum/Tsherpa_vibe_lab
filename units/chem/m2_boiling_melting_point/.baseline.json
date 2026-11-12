@@ -1,0 +1,21 @@
+{
+  "created": "2026-10-18T23:47:36",
+  "files": {
+    "docs/design.md": "218f735d5481b503b59bf42b2532ad73756be815157c86addb7d2547cf1199fb",
+    "docs/gates.md": "a0fd620520f2b6ada33ae315b6c3a20eab014872228b026830d1f3cbefd551c4",
+    "docs/outputs.md": "3837df586f1e9ce4e5b2395833992b4ab73b6f45e089f2420c53861cdb366d1d",
+    "docs/pipeline.md": "922a22c20a9471b012cb1fba589b6d959795bc196776f1e2df0bee3cee6e77d1",
+    "docs/prd.md": "060d038f04de3a81bb4682c7a0680a92b3f159b4517f5c5e1e328f93828e3beb",
+    "docs/purpose.md": "c162f4004cae747b0dc671f48158ce16acf28c652b25055de9a03bf4b7df9541",
+    "docs/roles.md": "3523d7f7f7b0034fb023ee3078ee507cc087b964f2fa7137ca0f5702eace2e6f",
+    "docs/story-service.md": "9010e1de9011c3fbb50f6a4263d30fada586f2de3948825e9a72711d888b6676",
+    "docs/story-work.md": "9790bf42da7969d6140eed285dffec88a0a38f7164c4d0cef712ec232dcf080b",
+    "templates/unit/00_input.md": "ee5ee60063ef58d6ccf57acbec0e13e937e938d5e6938d2da7912598723ec328",
+    "templates/unit/index.html": "114e1aa6a88030f99c0466afd8573f71815c4ada4e3fc5e7907652d869c0e599",
+    "scripts/check_unit.py": "3b5c4290a95f3fc7abf975d4a76818d1c5f0b4b9e5d62cf9e5cfa9e0574b4b0a",
+    "scripts/chrome.py": "e8fc55e25c937947e8c3bcc69f752eb0b5a4f61877ef4222b3984d6eb571cb39",
+    "scripts/extract_textbook.js": "fa581d81c0a5410c108d1b9ed8c8e763f3604e05bafa43b343be3c49fabbbee2",
+    "scripts/render_check.mjs": "3f615ea832b4c8d26149156c7115a8e62bc43715394a08ae9eb3dc035ab498fa",
+    "scripts/scenario_shots.mjs": "92ebdc49293282ec6d9373f459678681e4c332ecf32ae73ecd23e7b9b83fd088"
+  }
+}
