@@ -1,1 +1,1051 @@
-{"viewport": [375, 667], "steps": [{"do": "wait", "ms": 1500}, {"do": "radio", "name": "simOption", "value": "oxygen"}, {"do": "wait", "ms": 300}, {"do": "click", "id": "customSelectTrigger"}, {"do": "option", "value": "0"}, {"do": "wait", "ms": 300}, {"do": "click", "id": "pauseBtn"}, {"do": "wait", "ms": 10500}, {"do": "shot", "name": "m1_se_cuo_end"}, {"do": "click", "id": "resetBtn"}, {"do": "wait", "ms": 300}, {"do": "radio", "name": "simOption", "value": "electron"}, {"do": "wait", "ms": 300}, {"do": "click", "id": "customSelectTrigger"}, {"do": "option", "value": "0"}, {"do": "wait", "ms": 300}, {"do": "radio", "name": "metalShape", "value": "heart"}, {"do": "click", "id": "pauseBtn"}, {"do": "wait", "ms": 10500}, {"do": "shot", "name": "m2_se_ag_end"}, {"do": "click", "id": "resetBtn"}, {"do": "wait", "ms": 300}, {"do": "radio", "name": "simOption", "value": "life"}, {"do": "wait", "ms": 300}, {"do": "click", "id": "customSelectTrigger"}, {"do": "option", "value": "3"}, {"do": "wait", "ms": 300}, {"do": "click", "id": "pauseBtn"}, {"do": "wait", "ms": 12500}, {"do": "shot", "name": "m3_se_rust_end"}, {"do": "click", "id": "resetBtn"}, {"do": "wait", "ms": 300}]}
+{
+ "viewport": [
+  1440,
+  900
+ ],
+ "note": "V 단계 전체 시나리오. 한 번에 돌리면 120초를 넘으므로 부분별로 나눠 실행함(2026-11-12)",
+ "steps": [
+  {
+   "do": "viewport",
+   "size": [
+    1440,
+    900
+   ]
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "shot",
+   "name": "a00_start"
+  },
+  {
+   "do": "click",
+   "id": "helpBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 500
+  },
+  {
+   "do": "shot",
+   "name": "a01_guide"
+  },
+  {
+   "do": "click",
+   "id": "closeHelpBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "conceptBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 500
+  },
+  {
+   "do": "shot",
+   "name": "a02_concept"
+  },
+  {
+   "do": "click",
+   "id": "closeConceptBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "quizBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 500
+  },
+  {
+   "do": "shot",
+   "name": "a03_quiz"
+  },
+  {
+   "do": "click",
+   "id": "showAnswerBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "shot",
+   "name": "a04_quiz_answer"
+  },
+  {
+   "do": "click",
+   "id": "nextQuizBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "showAnswerBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "shot",
+   "name": "a05_quiz2_answer"
+  },
+  {
+   "do": "click",
+   "id": "closeQuizBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "shot",
+   "name": "a06_dropdown_open"
+  },
+  {
+   "do": "option",
+   "value": "0"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "electron"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "0"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "metalShape",
+   "value": "line"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 10500
+  },
+  {
+   "do": "shot",
+   "name": "a07_ag_line"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "shot",
+   "name": "a08_reset"
+  },
+  {
+   "do": "viewport",
+   "size": [
+    844,
+    390
+   ],
+   "touch": true
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "oxygen"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "1"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 10500
+  },
+  {
+   "do": "shot",
+   "name": "m6_land_h2_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "electron"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "2"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "metalShape",
+   "value": "spiral"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 10500
+  },
+  {
+   "do": "shot",
+   "name": "m7_land_zn_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "life"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "2"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 12500
+  },
+  {
+   "do": "shot",
+   "name": "m8_land_ch4_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "viewport",
+   "size": [
+    1440,
+    900
+   ]
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "electron"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "0"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "metalShape",
+   "value": "heart"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 10500
+  },
+  {
+   "do": "shot",
+   "name": "p4_ag_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "electron"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "1"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 5000
+  },
+  {
+   "do": "shot",
+   "name": "p5_mg_mid"
+  },
+  {
+   "do": "wait",
+   "ms": 5500
+  },
+  {
+   "do": "shot",
+   "name": "p5_mg_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "electron"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "2"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "metalShape",
+   "value": "spiral"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 10500
+  },
+  {
+   "do": "shot",
+   "name": "p6_zn_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "viewport",
+   "size": [
+    1440,
+    900
+   ]
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "life"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "0"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 6000
+  },
+  {
+   "do": "shot",
+   "name": "p7_photo_mid"
+  },
+  {
+   "do": "wait",
+   "ms": 6500
+  },
+  {
+   "do": "shot",
+   "name": "p7_photo_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "life"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "1"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 12500
+  },
+  {
+   "do": "shot",
+   "name": "p8_resp_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "life"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "2"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 12500
+  },
+  {
+   "do": "shot",
+   "name": "p9_ch4_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "life"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "3"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 12500
+  },
+  {
+   "do": "shot",
+   "name": "p10_rust_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "viewport",
+   "size": [
+    1440,
+    900
+   ]
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "oxygen"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "0"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 5000
+  },
+  {
+   "do": "shot",
+   "name": "p1_cuo_c_mid"
+  },
+  {
+   "do": "wait",
+   "ms": 5500
+  },
+  {
+   "do": "shot",
+   "name": "p1_cuo_c_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "oxygen"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "1"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 5000
+  },
+  {
+   "do": "shot",
+   "name": "p2_h2_mid"
+  },
+  {
+   "do": "wait",
+   "ms": 5500
+  },
+  {
+   "do": "shot",
+   "name": "p2_h2_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "oxygen"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "2"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 5000
+  },
+  {
+   "do": "shot",
+   "name": "p3_furn_mid"
+  },
+  {
+   "do": "wait",
+   "ms": 5500
+  },
+  {
+   "do": "shot",
+   "name": "p3_furn_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "viewport",
+   "size": [
+    412,
+    915
+   ]
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "oxygen"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "2"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 10500
+  },
+  {
+   "do": "shot",
+   "name": "m4_s20_furn_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "life"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "0"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 12500
+  },
+  {
+   "do": "shot",
+   "name": "m5_s20_photo_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "viewport",
+   "size": [
+    375,
+    667
+   ]
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "oxygen"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "0"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 10500
+  },
+  {
+   "do": "shot",
+   "name": "m1_se_cuo_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "electron"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "0"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "metalShape",
+   "value": "heart"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 10500
+  },
+  {
+   "do": "shot",
+   "name": "m2_se_ag_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "life"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "3"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 12500
+  },
+  {
+   "do": "shot",
+   "name": "m3_se_rust_end"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  }
+ ]
+}

@@ -1475,27 +1475,29 @@
                 labels: [{ b: [68, 150, '마그네슘 (Mg)'], a: [68, 150, '마그네슘 이온 (Mg²⁺)'], t: 0.3, end: 0.6 },
                 { b: [310, 100, '산소 (O₂)'], a: [310, 100, '산화 이온 (O²⁻)'], t: 0.58, end: 0.76 },
                 { b: [0, 0, ''], a: [230, 226, '산화 마그네슘 (MgO)'], t: 0.94 }],
-                tags: { ox: [68], red: [310], y: 42 }
+                /* 반응물이 사라지면 꼬리표를 생성물(MgO 결정) 바로 위로 옮긴다 (두 꼬리표 높이는 같게) */
+                tags: { ox: [68], red: [310], y: 42, after: { t: 0.78, ox: [190], red: [270], y: 116 } }
             },
             e2: surfaceModel('Zn', 'Cu', 1, 'cu', '아연 (Zn) 결정'),
             /* 생활 속: 분자 재배열 모형 (mol). 같은 분자 여러 개는 가로 줄·격자로. 포도당은 한 덩어리(GLU) */
             l0: {   /* 광합성 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂ */
                 /* 위: 반응물(CO₂ 3×2, H₂O 3×2 나란히), 아래: 생성물(포도당, O₂ 3×2). 꼬리표는 반응물 묶음 바로 위 같은 높이 */
                 mol: {
-                    arrow: [200, 108, 200, 146],
-                    react: [...[55, 90].flatMap(y => [['CO2', 40, y], ['CO2', 105, y], ['CO2', 170, y]]), ...[50, 88].flatMap(y => [['H2O', 250, y], ['H2O', 300, y], ['H2O', 350, y]])],
+                    /* 분자 사이 간격은 원자 반지름(≈10.5) 이상: CO₂ 2열×3행(열 간격 85), H₂O·O₂ 3열×2행(열 간격 50·55) */
+                    arrow: [200, 112, 200, 140],
+                    react: [...[42, 74, 106].flatMap(y => [['CO2', 55, y], ['CO2', 140, y]]), ...[50, 88].flatMap(y => [['H2O', 250, y], ['H2O', 300, y], ['H2O', 350, y]])],
                     prod: [['GLU', 110, 182], ...[168, 204].flatMap(y => [['O2', 245, y], ['O2', 300, y], ['O2', 355, y]])]
                 },
-                labels: [{ x: 105, y: 120, t: '6CO₂', side: 'r' }, { x: 300, y: 120, t: '6H₂O', side: 'r' }, { x: 110, y: 230, t: 'C₆H₁₂O₆', side: 'p' }, { x: 300, y: 230, t: '6O₂', side: 'p' }],
-                tags: { red: [105], ox: [300], y: 22 }
+                labels: [{ x: 97, y: 127, t: '6CO₂', side: 'r' }, { x: 300, y: 122, t: '6H₂O', side: 'r' }, { x: 110, y: 230, t: 'C₆H₁₂O₆', side: 'p' }, { x: 300, y: 230, t: '6O₂', side: 'p' }],
+                tags: { red: [97], ox: [300], y: 18 }
             },
             l1: {   /* 세포호흡 C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O */
                 mol: {
-                    arrow: [200, 108, 200, 146],
+                    arrow: [200, 108, 200, 132],
                     react: [['GLU', 110, 70], ...[55, 90].flatMap(y => [['O2', 245, y], ['O2', 300, y], ['O2', 355, y]])],
-                    prod: [...[168, 204].flatMap(y => [['CO2', 40, y], ['CO2', 105, y], ['CO2', 170, y]]), ...[162, 200].flatMap(y => [['H2O', 250, y], ['H2O', 300, y], ['H2O', 350, y]])]
+                    prod: [...[146, 178, 210].flatMap(y => [['CO2', 55, y], ['CO2', 140, y]]), ...[162, 200].flatMap(y => [['H2O', 250, y], ['H2O', 300, y], ['H2O', 350, y]])]
                 },
-                labels: [{ x: 110, y: 120, t: 'C₆H₁₂O₆', side: 'r' }, { x: 300, y: 120, t: '6O₂', side: 'r' }, { x: 105, y: 230, t: '6CO₂', side: 'p' }, { x: 300, y: 230, t: '6H₂O', side: 'p' }],
+                labels: [{ x: 110, y: 120, t: 'C₆H₁₂O₆', side: 'r' }, { x: 300, y: 120, t: '6O₂', side: 'r' }, { x: 97, y: 233, t: '6CO₂', side: 'p' }, { x: 300, y: 230, t: '6H₂O', side: 'p' }],
                 tags: { ox: [110], red: [300], y: 22 }
             },
             l2: {   /* 메테인의 연소 CH₄ + 2O₂ → CO₂ + 2H₂O */
@@ -1528,7 +1530,7 @@
                     labels: [{ b: [67, 150, '철 (Fe)'], a: [67, 150, '철 이온 (Fe³⁺)'], t: 0.4, end: 0.62 },
                     { b: [293, 82, '산소 (O₂)'], a: [293, 82, '산화 이온 (O²⁻)'], t: 0.6, end: 0.78 },
                     { b: [0, 0, ''], a: [246, 226, '산화 철(III) (Fe₂O₃)'], t: 0.96 }],
-                    tags: { ox: [67], red: [293], y: 30 }
+                    tags: { ox: [67], red: [293], y: 30, after: { t: 0.8, ox: [206], red: [296], y: 120 } }
                 };
             })()
         };
@@ -2624,9 +2626,10 @@
         function drawModelTags(M, ox, oy, s, bh, r, ui) {
             if (!tagOn()) return;
             /* 산화·환원 꼬리표: 각 물질 묶음 바로 위, 두 꼬리표는 같은 높이(M.tags.y, 기준 좌표). 겹치면 옆으로 민다 */
+            const T = M.tags.after && modelTime() >= M.tags.after.t ? M.tags.after : M.tags;   /* 반응물이 사라진 뒤에는 생성물 위 */
             const fs = Math.max(9, 12 * ui), sub = tagSub(), th = fs * 1.7;
-            const y = clamp(oy + (M.tags.y || 20) * s - th / 2, oy + 2, oy + bh - th - 2);
-            const items = [['red', M.tags.red[0]], ['ox', M.tags.ox[0]]].map(([kind, bx]) => {
+            const y = clamp(oy + (T.y || 20) * s - th / 2, oy + 2, oy + bh - th - 2);
+            const items = [['red', T.red[0]], ['ox', T.ox[0]]].map(([kind, bx]) => {
                 const m = measureTag(kind, sub[kind], fs);
                 return { kind, m, x: clamp(ox + bx * s - m.w / 2, r.x, r.x + r.w - m.w) };
             }).sort((a, b) => a.x - b.x);
