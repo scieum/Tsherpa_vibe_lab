@@ -1,0 +1,25 @@
+{
+  "created": "2026-11-12T21:58:05",
+  "files": {
+    "docs\\CHANGES_2026-11-12.md": "278c888626b16517fb6a23c5b043b7675a4b76e55214b2488a7cc3da3ff4d857",
+    "docs\\design.md": "d308d5173b24c7b5c165655b1f3434a2b3ddf723097c55ce20517e1e98efa033",
+    "docs\\gates.md": "85ef44ef08e4ac1ae226a9d26007c2c5ab7fcb11d5e38c7028cec364a3a05aae",
+    "docs\\outputs.md": "4cd213e735554a40f10e85022efca06d7bd74e0c2b8872d91de04c890190b2cb",
+    "docs\\paths.md": "84e2877b36aea6940d2f974f2a6c4002a5882946e9604f2b1e561b45c5b8328b",
+    "docs\\pipeline.md": "2de62e505cb2095af767a3c0f5ee522ae9878e4f9d7361bc60a6cb51f45f000f",
+    "docs\\prd.md": "c0f6fbe49ddbe8945b9d06bb0421073ce5573e46719e37609ddcb8339e9b1274",
+    "docs\\purpose.md": "1863f81087c17022f3d762937ae0c4a5435e2362c4c4bba8f18515656eb9c802",
+    "docs\\roles.md": "650c1bc5f098ce48780d48576ac648715cde10af2b2770195f63dcb65ca980cc",
+    "docs\\story-service.md": "9010e1de9011c3fbb50f6a4263d30fada586f2de3948825e9a72711d888b6676",
+    "docs\\story-work.md": "9790bf42da7969d6140eed285dffec88a0a38f7164c4d0cef712ec232dcf080b",
+    "templates\\unit\\00_input.md": "5000901a33bd0471d41116dce366827d4847bbc424f109e131eda9db0c42db2b",
+    "templates\\unit\\T_Fixed.html": "ad01deb5a7d6edf245460e327c3931205c94275647a90590549e9c902b66b2c2",
+    "templates\\unit\\T_Floating.html": "1233ec8a6e1247493bd90b712db68ff6402bcf4bc519d85d8c4dd5acaaa651e3",
+    "scripts\\check_unit.py": "b6c013231ab7841e8f89999526f72997e5994ce0fd72a3170dc3e8b94b4798fd",
+    "scripts\\chrome.py": "e8fc55e25c937947e8c3bcc69f752eb0b5a4f61877ef4222b3984d6eb571cb39",
+    "scripts\\extract_textbook.js": "fa581d81c0a5410c108d1b9ed8c8e763f3604e05bafa43b343be3c49fabbbee2",
+    "scripts\\pdf2md.py": "c5b3ca131ff69dfb4266bd51e24f7c6c7bad7ab4a999684a9895494b11a2d436",
+    "scripts\\render_check.mjs": "3f615ea832b4c8d26149156c7115a8e62bc43715394a08ae9eb3dc035ab498fa",
+    "scripts\\scenario_shots.mjs": "208478334d7b70a8bce4f0a91173dbfc9afa5d5277c1e43edff24537b2b2a68c"
+  }
+}

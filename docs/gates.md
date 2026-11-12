@@ -11,7 +11,24 @@
 | G2 콘텐츠 (멈칫 G-b) | S2 후 | guide steps 3~5개<br>concepts 1~4장, color ∈ {orange, green, blue, purple} (concept 삭제 시 `[]`)<br>quiz ≥ 3, `a`는 `정답:`으로 시작 + `해설:` 포함 (quiz 삭제 시 `[]`)<br>★N1 개념·퀴즈마다 `standard_ref` ∈ 01_spec의 성취기준 코드<br>★N1 퀴즈 정답 번호(①~⑤)가 그 문항 보기에 있음 | S2 |
 | GA 참고 그림 | SA 후 | `03_reference.json` 있음, 항목 ≥ 1 또는 `skipped` 이유<br>항목마다 출처 URL, `style_notes` ≥ 1<br>★N2 참고 파일은 단원 폴더 밖(`inbox/refs/`) | SA |
 | G3 화면 | S3 후 | 비교 기준 = `templates/unit/<template>.html`<br>필수 유지 요소 10개 있음 (헤더·`#workspace`·푸터, T셀파 로고 링크, 제목, 학습 가이드 버튼·팝업, 전체화면, 초기화, 캔버스)<br>`removed_features`에 적은 기능은 흔적 0, 안 적은 기능은 모두 있음<br>섹션 (design.md 7장 `sections`, 삭제한 개념·퀴즈 제외)<br>`:root` 토큰 18개 일치<br>🚫 영역 = 템플릿 — 기능을 지운 경우 **지우기만 한 차이**는 허용(지운 줄 수를 보고), 고치거나 끼워 넣은 줄은 실패 (`locked_zone_exceptions` 신고 영역 제외)<br>필수 함수 4개 (`initSimulation`, `draw`, `updatePhysics`, `bindInputEvents`)<br>`CONTENT_CONFIG` = `02_content.json`<br>남긴 `#conceptBtn`, `#quizBtn`에 `hidden` 없음<br>★N2 외부 파일은 `./contents/` 상대경로 + 파일 있음 + `media`에 출처 (템플릿 로고 제외, 절대경로·`../` 실패 — docs/paths.md)<br>단원 폴더 이름 `^m[1-3]_[a-z0-9_]+$`, 업로드 파일 이름 영문·숫자·`_`만<br>★N2 외부 도메인 ⊆ 기본 6개 + `formula_or_source`에 적은 도메인<br>헤드리스 Chrome 콘솔 에러 0건<br>`docs/`·`templates/`·`scripts/` 해시가 시작 때와 같음 | 원인별 S1 / S2 / S3 (pipeline.md) |
+| GQ 삽화 품질 | G3 후, V 전 | Claude가 장면별 캡처를 교과서 쪽 그림과 나란히 보고 `art_check.json`에 채점 (아래 기준). 모든 항목 ≥ 2이고 평균 ≥ 2.5 | 1·2회째: S3 / 2회 실패: 사용자에게 Higgsfield 삽화 제안 ⏸ |
 | G4 사람 승인 | S4 | `04_review.json`에 `approved: true`, `approver`, `date`, N1·N2·검수 체크 결과 → `<폴더명>.zip` 생성 | 사람이 고른 단계 |
+
+## GQ 삽화 품질 (2026-11-12 추가)
+- 대상: 기구·장치·장면 그림(시험관, 알코올램프, 비커, 용광로, 서식지 등). 입자 모형·그래프·라벨은 대상이 아니다.
+- 방법: `scenario_shots.mjs`로 장면마다 PC 1440×900 캡처 1장 → 같은 장면의 교과서 쪽 그림(`scripts/pdf2md.py`나 PyMuPDF로 뽑은 PNG, 단원 폴더 밖)과 나란히 본다.
+- 채점 (항목마다 1 = 어색함 / 2 = 쓸 만함 / 3 = 교과서 삽화 수준):
+  1. 형태: 교과서 그림과 같은 기구 구성·연결 (빠지거나 틀린 부품 없음)
+  2. 비례·원근: 크기 비율, 놓인 위치, 바닥에 떠 있지 않음
+  3. 질감: 유리 투명도·반사, 액체 면, 불꽃, 금속 광택
+  4. 스타일: 선 굵기·색이 한 장면 안에서 고르고 교과서 삽화 톤과 맞음
+  5. 변화 표현: 색 변화·석출·기포 같은 관찰 결과가 한눈에 보임
+- 기록: `art_check.json` = `{"round": n, "scenes": [{"scene", "shot", "textbook_ref", "scores": {"형태": n, …}, "fix": "고칠 점"}], "pass": bool}`
+- 실패 1·2회째: `fix`를 S3에 넘겨 다시 그린다.
+- 2회 실패: 멈추고 사용자에게 **Higgsfield로 교과서 형태 삽화 만들기**를 제안한다 (크레딧이 들므로 사용자 승인 필수). 승인하면
+  - 정적인 기구 그림만 이미지로 만들어 `contents/`에 넣고(webp, 배경 투명), `01_spec.json` `media`에 "Higgsfield AI 생성(작업 번호)" 출처를 적는다.
+  - 색 변화·석출·입자·라벨처럼 조작에 따라 바뀌는 부분은 계속 코드로 그려 이미지 위에 얹는다.
+  - 교과서·clarchive 그림을 그대로 넣거나 따라 그리게 하지 않는다 (N2). 프롬프트에는 기구 이름·구성만 쓴다.
 
 ## G4 진행 방식
 1. Claude가 G0~G3 판정 결과와 V 단계 캡처를 보여준다.

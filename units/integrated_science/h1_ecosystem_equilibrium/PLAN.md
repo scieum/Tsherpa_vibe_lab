@@ -1,6 +1,6 @@
 # PLAN — 생태계평형 (통합과학2) 바이브랩
 
-- 단원 폴더: `units/bio/h1_ecosystem_equilibrium/`
+- 단원 폴더: `units/integrated_science/h1_ecosystem_equilibrium/`
 - 작성: 2026-11-12 · 상태: 계획(P0 전)
 
 ## 1. 내용 판단 (교과서·지도서 근거)

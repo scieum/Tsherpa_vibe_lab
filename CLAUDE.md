@@ -13,7 +13,7 @@
 - 교과서·지도서: 학교급별 `inbox/textbook/mid/*.pdf`(중학교), `inbox/textbook/high/<과목>/*.pdf`(고등학교: 물리학·생명과학 …) → 텍스트는 학교급 상관없이 `inbox/textbook/_text/<책 이름>.txt` (P1에서 추출). 단원 폴더가 `m…`이면 mid, `h…`이면 high를 본다
 
 ## 단원 = 새 폴더 1개
-- 새 콘텐츠를 만들 때마다 `units/{영역}/m{학년}_{영어_단원명}/` 폴더를 **새로** 만든다. 중학교는 `m`, 고등학교는 `h` (예: `m2_solubility`, `h1_…`, 2026-11-12 확정). (영역: phy / chem / bio / ear)
+- 새 콘텐츠를 만들 때마다 `units/{영역}/m{학년}_{영어_단원명}/` 폴더를 **새로** 만든다. 중학교는 `m`, 고등학교는 `h` (예: `m2_solubility`, `h1_…`, 2026-11-12 확정). (영역: phy / chem / bio / ear, 고등 통합과학1·2는 과목 구분 없이 `integrated_science`, 2026-11-12 결정)
 - **폴더·파일 이름은 영문+숫자, 공백은 `_`** (예: `m1_moon_phase`). 한글·공백은 FTP 업로드·실행 오류가 난다.
 - 그 단원의 파일(00_input.md ~ 04_review.json, index.html, 03_reference.json, scenarios.json)은 모두 이 폴더 안에만 둔다. 다른 단원 폴더는 건드리지 않는다.
 - 이미지·영상·음성·데이터 JS 같은 외부 파일을 쓰면 단원 폴더 안 `contents/`에 두고 **상대경로 `./contents/…`** 로만 부른다 (절대경로 `C:/…`·남의 URL·`../` 금지). 안 쓰면 `contents/`를 만들지 않는다. 자세한 규칙·예시는 **docs/paths.md** (S1·S3·G3·G4가 항상 참조). 기구·물체 그림은 여전히 코드로 그리는 것이 기본이다.
@@ -32,11 +32,12 @@
 | 6 | S2 콘텐츠 | unit-writer | 교과서 용어·사례, 지도서 오개념 반영한 가이드·개념·퀴즈 | `02_content.json` | G2 (S2) |
 | 7 | SA 참고 그림 ⏸ | 오케스트레이터 | 사용자의 로그인된 Chrome으로 clarchive.co.kr에서 기구·물체 그림 후보 검색(`scripts/chrome.py`) → 후보를 보여주고 고른 것을 **참고용으로만** `inbox/refs/<slug>/`에 저장 → 모양·선 스타일 메모. **페이지에는 넣지 않고 S3이 코드로 직접 그린다** (이미지 합성은 어색해서 쓰지 않음, 2026-10-18 결정). 참고가 필요 없으면 `skipped` | `03_reference.json` | GA (SA) |
 | 8 | S3 구현 | unit-builder | `template`에 맞는 템플릿을 복사 → `removed_features`만 통째로 지우고 ✏️ 영역 채우기. 필수 유지 5가지(레이아웃·로고/제목·학습 가이드·전체화면·초기화)는 그대로. 기구·물체는 `03_reference.json`의 참고 그림을 보고 캔버스 코드로 그린다 | `index.html` (+ `contents/`) | G3 (S1/S2/SA/S3) |
+| 8.5 | GQ 삽화 품질 | 오케스트레이터 | 장면별 캡처를 교과서 쪽 그림과 나란히 보고 5항목(형태·비례·질감·스타일·변화 표현) 1~3점 채점 (docs/gates.md). 모두 ≥ 2·평균 ≥ 2.5면 통과. 2번 실패하면 멈추고 **Higgsfield로 교과서 형태 삽화**를 제안 (크레딧, 사용자 승인) → 정적 기구만 `contents/` 이미지, 바뀌는 부분은 코드로 얹음 | `art_check.json` | GQ (S3 / 사용자) |
 | 9 | V 화면 점검 | 오케스트레이터 | 조작 시나리오를 `scenarios.json`에 쓰고 `node scripts/scenario_shots.mjs <단원폴더>`로 상태별 캡처 → **모든 캡처를 직접 열어 본다** (겹침, 그림 밖으로 나간 채우기, 흐림, 잘린 라벨). 필수 캡처: 모드·선택지(커스텀 드롭다운은 `{"do":"option"}`)·버튼·퀴즈 정답, PC 1440×900·**넓은 화면 2560×1200**·**전체화면(`{"do":"fullscreen"}`, 2960×1300)**, 모바일 세로 **아이폰SE 375×667·S20 울트라 412×915**(+ `moreMenuBtn` 클릭한 ⋮ 상태), **모바일 가로 844×390(`"touch": true`)**, T_Floating이면 패널 닫힘 상태. 문제가 있으면 S3로 돌려보내고 다시 캡처. 캡처하지 못한 상태는 G4에 "확인 못 함"으로 적는다 | `scenarios.json` | 사람 눈 (S3) |
 | 10 | G4 승인 ⏸ | 사용자 | 판정 결과 + 캡처 + 체크리스트(docs/gates.md: 실제 기기·브라우저 확인 포함) 확인 → "승인" / "반려, S{n}로". 승인하면 `check_unit.py --package`로 `<폴더명>.zip` (index.html + contents/) 생성 | `04_review.json`, `<폴더명>.zip` | — |
 
 1. 각 단계가 끝나면 그 게이트를 판정한다 (unit-judge 또는 `check_unit.py`).
-2. 멈추는 곳(⏸)은 G0(입력이 비었을 때), R(입력과 교과서가 다를 때), SA(참고 그림 선택), 3회 실패, G4뿐이다. 나머지는 자동으로 진행한다.
+2. 멈추는 곳(⏸)은 G0(입력이 비었을 때), R(입력과 교과서가 다를 때), SA(참고 그림 선택), GQ 2회 실패(Higgsfield 제안), 3회 실패, G4뿐이다. 나머지는 자동으로 진행한다.
 3. 실패하면 판정 결과의 "돌아갈 단계"로 가서 그 단계 파일과 뒤 파일을 지우고 다시 만든다 (지운 파일은 scratchpad에 백업).
 4. 같은 단계로 3번 돌아가도 실패하면 멈추고 사용자에게 묻는다.
 5. 질문할 때는 항목마다 기본값(교과서 근거)을 붙인다.
@@ -52,7 +53,7 @@
 
 ## 재개
 단원 폴더에서 처음으로 없는 파일부터 이어서 한다.
-(00_input.md → 00_research.json → 01_spec.json → 02_content.json → 03_reference.json → index.html → scenarios.json(V) → 04_review.json → `<폴더명>.zip`)
+(00_input.md → 00_research.json → 01_spec.json → 02_content.json → 03_reference.json → index.html → art_check.json(GQ) → scenarios.json(V) → 04_review.json → `<폴더명>.zip`)
 - 2026-11-12 이전(임시 템플릿 `templates/unit/index.html`)으로 만든 단원의 `index.html`은 새 템플릿 기준 G3를 통과하지 못한다. 이어서 할 때는 사용자에게 "S1(template 추가)·S3 다시 만들기"를 묻는다.
 
 ## 트리거

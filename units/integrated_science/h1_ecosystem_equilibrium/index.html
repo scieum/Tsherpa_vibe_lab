@@ -1161,7 +1161,7 @@
             upFactor: 1.6,              /* 증가 교란: 1.6배 */
             downFactor: 0.5,            /* 감소 교란: 절반 (복원 한계 시나리오는 0) */
             reintroduce: 0.3,           /* 사라진 영양단계를 다시 들여올 때 (평형값 대비) */
-            extinct: 0.01,              /* 이보다 작아지면 사라짐(0) */
+            extinct: 0.5,               /* 상대 개체수(base 곱한 값)가 이보다 작으면 사라짐(0): 피라미드에 0으로 보이면 그림·모형도 0 */
             maxU: 5,
             speed: { slow: 1, normal: 2, fast: 4 },   /* 실제 1초당 모형 시간 */
             dt: 0.02,
@@ -1515,7 +1515,7 @@
             const k4 = modelRates(add(u, k3, h));
             return u.map((v, i) => {
                 let n = v + h / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
-                if (!(n >= SIM_CONFIG.extinct)) n = 0;
+                if (!(n * SIM_CONFIG.base[i] >= SIM_CONFIG.extinct)) n = 0;
                 return Math.min(SIM_CONFIG.maxU, n);
             });
         }
@@ -1536,7 +1536,7 @@
             const v = u.slice();
             if (dir === 'up') v[level] = v[level] > 0 ? Math.min(SIM_CONFIG.maxU, v[level] * SIM_CONFIG.upFactor) : SIM_CONFIG.reintroduce;
             else v[level] = scenario === 'limit' ? 0 : v[level] * SIM_CONFIG.downFactor;
-            if (v[level] < SIM_CONFIG.extinct) v[level] = 0;
+            if (v[level] * SIM_CONFIG.base[level] < SIM_CONFIG.extinct) v[level] = 0;
             return v;
         }
 
@@ -2423,6 +2423,15 @@
                 simData.autoStopped = true;
                 simData.popup = true;
                 uiSound.playDone();
+                simData.lastNow = 0;
+                sysState.isPaused = true;
+                stopLoop();
+                updateUIState();
+            }
+            /* 사라진 영양단계가 있고 더 이상 변하지 않으면(판정도 끝남) 멈춘다 — 끝없이 실행 중으로 두지 않음 */
+            else if (simData.u.some(v => v === 0) && (!simData.pert || simData.pert.done)
+                && Math.max(...modelRates(simData.u).map((v, i) => Math.abs(v) * SIM_CONFIG.base[i])) < 0.01) {
+                simData.autoStopped = true;
                 simData.lastNow = 0;
                 sysState.isPaused = true;
                 stopLoop();

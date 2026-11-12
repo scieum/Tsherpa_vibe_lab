@@ -1,0 +1,2896 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>산화·환원 반응</title><!-- JS의 CONTENT_CONFIG.title로 자동 변경됩니다 -->
+
+    <!-- ════════════════════════════════════════════════════════
+         🚫 [수정 금지] 핵심 라이브러리 — KaTeX · Tailwind CSS
+         ════════════════════════════════════════════════════════ -->
+    <link rel="icon" href="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_short.png"
+        type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ════════════════════════════════════════════════════════
+         ⚙️  [선택 수정] Tailwind 테마 — 브랜드 색상·폰트만 변경
+         ════════════════════════════════════════════════════════ -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: { 'desktop-only': { 'raw': '(hover: hover) and (pointer: fine)' } },
+                    colors: { primary: '#4f46e5' },   /* ✏️ 브랜드 색상 */
+                    fontFamily: { sans: ['Noto Sans KR', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script>
+        /* 모바일에서 생략되는 number 스피너만 보완하고 PC 네이티브 UI는 유지 */
+        const isIPadDevice =
+            /iPad/i.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isMobileNumberUI =
+            navigator.userAgentData?.mobile === true ||
+            /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+            isIPadDevice;
+        if (isMobileNumberUI) document.documentElement.classList.add('mobile-number-controls');
+    </script>
+
+    <style>
+        html,
+        body,
+        button,
+        input,
+        select,
+        textarea {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        /* ════════════════════════════════════════════════════════
+           ⚙️  [선택 수정] CSS 변수 — 전체 색상·폰트 크기 일괄 조정
+           ════════════════════════════════════════════════════════ */
+        :root {
+            /* 폰트 크기 */
+            --font-size-title: 1.275rem;
+            --font-size-modal: 1.15rem;
+            --font-size-guide: 1.025rem;
+            --font-size-desc: 1rem;
+            --font-size-small: 0.9rem;
+            --font-size-tiny: 0.75rem;
+
+            /* 텍스트 색상 */
+            --color-text-main: #334155;
+            --color-text-sub: #475569;
+            --color-text-light: #64748b;
+
+            /* 테마 포인트 색상 */
+            --color-primary: #4f46e5;
+            /* ✏️ 메인 포인트 색상 */
+            --color-primary-bg: #e0e7ff;
+            --color-tab-bg: #d8e0ff80;
+            --color-action: #059669;
+            --color-action-hover: #047857;
+            --color-pause: #e11d48;
+            --color-pause-bg: #fff1f2;
+            --color-pause-border: #fecdd3;
+            --color-obs1: #ea580c;
+        }
+
+        /* ════════════════════════════════════════════════════════
+           ⚙️  [선택 수정] 디자인 클래스 매핑 — CSS 변수를 UI 요소에 적용
+           ════════════════════════════════════════════════════════ */
+        .sim-title {
+            font-size: var(--font-size-title);
+            font-weight: 700;
+            color: var(--color-text-main);
+            line-height: 1.25;
+        }
+
+        .guide-on-off {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: var(--color-text-light);
+        }
+
+        .guide-title {
+            font-size: var(--font-size-guide);
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .guide-desc {
+            font-size: var(--font-size-desc);
+            color: var(--color-text-sub);
+        }
+
+        .env-text {
+            font-weight: 700;
+            color: var(--color-text-light);
+            font-size: var(--font-size-tiny);
+        }
+
+        .tab-btn {
+            font-weight: 700;
+            color: var(--color-text-light);
+            font-size: var(--font-size-small);
+        }
+
+        @media (min-width: 768px) {
+            .env-text {
+                font-size: var(--font-size-small);
+            }
+        }
+
+        .helper-text-default {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .helper-text-running {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-pause);
+        }
+
+        .helper-text-paused {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: #d97706;
+        }
+
+        .var-label-control {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-text-main);
+        }
+
+        .var-label-obs1 {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-obs1);
+        }
+
+        .var-label-obs2 {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-action);
+        }
+
+        .var-label-var {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: var(--color-text-main);
+        }
+
+        .slider-limit-label {
+            font-size: var(--font-size-tiny);
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .var-unit-display {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: var(--color-primary);
+            background-color: var(--color-primary-bg);
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .select-option-text {
+            font-size: var(--font-size-tiny);
+            font-weight: 700;
+            color: var(--color-text-sub);
+        }
+
+        .header-button {
+            background-color: #fff;
+            color: var(--color-text-sub);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .header-button:hover {
+                background-color: #f1f5f9;
+            }
+        }
+
+        .btn-action-start {
+            background-color: var(--color-action);
+            color: #fff;
+            border-color: var(--color-action-hover);
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-action-start:hover {
+                background-color: var(--color-action-hover);
+            }
+        }
+
+        .btn-action-pause {
+            background-color: var(--color-pause-bg);
+            color: var(--color-pause);
+            border-color: var(--color-pause-border);
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        .btn-sub {
+            background-color: #fff;
+            color: var(--color-text-main);
+            border-color: #cbd5e1;
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-sub:hover {
+                background-color: #f1f5f9;
+            }
+        }
+
+        .btn-reset-custom {
+            color: var(--color-text-main);
+            border-color: #cbd5e1;
+            font-weight: 700;
+            font-size: var(--font-size-small);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-reset-custom:hover {
+                color: var(--color-pause);
+                border-color: #fda4af;
+                background-color: var(--color-pause-bg);
+            }
+        }
+
+        .modal-title {
+            font-size: var(--font-size-modal);
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .modal-close-btn {
+            color: #94a3b8;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .modal-close-btn:hover {
+                color: #f43f5e;
+            }
+        }
+
+        .concept-title-1 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #c2410c;
+        }
+
+        .concept-title-2 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #047857;
+        }
+
+        .concept-title-3 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #4338ca;
+        }
+
+        .concept-title-4 {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #6e0478;
+        }
+
+        .concept-desc {
+            font-size: var(--font-size-desc);
+            color: var(--color-text-main);
+        }
+
+        .quiz-step {
+            font-size: var(--font-size-small);
+            font-weight: 700;
+            color: #4338ca;
+            background-color: var(--color-primary-bg);
+        }
+
+        .quiz-question {
+            font-size: var(--font-size-modal);
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .quiz-btn-check {
+            font-size: var(--font-size-desc);
+            font-weight: 700;
+            color: #fff;
+            background-color: #f97316;
+            border: 1px solid #f97316;
+            line-height: 1.5rem;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .quiz-btn-check:hover {
+                background-color: #ea580c;
+                border-color: #ea580c;
+            }
+        }
+
+        .quiz-answer-box {
+            font-size: var(--font-size-guide);
+            font-weight: 700;
+            line-height: 1.5rem;
+            color: var(--color-text-main);
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+        }
+
+        .header-button:is(.is-tap-feedback, .is-pen-hover),
+        .btn-sub:is(.is-tap-feedback, .is-pen-hover),
+        .zoom-btn:is(.is-tap-feedback, .is-pen-hover),
+        .nav-btn:is(.is-tap-feedback, .is-pen-hover),
+        #customSelectTrigger:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #f1f5f9;
+        }
+
+        .btn-action-start:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: var(--color-action-hover);
+        }
+
+        .btn-reset-custom:is(.is-tap-feedback, .is-pen-hover) {
+            color: var(--color-pause);
+            border-color: #fda4af;
+            background-color: var(--color-pause-bg);
+        }
+
+        .modal-close-btn:is(.is-tap-feedback, .is-pen-hover) {
+            color: #f43f5e;
+        }
+
+        .quiz-btn-check:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #ea580c;
+        }
+
+        .tab-btn:not(.border-indigo-600):is(.is-tap-feedback, .is-pen-hover) {
+            background-color: rgb(226 232 240 / 0.5);
+        }
+
+        .radio-label:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #f8fafc;
+        }
+
+        #customSelectList [role="option"]:is(.is-tap-feedback, .is-pen-hover) {
+            background-color: #eef2ff;
+        }
+
+        /* PC·모바일에서 동일한 숫자 입력 스피너를 고정 노출 */
+        .ratio-number-field {
+            display: flex;
+            flex: 1 1 0%;
+            min-width: 0;
+            position: relative;
+        }
+
+        .ratio-number-stepper {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            width: 2.5rem;
+            justify-content: center;
+            gap: 0;
+        }
+
+        .ratio-step-btn {
+            display: flex;
+            flex: 1 1 50%;
+            min-height: 0;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 0.15rem;
+            background-color: transparent;
+            color: #737373;
+            line-height: 1;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ratio-step-icon {
+            width: 0.66rem;
+            height: 0.48rem;
+            fill: currentColor;
+        }
+
+        .ratio-step-btn[data-step-direction="up"] .ratio-step-icon {
+            transform: translateY(0.1875rem);
+        }
+
+        .ratio-step-btn[data-step-direction="down"] .ratio-step-icon {
+            transform: translateY(-0.1875rem);
+        }
+
+        .ratio-step-btn:active {
+            background-color: transparent;
+            color: #475569;
+        }
+
+        .ratio-step-btn:focus {
+            background-color: transparent;
+        }
+
+        .ratio-step-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .ratio-number-field>.input-text {
+            appearance: textfield;
+            -moz-appearance: textfield;
+            padding-right: 2.75rem;
+            background-color: transparent;
+            transition: border-color 150ms ease;
+        }
+
+        .ratio-number-field>.input-text::-webkit-inner-spin-button,
+        .ratio-number-field>.input-text::-webkit-outer-spin-button {
+            margin: 0;
+            -webkit-appearance: none;
+        }
+
+        .ratio-number-field:has(>.ratio-number-stepper>.ratio-step-btn:active)>.input-text,
+        .ratio-number-field:has(>.ratio-number-stepper>.ratio-step-btn.is-tap-feedback)>.input-text {
+            border-color: #6366f1;
+        }
+
+        /* iOS Safari는 16px 미만 입력창에 포커스할 때 화면을 자동 확대한다. */
+        @supports (-webkit-touch-callout: none) {
+            html.mobile-number-controls input[type="number"] {
+                font-size: 16px !important;
+            }
+
+            .radio-label>.select-option-text {
+                white-space: nowrap;
+            }
+        }
+
+        /* ════════════════════════════════════════════════════════
+           🚫 [수정 금지] 코어 레이아웃 구조 — 전체화면·캔버스·스크롤
+           ════════════════════════════════════════════════════════ */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        html,
+        body {
+            overscroll-behavior: none;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            font-size: 16px !important;
+        }
+
+        .ui-box {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+        }
+
+        .shutter-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .shutter-wrapper.is-open {
+            grid-template-rows: 1fr;
+        }
+
+        .shutter-inner {
+            overflow: hidden;
+        }
+
+        @media (hover: none), (pointer: coarse) {
+
+            input,
+            textarea,
+            select,
+            button,
+            [role="button"],
+            [contenteditable="true"] {
+                touch-action: manipulation;
+            }
+
+            .zoom-btn,
+            .nav-btn,
+            .header-button,
+            .btn-sub,
+            .btn-reset-custom,
+            .modal-close-btn,
+            #btnScrollLeft,
+            #btnScrollRight {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+
+            .zoom-btn:active,
+            .zoom-btn.is-tap-feedback,
+            .nav-btn:active,
+            .nav-btn.is-tap-feedback,
+            .header-button:active,
+            .header-button.is-tap-feedback,
+            .btn-sub:active,
+            .btn-sub.is-tap-feedback {
+                background-color: #f1f5f9;
+            }
+
+            .btn-reset-custom:active,
+            .btn-reset-custom.is-tap-feedback {
+                color: var(--color-pause);
+                border-color: #fda4af;
+                background-color: var(--color-pause-bg);
+            }
+
+            .modal-close-btn:active,
+            .modal-close-btn.is-tap-feedback {
+                color: #f43f5e;
+            }
+
+            #btnScrollLeft:active,
+            #btnScrollLeft.is-tap-feedback,
+            #btnScrollRight:active,
+            #btnScrollRight.is-tap-feedback {
+                color: #4f46e5;
+            }
+
+            #fullscreen-btn:is(:active, .is-tap-feedback),
+            #fullscreen-btn-mobile:is(:active, .is-tap-feedback) {
+                background-color: #f1f5f9;
+            }
+        }
+
+        canvas {
+            touch-action: none;
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .bar-track {
+            width: 100%;
+            height: 16px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .popup-overlay {
+            background-color: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(2px);
+        }
+
+        #workspace:fullscreen {
+            background-color: #f8fafc;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        @media (orientation: landscape) {
+            #workspace:fullscreen {
+                padding: 1rem;
+                overflow-y: hidden;
+            }
+        }
+    </style>
+
+    <!-- 🚫 [수정 금지] Tailwind 컴포넌트 추출 -->
+    <style type="text/tailwindcss">
+        @layer components {
+            .panel-block      { @apply flex flex-col gap-2 p-3 border border-slate-200 rounded-lg bg-white; }
+            .modal-container  { @apply bg-white border border-slate-300 rounded-2xl w-full flex flex-col relative shadow-2xl max-h-[70dvh]; }
+            .modal-header     { @apply h-14 lg:h-16 px-6 border-b border-slate-100 flex items-center justify-between flex-none; }
+            .modal-body       { @apply flex-1 overflow-y-auto p-4 lg:p-6 flex flex-col gap-4; }
+            .guide-block      { @apply p-4 bg-slate-50 border border-slate-200 rounded-xl; }
+            .zoom-btn         { @apply w-10 h-10 flex items-center justify-center bg-white border border-slate-300 rounded-full shadow-sm text-slate-600 font-bold desktop-only:hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed desktop-only:disabled:hover:bg-slate-50; }
+            .nav-btn          { @apply w-12 h-12 flex items-center justify-center bg-white border border-slate-300 text-slate-600 rounded-full desktop-only:hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed desktop-only:disabled:hover:bg-slate-50; }
+            .radio-label      { @apply flex items-start gap-2 p-2 border border-slate-200 rounded bg-white cursor-pointer desktop-only:hover:bg-slate-50 transition-colors has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed; }
+            .input-text       { @apply w-full p-2 border border-slate-200 rounded text-center focus:outline-none focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50; }
+        }
+    </style>
+</head>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     🚫 [수정 금지] BODY — 레이아웃 클래스 수정 금지
+     ════════════════════════════════════════════════════════════════════ -->
+
+<body
+    class="bg-slate-100 text-slate-800 font-sans w-full m-0 p-0 box-border select-none overflow-x-hidden md:overflow-hidden landscape:overflow-hidden flex flex-col justify-center md:h-[100dvh] landscape:h-[100dvh]">
+
+    <div
+        class="flex flex-col w-full max-w-[1680px] mx-auto p-2 gap-2 box-border md:h-[100dvh] md:overflow-hidden landscape:h-[100dvh] landscape:overflow-hidden relative">
+
+        <!-- ═══════════════════════════════════════════════════════════════
+         🚫 [수정 금지] 헤더 — 제목은 JS CONTENT_CONFIG.title로 자동 주입
+         ═══════════════════════════════════════════════════════════════ -->
+        <header class="ui-box flex-none px-4 py-2 flex items-center justify-between z-10 bg-white relative">
+            <div class="flex items-center gap-4">
+                <a href="https://www.tsherpa.co.kr" target="_blank"
+                    class="flex items-center flex-none desktop-only:hover:opacity-80 transition-opacity">
+                    <img src="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_black.png"
+                        alt="T셀파"
+                        class="h-7 md:h-8 object-contain draggable-false flex-none hidden [@media(min-width:768px)]:block">
+                    <img src="https://cdata2.tsherpa.co.kr/tsherpa/Tsherpa2021/mh/vibe/00_common/images/t_logo_short.png"
+                        alt="T셀파"
+                        class="h-7 md:h-8 object-contain draggable-false flex-none block [@media(min-width:768px)]:hidden">
+                </a>
+                <div class="border-l border-slate-300 pl-4">
+                    <h1 class="sim-title" id="sim-title-el">로딩 중...</h1><!-- CONTENT_CONFIG.title 자동 주입 -->
+                </div>
+            </div>
+            <div class="flex items-center relative">
+                <button id="moreMenuBtn"
+                    class="header-button flex landscape:hidden desktop-only:hidden transition-colors ml-2"
+                    title="메뉴 더보기">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                    </svg>
+                </button>
+                <div class="hidden landscape:flex desktop-only:flex items-center">
+                    <!-- SOUND MANAGER -->
+                    <div id="volume-popup"
+                        class="flex items-center overflow-hidden transition-all duration-300 w-0 opacity-0">
+                        <div
+                            class="flex items-center gap-2 w-48 px-3 bg-white border border-slate-200 rounded-xl h-[36px] ml-2">
+                            <button id="popup-mute-btn"
+                                class="flex-none text-slate-500 desktop-only:hover:text-indigo-600 transition-colors">
+                                <svg id="sound-icon-popup" class="w-5 h-5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2l5 5V3l-5 5H7a2 2 0 00-2 2z" />
+                                </svg>
+                            </button>
+                            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5"
+                                class="w-full accent-indigo-600 cursor-pointer">
+                        </div>
+                    </div>
+                    <button id="sound-toggle-btn" class="header-button hidden desktop-only:flex ml-2">
+                        <svg id="sound-icon-main" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2l5 5V3l-5 5H7a2 2 0 00-2 2z" />
+                        </svg>
+                    </button>
+                    <!-- 학습 가이드 -->
+                    <button id="helpBtn" class="header-button desktop-only:md:hidden font-bold text-lg ml-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <!-- 전체화면 | fullscreen -->
+                    <button id="fullscreen-btn" class="header-button flex ml-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="mobileMenuPanel"
+                    class="absolute top-1/2 -translate-y-1/2 right-full z-50 flex items-center gap-2 overflow-hidden transition-all duration-300 w-0 opacity-0">
+                    <button id="help-Btn" class="header-button flex-none flex font-bold text-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <button id="fullscreen-btn-mobile" class="header-button flex-none flex transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ════════════════════════════════════════════════════════
+         🚫 [수정 금지] 메인 워크스페이스 래퍼
+         ════════════════════════════════════════════════════════ -->
+        <main id="workspace"
+            class="flex flex-col md:flex-row landscape:flex-row flex-1 min-h-0 gap-3 relative bg-slate-100 md:bg-transparent">
+
+            <!-- 🚫 [수정 금지] 캔버스 영역 -->
+            <section id="content-area"
+                class="ui-box flex-none h-[50vh] md:h-auto landscape:h-auto md:flex-[3] landscape:flex-[3] flex flex-col min-h-[250px] md:min-h-[400px] landscape:min-h-0 overflow-hidden relative bg-white">
+                <!-- 캔버스 상단 환경변수 및 인디케이터 -->
+                <div
+                    class="h-10 pr-4 border-b border-slate-200 flex items-center justify-between flex-none bg-slate-50 z-50 relative gap-4">
+                    <div class="env-text flex items-center gap-4 flex-none pl-4" id="environment-info">
+                        <span id="env-label-canvas">로딩 중...</span><!-- CONTENT_CONFIG.envLabel 자동 주입 -->
+                    </div>
+                    <div id="statusIndicator"
+                        class="w-3 h-3 rounded-full bg-emerald-500 border border-slate-300 transition-colors duration-200 translate-y-[1px]">
+                    </div>
+                </div>
+
+                <div class="flex-1 w-full relative bg-white overflow-hidden" id="canvas-container">
+                    <!-- 콘텐츠 상태 -->
+                    <div
+                        class="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full border border-slate-200 shadow-sm pointer-events-none">
+                        <p id="helperText" class="helper-text-default whitespace-nowrap transition-colors">로딩 중...</p>
+                    </div>
+                    <canvas id="simCanvas" class="w-full h-full block relative z-0">컨텐츠 영역</canvas>
+                </div>
+                <!-- 초기화 -->
+                <button id="resetBtn"
+                    class="btn-reset-custom flex absolute bottom-4 right-4 z-40 bg-white/95 backdrop-blur border rounded-full px-4 h-10 items-center gap-2 transition-colors shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    초기화
+                </button>
+            </section>
+
+
+            <!-- ╔══════════════════════════════════════════════════════════╗
+             ║  ✏️  EDIT ZONE — 제어 패널 (우측 사이드바)                ║
+             ║  이 <aside> 안의 입력 폼을 자유롭게 추가/수정/삭제하세요.   ║
+             ╚══════════════════════════════════════════════════════════╝ -->
+            <aside id="settings-area"
+                class="ui-box flex-none landscape:max-w-[300px] md:flex-[1] landscape:flex-[1] md:min-w-[250px] landscape:min-w-[250px] flex flex-col min-h-[300px] landscape:min-h-0 overflow-hidden relative">
+                <div class="flex-1 overflow-y-auto relative" id="controlsWrapper">
+                    <div class="p-3 md:p-4 min-h-full flex flex-col justify-between gap-4">
+                        <div class="flex flex-col gap-4">
+
+                        <!-- ─────────────────────────────────────────────
+                         ✏️  입력 폼 영역 시작 — 아래부터 자유롭게 수정
+                         ───────────────────────────────────────────── -->
+
+                        <!-- 폼 2: 라디오 — 모드 (실행 중 ZONE G가 잠금) -->
+                        <div class="panel-block">
+                            <label class="var-label-control">모드</label>
+                            <div class="grid grid-cols-1 gap-2 w-full" id="radioSelectContainer">
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="simOption" value="oxygen"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0" checked>
+                                    <span class="select-option-text whitespace-nowrap">산소의 이동</span>
+                                </label>
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="simOption" value="electron"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                    <span class="select-option-text whitespace-nowrap">전자의 이동</span>
+                                </label>
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="simOption" value="life"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                    <span class="select-option-text whitespace-nowrap">생활 속 산화·환원</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 폼 1: 드롭다운 — 반응 (목록은 모드에 따라 JS가 채움) -->
+                        <div class="panel-block" id="rxnBlock">
+                            <label class="var-label-control">반응</label>
+                            <div class="relative w-full" id="customSelectContainer">
+                                <button id="customSelectTrigger" aria-haspopup="listbox" aria-expanded="false"
+                                    aria-controls="customSelectList"
+                                    class="select-option-text w-full h-10 flex justify-between items-center p-2 border rounded bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-shadow disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                                    <span class="truncate" id="customSelectValue">산화 구리(II) + 탄소(숯가루)</span>
+                                    <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <ul id="customSelectList" role="listbox" tabindex="-1"
+                                    class="select-option-text hidden absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-md shadow-lg max-h-48 overflow-y-auto outline-none">
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 폼 2: 라디오 — 금속 모양 (구리줄·아연일 때만) -->
+                        <div class="panel-block hidden" id="shapeBlock">
+                            <label class="var-label-control">금속 모양</label>
+                            <div class="grid grid-cols-3 gap-2 w-full" id="shapeContainer">
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="metalShape" value="line"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0" checked>
+                                    <span class="select-option-text whitespace-nowrap">직선</span>
+                                </label>
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="metalShape" value="heart"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                    <span class="select-option-text whitespace-nowrap">하트</span>
+                                </label>
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="metalShape" value="spiral"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                    <span class="select-option-text whitespace-nowrap">나선</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 폼 2: 라디오 — 생활 속 카드 -->
+                        <div class="panel-block hidden" id="cardBlock">
+                            <label class="var-label-control">생활 속 카드</label>
+                            <div class="grid grid-cols-1 gap-2 w-full" id="cardContainer">
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="lifeCard" value="0"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0" checked>
+                                    <span class="select-option-text whitespace-nowrap">광합성</span>
+                                </label>
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="lifeCard" value="1"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                    <span class="select-option-text whitespace-nowrap">세포호흡</span>
+                                </label>
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="lifeCard" value="2"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                    <span class="select-option-text whitespace-nowrap">메테인의 연소</span>
+                                </label>
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="lifeCard" value="3"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                    <span class="select-option-text whitespace-nowrap">철이 녹스는 반응</span>
+                                </label>
+                                <label class="radio-label min-w-0">
+                                    <input type="radio" name="lifeCard" value="4"
+                                        class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                    <span class="select-option-text whitespace-nowrap">철의 제련</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 폼 2: 라디오 — 산화·환원되는 물질 고르기 + 판정 -->
+                        <div class="panel-block hidden" id="judgeBlock">
+                            <label class="var-label-control">산화되는 물질</label>
+                            <div class="grid grid-cols-2 gap-2 w-full" id="pickOxContainer"></div>
+                            <label class="var-label-control">환원되는 물질</label>
+                            <div class="grid grid-cols-2 gap-2 w-full" id="pickRedContainer"></div>
+                            <button type="button" id="judgeBtn"
+                                class="btn-sub min-h-[44px] py-2 border rounded-lg transition-colors">판정하기</button>
+                            <p id="judgeResult" class="var-label-var leading-relaxed"></p>
+                        </div>
+
+                        <!-- 폼 6: 관찰 게이지 — 반응 진행도 -->
+                        <div class="panel-block" id="gaugeBlock">
+                            <div class="flex flex-col gap-1">
+                                <div class="flex justify-between items-end">
+                                    <span class="var-label-obs1">반응 진행도</span>
+                                    <span id="val-1" class="var-label-var">0 %</span>
+                                </div>
+                                <div class="bar-track">
+                                    <div id="bar-1" class="bar-fill bg-orange-500"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ─────────────────────────────────────────────
+                         ✏️  입력 폼 영역 끝
+                         ───────────────────────────────────────────── -->
+                        </div>
+
+                        <!-- 🚫 [수정 금지] 하단 동작 버튼 (텍스트만 변경 가능) -->
+                        <div class="flex flex-col gap-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button id="pauseBtn"
+                                    class="btn-action-start col-span-2 py-2 border rounded-lg transition-colors">▶
+                                    시작</button>
+                                <button id="conceptBtn" class="btn-sub py-2 border rounded-lg transition-colors">개념
+                                    정리</button>
+                                <button id="quizBtn" class="btn-sub py-2 border rounded-lg transition-colors">확인
+                                    퀴즈</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </aside>
+            <!-- ╚══════EDIT ZONE 끝═════════════════════════════════════════╝ -->
+
+
+            <!-- ═════════════════════════════════════════════════════════════
+             🚫 [수정 금지] 팝업 모달 — 내용은 JS CONTENT_CONFIG로 자동 주입
+             ═════════════════════════════════════════════════════════════ -->
+
+            <!-- 학습 가이드 모달 (모바일/태블릿) -->
+            <div id="helpBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-left">
+                <div class="modal-container max-w-4xl min-h-[200px]">
+                    <div class="modal-header">
+                        <h3 class="modal-title flex items-center gap-2"><svg class="w-6 h-6 text-indigo-600" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg> 학습 가이드</h3>
+                        <button id="closeHelpBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="guide-block">
+                            <h4 class="guide-title mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg> 콘텐츠 소개</h4>
+                            <p class="guide-desc" id="guide-intro-modal">로딩 중...</p>
+                        </div>
+                        <div class="guide-block">
+                            <h4 class="guide-title mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg> 사용 방법</h4>
+                            <ol class="guide-desc list-decimal pl-5 space-y-1.5 marker:text-slate-400 marker:font-bold"
+                                id="guide-steps-modal"><!-- JS 자동 주입 --></ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 개념 정리 모달 -->
+            <div id="conceptBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-left">
+                <div class="modal-container max-w-2xl min-h-[200px]">
+                    <div class="modal-header">
+                        <h3 class="modal-title">개념 정리</h3>
+                        <button id="closeConceptBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                    <div class="modal-body" id="conceptContent"><!-- JS CONTENT_CONFIG.concept 자동 주입 --></div>
+                </div>
+            </div>
+
+            <!-- 확인 퀴즈 모달 -->
+            <div id="quizBox"
+                class="popup-overlay fixed inset-0 hidden flex items-center justify-center z-50 p-4 text-center">
+                <div class="modal-container max-w-2xl min-h-[200px] lg:min-h-[480px] max-h-[70dvh] overflow-hidden">
+                    <div class="modal-header">
+                        <div class="flex items-center gap-3">
+                            <h3 class="modal-title">확인 퀴즈</h3>
+                            <span id="quizStep" class="quiz-step px-3 py-1 rounded-full">질문 1 / N</span>
+                        </div>
+                        <button id="closeQuizBtn" class="modal-close-btn transition-colors"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </div>
+                                        <div class="flex-1 flex flex-col min-h-0">
+                        <!-- 👻 Sizer Wrapper Start -->
+                        <div class="relative flex-1 min-h-0">
+                            <!-- 투명 뼈대 (Sizer) : 화면에 보이지 않지만 최대 크기를 버텨줌 -->
+                            <div class="invisible px-5 pt-5 flex flex-col gap-2 pointer-events-none">
+                                <p id="sizerQ" class="quiz-question flex-none"></p>
+                                <div class="flex-1 flex flex-col justify-center py-4">
+                                    <div id="sizerA" class="quiz-answer-box py-3 px-4 rounded-xl border w-full text-center"></div>
+                                </div>
+                            </div>
+                            <!-- 실제 퀴즈 내용 : 뼈대 위를 덮어씌움 -->
+                            <div class="absolute inset-0 px-5 pt-5 flex flex-col gap-2 overflow-y-auto">
+                                <p id="questionText" class="quiz-question flex-none"></p>
+                                <div id="answerArea" class="flex-1 flex flex-col justify-center py-4">
+                                    <button id="showAnswerBtn"
+                                        class="quiz-btn-check w-full max-w-sm mx-auto py-3 rounded-xl transition-colors">정답
+                                        확인하기</button>
+                                    <div id="answerText"
+                                        class="quiz-answer-box hidden py-3 px-4 rounded-xl border w-full text-center">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 👻 Sizer Wrapper End -->
+                        <div id="quizNav" class="flex justify-center gap-4 flex-none pt-2 pb-4 px-5 mt-0">
+                            <button id="prevQuizBtn" class="nav-btn">←</button>
+                            <button id="nextQuizBtn" class="nav-btn">→</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🚫 [수정 금지] 전체화면 딤처리 UI -->
+            <div id="fullscreen-exit-ui"
+                class="hidden fixed top-0 left-0 w-full h-12 z-[60] transition-opacity duration-300 opacity-0 pointer-events-none">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent"></div>
+            </div>
+        </main>
+
+        <!-- 🚫 [수정 금지] 푸터 -->
+        <footer class="flex-none flex justify-center p-1">
+            <p class="text-[10px] text-slate-400 font-medium">copyright© 2026 by chunjae co.ltd all rights reserved.</p>
+        </footer>
+    </div>
+
+
+    <script>
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE A — CONTENT CONFIG (텍스트/콘텐츠 설정)              ████
+           ████   이 블록의 값만 수정하면 제목·가이드·개념·퀴즈가 모두 반영됩니다.  ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        const CONTENT_CONFIG = {
+            "title": "산화·환원 반응",
+            "envLabel": "산화·환원 반응 시뮬레이터",
+            "envLabelpanel": "",
+            "guide": {
+                "intro": "산소의 이동과 전자의 이동으로 산화·환원 반응을 설명하고, 산화와 환원은 항상 동시에 일어난다는 것과 광합성·세포호흡·철의 제련 같은 생활 주변의 산화·환원 반응을 확인할 수 있다.",
+                "steps": [
+                    "모드에서 산소의 이동, 전자의 이동, 생활 속 산화·환원 중 하나를 고르고, 반응 목록에서 관찰할 반응을 고른다.",
+                    "산소의 이동 모드에서는 시작 버튼을 눌러 가열하고, 검은색 산화 구리(II)가 붉은색 구리로 변하는 모습과 입자 모형에서 산소 원자가 옮겨 가는 모습을 관찰한다.",
+                    "전자의 이동 모드에서는 구리줄·아연의 모양(직선·하트·나선)을 고른 뒤 시작 버튼을 눌러 금속이 석출되고 용액 색이 변하는 모습과 전자가 옮겨 가는 모습을 관찰한다.",
+                    "반응식 아래에 산화(산소를 얻음·전자를 잃음)와 환원(산소를 잃음·전자를 얻음) 표시가 같은 순간에 함께 켜지는지 확인한다.",
+                    "생활 속 산화·환원 모드에서는 카드를 고르고 산화되는 물질과 환원되는 물질을 하나씩 고른 뒤 판정하기 버튼을 눌러 결과와 해설을 확인한다. 처음부터 다시 하려면 초기화 버튼을 누른다."
+                ]
+            },
+            "concept": [
+                {
+                    "color": "orange",
+                    "title": "산소의 이동으로 본 산화·환원",
+                    "desc": "물질이 산소를 얻는 반응을 산화, 산소를 잃는 반응을 환원이라고 합니다. 산화 구리(II)를 숯가루와 함께 가열하면(2CuO + C → 2Cu + CO₂) 검은색 산화 구리(II)는 산소를 잃고 붉은색 구리로 환원되고, 탄소는 산소를 얻어 이산화 탄소로 산화되며, 이산화 탄소 때문에 석회수가 뿌옇게 흐려집니다. 산화 구리(II)와 수소의 반응(CuO + H₂ → Cu + H₂O)에서도 산화 구리(II)는 환원되고 수소는 산화됩니다. (교과서 40~41쪽, 65쪽, 163쪽)"
+                },
+                {
+                    "color": "green",
+                    "title": "전자의 이동으로 본 산화·환원",
+                    "desc": "물질이 전자를 잃는 반응을 산화, 전자를 얻는 반응을 환원이라고 합니다. 구리줄을 질산 은 수용액에 넣으면(2Ag⁺ + Cu → 2Ag + Cu²⁺) 구리는 전자를 잃고 구리 이온(Cu²⁺)이 되어 수용액이 점점 푸른색으로 변하고, 은 이온(Ag⁺)은 전자를 얻어 금속 은으로 석출됩니다. 마그네슘의 연소처럼 산소의 이동으로 환원을 설명하기 어려운 반응은 전자의 이동으로 설명합니다. 마그네슘은 전자를 잃어 마그네슘 이온(Mg²⁺)으로 산화되고, 산소는 전자를 얻어 산화 이온(O²⁻)으로 환원됩니다. (교과서 42~43쪽, 지도서 87~89쪽)"
+                },
+                {
+                    "color": "blue",
+                    "title": "산화와 환원은 항상 동시에 일어난다",
+                    "desc": "한 물질이 산소를 잃으면 다른 물질이 그 산소를 얻고, 한 물질이 전자를 잃으면 다른 물질이 그 전자를 얻습니다. 따라서 산화 반응과 환원 반응은 항상 동시에 일어나며, 한쪽만 일어나는 반응은 없습니다. 이처럼 산소나 전자의 이동이 일어나는 반응을 산화·환원 반응이라고 합니다. 단, 반응식에 산소가 들어 있다고 해서 모두 산화·환원 반응인 것은 아닙니다. (교과서 41쪽, 43쪽, 지도서 84~86쪽, 88쪽)"
+                },
+                {
+                    "color": "purple",
+                    "title": "생활 주변의 산화·환원 반응",
+                    "desc": "광합성(6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂)에서는 이산화 탄소에서 환원이, 물에서 산화가 일어나고, 세포호흡(C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O)에서는 포도당에서 산화가, 산소에서 환원이 일어납니다. 화석 연료인 메테인의 연소(CH₄ + 2O₂ → CO₂ + 2H₂O)에서는 메테인이 산화되고, 철이 녹스는 반응(4Fe + 3O₂ → 2Fe₂O₃)에서는 철이 산화됩니다. 용광로에서 철의 제련(Fe₂O₃ + 3CO → 2Fe + 3CO₂)이 일어날 때는 산화 철(III)이 환원되고 일산화 탄소가 산화됩니다. (교과서 42쪽, 44~45쪽)"
+                }
+            ],
+            "quizzes": [
+                {
+                    "q": "산화 구리(II) 가루와 숯가루를 시험관에 넣고 가열하였더니 2CuO + C → 2Cu + CO₂ 반응이 일어났다. 이에 대한 설명으로 옳은 것만을 고른 것은?\n\nㄱ. 검은색 가루가 붉은색 구리 가루로 변한다.\nㄴ. 산화 구리(II)는 산소를 얻어 산화된다.\nㄷ. 석회수가 뿌옇게 흐려지는 것으로 보아 이산화 탄소가 생성된다.\n\n① ㄱ   ② ㄴ   ③ ㄱ, ㄷ   ④ ㄴ, ㄷ",
+                    "a": "정답: ③ ㄱ, ㄷ. 해설: 산화 구리(II)는 산소를 잃고 구리로 환원되고, 탄소는 산소를 얻어 이산화 탄소로 산화됩니다. 따라서 ㄴ은 틀립니다. (교과서 40~41쪽, 지도서 116쪽)"
+                },
+                {
+                    "q": "구리줄을 질산 은 수용액에 넣었더니 2Ag⁺ + Cu → 2Ag + Cu²⁺ 반응이 일어났다. 이에 대한 설명으로 옳은 것은?\n\n① 구리는 전자를 얻어 환원된다.\n② 은 이온은 전자를 잃어 산화된다.\n③ 구리줄 표면에 석출된 금속은 구리이다.\n④ 수용액이 푸른색으로 변하는 것은 구리가 구리 이온(Cu²⁺)이 되어 녹아 들어가기 때문이다.",
+                    "a": "정답: ④ 수용액이 푸른색으로 변하는 것은 구리가 구리 이온(Cu²⁺)이 되어 녹아 들어가기 때문이다. 해설: 구리는 전자를 잃고 구리 이온으로 산화되어 수용액이 푸른색으로 변하고, 은 이온은 전자를 얻어 금속 은으로 환원되어 구리줄 표면에 석출됩니다. (교과서 42~43쪽, 162쪽)"
+                },
+                {
+                    "q": "마그네슘 리본을 공기 중에서 가열하였더니 2Mg + O₂ → 2MgO 반응이 일어났다. 이에 대한 설명으로 옳지 않은 것은?\n\n① 마그네슘은 전자를 잃어 마그네슘 이온(Mg²⁺)이 된다.\n② 산소는 전자를 얻어 산화 이온(O²⁻)이 된다.\n③ 전자는 마그네슘에서 산소로 이동한다.\n④ 마그네슘이 산화된 뒤 나중에 산소가 환원되므로 산화와 환원은 동시에 일어나지 않는다.",
+                    "a": "정답: ④ 해설: 마그네슘이 잃은 전자를 산소가 얻으므로 전자를 잃는 반응과 얻는 반응은 함께 일어납니다. 산화와 환원은 항상 동시에 일어납니다. (교과서 43쪽, 지도서 88쪽, 114쪽, 116쪽)"
+                },
+                {
+                    "q": "산화·환원 반응에 대한 설명으로 옳은 것만을 고른 것은?\n\nㄱ. 반응식에 산소가 들어 있으면 모두 산화·환원 반응이다.\nㄴ. 철이 녹스는 반응(4Fe + 3O₂ → 2Fe₂O₃)에서 산소가 환원되는 것은 전자의 이동으로 설명한다.\nㄷ. 철의 제련(Fe₂O₃ + 3CO → 2Fe + 3CO₂)에서 환원되는 물질은 산화 철(III)이다.\n\n① ㄱ   ② ㄷ   ③ ㄱ, ㄴ   ④ ㄴ, ㄷ",
+                    "a": "정답: ④ ㄴ, ㄷ. 해설: 반응식에 산소가 들어 있어도 산화·환원 반응이 아닌 반응이 있으므로 ㄱ은 틀립니다. 철이 녹스는 반응에서 산소는 전자를 얻어 산화 이온이 되고, 철의 제련에서 산화 철(III)은 산소를 잃어 철로 환원됩니다. (지도서 85쪽, 87쪽, 교과서 42쪽, 45쪽, 162쪽)"
+                },
+                {
+                    "q": "광합성(6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂)에서 산화되는 물질과 환원되는 물질을 옳게 짝 지은 것은?\n\n① 산화: 이산화 탄소, 환원: 물\n② 산화: 물, 환원: 이산화 탄소\n③ 산화: 포도당, 환원: 산소\n④ 산화: 물, 환원: 산소",
+                    "a": "정답: ② 산화: 물, 환원: 이산화 탄소. 해설: 광합성에서는 이산화 탄소에서 환원이, 물에서 산화가 일어납니다. 이산화 탄소의 환원은 산소를 잃는 것으로 설명할 수 있지만, 물의 산화는 산소의 이동만으로 설명하기 어렵습니다. 포도당 산화·산소 환원은 세포호흡입니다. (교과서 44쪽, 지도서 91쪽)"
+                }
+            ]
+        };
+        /* ████ ZONE A 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE B — SIM CONFIG (시뮬레이션 파라미터 설정)             ████
+           ████   슬라이더 범위, 초기 객체 크기 등 수치 설정을 여기서 변경하세요.   ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        const SIM_CONFIG = {
+            duration: { oxygen: 9, electron: 9, life: 2.5 },   /* 진행도 0→100 %에 걸리는 시간(초) */
+            modeNames: { oxygen: '산소의 이동', electron: '전자의 이동', life: '생활 속 산화·환원' },
+            rxnNames: {
+                oxygen: ['산화 구리(II) + 탄소(숯가루)', '산화 구리(II) + 수소', '철의 제련(용광로)'],
+                electron: ['구리 + 질산 은 수용액', '마그네슘의 연소', '아연 + 황산 구리(II) 수용액'],
+                life: []
+            },
+            tagText: {
+                oxygen: { ox: '산소를 얻음', red: '산소를 잃음' },
+                electron: { ox: '전자를 잃음', red: '전자를 얻음' }
+            },
+            /* 생활 속 카드: tokens = [화학식, 물질 번호], subs = 물질 이름, nReact = 반응물 수, ox/red = 정답 물질 번호 (교과서 p.42, p.44-45, p.162) */
+            cards: [
+                { name: '광합성', tokens: [['6CO₂', 0], [' + '], ['6H₂O', 1], [' → '], ['C₆H₁₂O₆', 2], [' + '], ['6O₂', 3]], subs: ['이산화 탄소', '물', '포도당', '산소'], nReact: 2, ox: 1, red: 0, note: '광합성에서는 이산화 탄소에서 환원이 일어나고, 물에서 산화가 일어난다.' },
+                { name: '세포호흡', tokens: [['C₆H₁₂O₆', 0], [' + '], ['6O₂', 1], [' → '], ['6CO₂', 2], [' + '], ['6H₂O', 3]], subs: ['포도당', '산소', '이산화 탄소', '물'], nReact: 2, ox: 0, red: 1, note: '세포호흡에서는 포도당에서 산화가 일어나고, 산소에서 환원이 일어난다.' },
+                { name: '메테인의 연소', tokens: [['CH₄', 0], [' + '], ['2O₂', 1], [' → '], ['CO₂', 2], [' + '], ['2H₂O', 3]], subs: ['메테인', '산소', '이산화 탄소', '물'], nReact: 2, ox: 0, red: 1, note: '메테인의 연소에서는 메테인이 산화되고, 산소가 환원된다.' },
+                { name: '철이 녹스는 반응', tokens: [['4Fe', 0], [' + '], ['3O₂', 1], [' → '], ['2Fe₂O₃', 2]], subs: ['철', '산소', '산화 철(III)'], nReact: 2, ox: 0, red: 1, note: '철은 전자를 잃어 철 이온(Fe³⁺)이 되므로 산화되고, 산소는 전자를 얻어 산화 이온(O²⁻)이 되므로 환원된다.' },
+                { name: '철의 제련', tokens: [['Fe₂O₃', 0], [' + '], ['3CO', 1], [' → '], ['2Fe', 2], [' + '], ['3CO₂', 3]], subs: ['산화 철(III)', '일산화 탄소', '철', '이산화 탄소'], nReact: 2, ox: 1, red: 0, note: '산화 철(III)은 산소를 잃어 철로 환원되고, 일산화 탄소는 산소를 얻어 이산화 탄소로 산화된다.' }
+            ]
+        };
+        /* ████ ZONE B 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                                ████
+           ████   ✏️  ZONE C — SIM STATE (동적 상태 변수)                       ████
+           ████   시뮬레이션 진행 중 변하는 값들을 여기에 추가·수정하세요.         ████
+           ████                                                                ████
+           ████████████████████████████████████████████████████████████████████████ */
+        let simData = {
+            x: 0, y: 0, radius: 0,              /* 코어(resizeCanvas·limitOffset)가 쓰는 값 */
+            mode: 'oxygen', rxn: 0, shape: 'line', card: 0,
+            progress: 0, done: false, time: 0, lastTs: 0,
+            bubbles: [], spawn: 0,
+            pickOx: null, pickRed: null, judged: null,
+            pct: -1
+        };
+
+        /* 탭을 쓰지 않음 */
+        const tabStates = {};
+        /* ████ ZONE C 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE D — CORE ENGINE (수정 금지)
+           캔버스·상태·사운드·DOM캐시 등 엔진 코어 초기화
+           ════════════════════════════════════════════════════════════════════════ */
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        const container = document.getElementById('canvas-container');
+
+        const varSlider1 = document.getElementById('varSlider1');
+        const varDisplay1 = document.getElementById('varDisplay1');
+
+        const sysState = {
+            isStarted: false, isPaused: false, isDragging: false, isLooping: false,
+            zoomLevel: 1.0, offsetX: 0, offsetY: 0, lastX: 0, lastY: 0,
+            currentQuizIndex: 0, canvasLogicalWidth: 0, canvasLogicalHeight: 0
+        };
+
+        const ZOOM_MIN = 0.5;
+        const ZOOM_MAX = 1.5;
+        const ZOOM_EPSILON = 0.0001;
+
+        function updateZoomButtons() {
+            const zoomOutBtn = document.getElementById('zoomOutBtn');
+            const zoomInBtn = document.getElementById('zoomInBtn');
+            if (zoomOutBtn) zoomOutBtn.disabled = sysState.zoomLevel <= ZOOM_MIN + ZOOM_EPSILON;
+            if (zoomInBtn) zoomInBtn.disabled = sysState.zoomLevel >= ZOOM_MAX - ZOOM_EPSILON;
+        }
+
+        const DOM = {}; /* DOM 요소 캐시 */
+
+        const debounce = (func, delay) => {
+            let id;
+            return (...args) => { clearTimeout(id); id = setTimeout(() => func.apply(this, args), delay); };
+        };
+
+        const bindEvent = (id, type, handler) => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener(type, handler);
+        };
+
+        /* CONTENT_CONFIG → DOM 주입 */
+        function renderContent() {
+            const C = CONTENT_CONFIG;
+
+            /* 제목 */
+            document.title = C.title;
+            const titleEl = document.getElementById('sim-title-el');
+            if (titleEl) titleEl.textContent = C.title;
+
+            /* 환경 변수 레이블 */
+            ['env-label-canvas', 'env-label-panel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.envLabel;
+            });
+
+            /* 제어패널 환경 변수 레이블 */
+            ['env-label-panel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.envLabelpanel;
+            });
+
+            /* 가이드 — 소개 */
+            ['guide-intro-desktop', 'guide-intro-modal'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = C.guide.intro;
+            });
+
+            /* 가이드 — 단계 (모달: 단순 주입) */
+            const stepsHTML = CONTENT_CONFIG.guide.steps.map(s => `<li>${s}</li>`).join('');
+            const modalSteps = document.getElementById('guide-steps-modal');
+            if (modalSteps) modalSteps.innerHTML = stepsHTML;
+
+            /* 가이드 — 단계 (데스크톱 셔터: 개수에 따라 비율·컬럼 분기) */
+            const steps = CONTENT_CONFIG.guide.steps;
+            const introCol = document.getElementById('guide-intro-col');
+            const stepsCol = document.getElementById('guide-steps-col');
+            const stepsWrap = document.getElementById('guide-steps-wrapper-desktop');
+
+            if (steps.length >= 4) {
+                /* 1:2 비율 적용 */
+                if (introCol) introCol.className = 'flex-1';
+                if (stepsCol) stepsCol.className = 'flex-[2]';
+
+                /* 컬럼 분할: ceil(n/2)개가 왼쪽 */
+                const split = Math.ceil(steps.length / 2);
+                const col1 = steps.slice(0, split);
+                const col2 = steps.slice(split);
+
+                if (stepsWrap) {
+                    stepsWrap.innerHTML = `
+                <div class="flex flex-col lg:flex-row gap-x-8 gap-y-1">
+                    <ol class="guide-desc flex-1 list-decimal pl-5 space-y-1">
+                        ${col1.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                    <ol class="guide-desc flex-1 list-decimal pl-5 space-y-1" start="${split + 1}">
+                        ${col2.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                </div>`;
+                }
+            } else {
+                /* 1:1 비율, 단일 리스트 */
+                if (introCol) introCol.className = 'flex-1';
+                if (stepsCol) stepsCol.className = 'flex-1';
+
+                if (stepsWrap) {
+                    stepsWrap.innerHTML = `
+                <ol class="guide-desc list-decimal pl-5 space-y-1">
+                    ${steps.map(s => `<li>${s}</li>`).join('')}
+                </ol>`;
+                }
+            }
+
+            /* 개념 정리 카드 */
+            const colorMap = {
+                orange: { bg: 'bg-orange-50', border: 'border-orange-500', titleClass: 'concept-title-1', descClass: 'concept-desc' },
+                green: { bg: 'bg-emerald-50', border: 'border-emerald-500', titleClass: 'concept-title-2', descClass: 'concept-desc' },
+                blue: { bg: 'bg-blue-50', border: 'border-blue-500', titleClass: 'concept-title-3', descClass: 'concept-desc' },
+                purple: { bg: 'bg-purple-50', border: 'border-purple-500', titleClass: 'concept-title-4', descClass: 'concept-desc' }
+            };
+            const conceptContent = document.getElementById('conceptContent');
+            if (conceptContent) {
+                conceptContent.innerHTML = C.concept.map(item => {
+                    const col = colorMap[item.color] || colorMap.orange;
+                    return `<div class="p-4 ${col.bg} border-l-4 ${col.border} rounded-r-xl">
+                        <p class="${col.titleClass} mb-1">${item.title}</p>
+                        <p class="${col.descClass}">${item.desc}</p>
+                    </div>`;
+                }).join('');
+            }
+
+            /* KaTeX 수식 렌더링 (콘텐츠 주입 후 실행) */
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '\\[', right: '\\]', display: true }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            /* DOM 캐싱 */
+            DOM.statusIndicator = document.getElementById('statusIndicator');
+            DOM.pauseBtn = document.getElementById('pauseBtn');
+            DOM.helperText = document.getElementById('helperText');
+            DOM.varSlider1 = document.getElementById('varSlider1');
+            DOM.directInputSingle = document.getElementById('directInputSingle');
+            DOM.ratioInputA = document.getElementById('ratioInputA');
+            DOM.ratioInputB = document.getElementById('ratioInputB');
+            DOM.customSelectTrigger = document.getElementById('customSelectTrigger');
+            DOM.customSelectList = document.getElementById('customSelectList');
+            DOM.radioOptions = document.querySelectorAll('input[name="simOption"]');
+
+            /* 콘텐츠 주입 */
+            renderContent();
+
+            /* 슬라이더 초기값 세팅 */
+            if (varSlider1) {
+                varSlider1.min = SIM_CONFIG.slider.min;
+                varSlider1.max = SIM_CONFIG.slider.max;
+                varSlider1.step = SIM_CONFIG.slider.step;
+                varSlider1.value = SIM_CONFIG.slider.initialValue;
+            }
+            if (varDisplay1) varDisplay1.textContent = `${SIM_CONFIG.slider.initialValue} ${SIM_CONFIG.slider.unit}`;
+
+            checkLandscape();
+        });
+
+        const checkLandscape = () => {
+            if (window.matchMedia("(orientation: landscape)").matches && window.innerWidth < 1024) {
+                const sc = document.getElementById('shutter-content');
+                if (sc && sc.classList.contains('is-open')) document.getElementById('shutter-toggle')?.click();
+            }
+        };
+        window.addEventListener('orientationchange', () => setTimeout(checkLandscape, 100));
+
+        if (!document.getElementById('shutter-toggle')) {
+            const helpBtn = document.getElementById('helpBtn');
+            if (helpBtn) helpBtn.classList.remove('desktop-only:md:hidden');
+        }
+        /* ════ ZONE D 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE E — SOUND MANAGER (수정 금지) (삭제시 uiSound 관련 코드 모두 삭제)
+           ════════════════════════════════════════════════════════════════════════ */
+        const uiSound = (function () {
+            let audioCtx = null, volume = 0.5, previousVolume = 0.5;
+            let iconMain, iconPopup, sliderEl;
+
+            function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+
+            function playTone(freq, type, duration, volOffset = 0) {
+                if (volume === 0) return;
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                const v = Math.max(0, Math.min(1, volume + volOffset));
+                gain.gain.setValueAtTime(v, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + duration);
+            }
+
+            function updateUI() {
+                const on = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2l5 5V3l-5 5H7a2 2 0 00-2 2z"/>`;
+                const off = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>`;
+                const svg = volume === 0 ? off : on;
+                if (iconMain) iconMain.innerHTML = svg;
+                if (iconPopup) iconPopup.innerHTML = svg;
+                if (sliderEl) sliderEl.value = volume;
+            }
+
+            return {
+                playClick: () => playTone(600, 'sine', 0.1),
+                playTick: () => playTone(800, 'triangle', 0.05, -0.3),
+                setDOM: (mIcon, pIcon, slider) => { iconMain = mIcon; iconPopup = pIcon; sliderEl = slider; updateUI(); },
+                setVolume: (val) => { volume = parseFloat(val); if (volume > 0) previousVolume = volume; updateUI(); },
+                toggleMute: () => { volume = volume > 0 ? (previousVolume = volume, 0) : (previousVolume > 0 ? previousVolume : 0.5); updateUI(); }
+            };
+        })();
+        /* ════ ZONE E 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ███████████████████████████████████████████████████████████████████████
+           ████                                                               ████
+           ████   ✏️  ZONE F — SIMULATION LOGIC (시뮬레이션 핵심 로직)         ████
+           ████   draw()와 updatePhysics()에 시뮬레이션 코드를 작성하세요.       ████
+           ████                                                               ████
+           ███████████████████████████████████████████████████████████████████████ */
+
+        /* ── 색: 산화·환원 표시, 원소마다 한 가지 색 ── */
+        const COL = { ox: '#db2777', red: '#c2410c', text: '#1e293b', sub: '#475569', e: '#facc15', eLine: '#a16207' };
+        const EL = {
+            Cu: { r: 20, c: '#c8683a', t: '#ffffff' },
+            O: { r: 15, c: '#ef4444', t: '#ffffff' },
+            C: { r: 15, c: '#374151', t: '#ffffff' },
+            H: { r: 10, c: '#f8fafc', t: '#334155' },
+            Fe: { r: 20, c: '#8d6e63', t: '#ffffff' },
+            Ag: { r: 18, c: '#d4d4d8', t: '#334155' },
+            Mg: { r: 20, c: '#6f9a5c', t: '#ffffff' },
+            Zn: { r: 20, c: '#6f86a3', t: '#ffffff' }
+        };
+
+        /* 반응식 띠: role ox=산화되는 물질, red=환원되는 물질, oxP/redP=그 생성물 */
+        const EQ = {
+            o0: [['2CuO', 'red'], [' + '], ['C', 'ox'], [' → '], ['2Cu', 'redP'], [' + '], ['CO₂', 'oxP']],
+            o1: [['CuO', 'red'], [' + '], ['H₂', 'ox'], [' → '], ['Cu', 'redP'], [' + '], ['H₂O', 'oxP']],
+            o2: [['Fe₂O₃', 'red'], [' + '], ['3CO', 'ox'], [' → '], ['2Fe', 'redP'], [' + '], ['3CO₂', 'oxP']],
+            e0: [['2Ag⁺', 'red'], [' + '], ['Cu', 'ox'], [' → '], ['2Ag', 'redP'], [' + '], ['Cu²⁺', 'oxP']],
+            e1: [['2Mg', 'ox'], [' + '], ['O₂', 'red'], [' → '], ['2MgO'], [' ( '], ['2Mg²⁺', 'oxP'], [' + '], ['2O²⁻', 'redP'], [' )']],
+            e2: [['Zn', 'ox'], [' + '], ['Cu²⁺', 'red'], [' → '], ['Zn²⁺', 'oxP'], [' + '], ['Cu', 'redP']]
+        };
+
+        /* 반응 완료 때 안내 상자 (교과서 p.40-45, 지도서 p.114, R 대조 결정) */
+        const OBS = {
+            o0: '검은색 산화 구리(II) 가루가 붉은색 구리 가루로 변하고 반응하지 않은 숯가루가 남는다. 이산화 탄소가 발생하여 석회수가 뿌옇게 흐려진다.',
+            o1: '검은색 산화 구리(II)가 붉은색 구리로 변하고, 유리관의 차가운 쪽 안쪽에 물방울이 맺힌다.',
+            o2: '코크스가 산소와 결합하여 생긴 일산화 탄소가 산화 철(III)과 반응하여 철이 얻어지고, 녹은 철이 아래쪽에 모인다.',
+            e0: '구리줄 표면에 반짝이는 은백색의 은이 석출되고, 무색의 수용액이 점점 푸른색으로 변한다.',
+            e1: '마그네슘 리본이 매우 밝은 빛을 내며 타서 산화 마그네슘이 된다.',
+            e2: '아연 표면에 붉은색 구리가 붙고, 푸른색 수용액의 색이 점점 옅어진다.'
+        };
+
+        /* 입자·전자 모형 (기준 상자 400×240). t는 모형 시간 0~1, ch = [전 전하, 후 전하, 바뀌는 시각] */
+        const ROW = (el, xs, y) => xs.map(x => ({ el, at: [x, y] }));
+        const MODELS = {
+            o0: {
+                atoms: [
+                    { el: 'Cu', at: [70, 85] },
+                    { el: 'O', at: [105, 85], to: [270, 135], t: [0, 0.55], arc: 55 },
+                    { el: 'Cu', at: [70, 170] },
+                    { el: 'O', at: [105, 170], to: [330, 135], t: [0.25, 0.8], arc: -45 },
+                    { el: 'C', at: [300, 135] }
+                ], electrons: [],
+                labels: [{ b: [88, 122, 'CuO'], a: [70, 122, 'Cu'], t: 0.55 }, { b: [88, 207, 'CuO'], a: [70, 207, 'Cu'], t: 0.8 }, { b: [300, 172, 'C'], a: [300, 172, 'CO₂'], t: 0.8 }],
+                tags: { red: [85, 32], ox: [300, 82] }
+            },
+            o1: {
+                atoms: [
+                    { el: 'Cu', at: [110, 125] },
+                    { el: 'O', at: [145, 125], to: [300, 110], t: [0, 0.65], arc: 55 },
+                    { el: 'H', at: [290, 145], to: [284, 128], t: [0.55, 0.7] },
+                    { el: 'H', at: [310, 145], to: [316, 128], t: [0.55, 0.7] }
+                ], electrons: [],
+                labels: [{ b: [128, 162, 'CuO'], a: [110, 162, 'Cu'], t: 0.65 }, { b: [300, 172, 'H₂'], a: [300, 162, 'H₂O'], t: 0.7 }],
+                tags: { red: [115, 58], ox: [300, 58] }
+            },
+            o2: {
+                atoms: [
+                    { el: 'Fe', at: [75, 100] }, { el: 'Fe', at: [75, 158] },
+                    { el: 'O', at: [112, 76], to: [270, 62], t: [0, 0.45], arc: 30 },
+                    { el: 'O', at: [114, 129], to: [270, 125], t: [0.15, 0.6], arc: 30 },
+                    { el: 'O', at: [112, 182], to: [270, 188], t: [0.3, 0.75], arc: 30 },
+                    { el: 'C', at: [300, 62] }, { el: 'O', at: [330, 62] },
+                    { el: 'C', at: [300, 125] }, { el: 'O', at: [330, 125] },
+                    { el: 'C', at: [300, 188] }, { el: 'O', at: [330, 188] }
+                ], electrons: [],
+                labels: [{ b: [92, 222, 'Fe₂O₃'], a: [75, 222, '2Fe'], t: 0.75 },
+                { b: [372, 62, 'CO'], a: [372, 62, 'CO₂'], t: 0.45 }, { b: [372, 125, 'CO'], a: [372, 125, 'CO₂'], t: 0.6 }, { b: [372, 188, 'CO'], a: [372, 188, 'CO₂'], t: 0.75 }],
+                tags: { red: [90, 28], ox: [300, 24] }
+            },
+            e0: {
+                sol: 'ag',
+                atoms: [
+                    ...ROW('Cu', [40, 80, 160, 200, 240, 280, 320, 360], 198),
+                    { el: 'Cu', at: [120, 198], to: [90, 100], t: [0.45, 0.8], ch: ['', '2+', 0.12] },
+                    { el: 'Ag', at: [250, 88], to: [220, 160], t: [0.42, 0.78], ch: ['+', '', 0.36] },
+                    { el: 'Ag', at: [330, 88], to: [260, 160], t: [0.52, 0.88], ch: ['+', '', 0.46] }
+                ],
+                electrons: [{ from: 8, to: 9, t: [0, 0.36], lift: 50 }, { from: 8, to: 10, t: [0.12, 0.46], lift: 70 }],
+                labels: [{ b: [200, 230, '구리줄 표면'], a: [200, 230, '구리줄 표면'], t: 0 }],
+                tags: { ox: [95, 40], red: [290, 40] }
+            },
+            e1: {
+                atoms: [
+                    { el: 'Mg', at: [80, 90], to: [222, 95], t: [0.58, 0.92], ch: ['', '2+', 0.08] },
+                    { el: 'Mg', at: [80, 172], to: [222, 175], t: [0.58, 0.92], ch: ['', '2+', 0.14] },
+                    { el: 'O', at: [300, 118], to: [258, 95], t: [0.58, 0.92], ch: ['', '2−', 0.46] },
+                    { el: 'O', at: [300, 148], to: [258, 175], t: [0.58, 0.92], ch: ['', '2−', 0.52] }
+                ],
+                electrons: [{ from: 0, to: 2, t: [0, 0.38], lift: 30 }, { from: 0, to: 2, t: [0.08, 0.46], lift: 46 },
+                { from: 1, to: 3, t: [0.06, 0.44], lift: -30 }, { from: 1, to: 3, t: [0.14, 0.52], lift: -46 }],
+                labels: [{ b: [300, 182, 'O₂'], a: [240, 212, '2MgO'], t: 0.92 }],
+                tags: { ox: [80, 38], red: [300, 70] }
+            },
+            e2: {
+                sol: 'cu',
+                atoms: [
+                    ...ROW('Zn', [40, 80, 160, 200, 240, 280, 320, 360], 198),
+                    { el: 'Zn', at: [120, 198], to: [90, 100], t: [0.45, 0.8], ch: ['', '2+', 0.12] },
+                    { el: 'Cu', at: [290, 88], to: [240, 158], t: [0.52, 0.88], ch: ['2+', '', 0.48] }
+                ],
+                electrons: [{ from: 8, to: 9, t: [0, 0.4], lift: 45 }, { from: 8, to: 9, t: [0.12, 0.48], lift: 70 }],
+                labels: [{ b: [200, 230, '아연 표면'], a: [200, 230, '아연 표면'], t: 0 }],
+                tags: { ox: [95, 40], red: [290, 40] }
+            }
+        };
+
+        /* ── 도우미 ── */
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+        const lerp = (a, b, t) => a + (b - a) * t;
+        const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+        const ease = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        const hr = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+        const isRun = () => sysState.isStarted && !sysState.isPaused;
+        const key = () => simData.mode[0] + simData.rxn;
+        const font = (px, wt = 700) => `${wt} ${px}px 'Noto Sans KR', sans-serif`;
+        const modelTime = () => clamp((simData.progress - 0.08) / 0.72, 0, 1);
+        const tagOn = () => simData.progress > 0.08;   /* 산화·환원 표시는 이 한 조건으로 함께 켜진다 */
+
+        function mixHex(a, b, t) {
+            const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+            const A = p(a), B = p(b);
+            return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',')})`;
+        }
+        function rrect(x, y, w, h, r) {
+            r = Math.max(0, Math.min(r, w / 2, h / 2));
+            ctx.beginPath(); ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+        }
+        function wrap(text, maxW) {
+            const lines = []; let cur = '';
+            text.split(' ').forEach(w => {
+                const test = cur ? cur + ' ' + w : w;
+                if (cur && ctx.measureText(test).width > maxW) { lines.push(cur); cur = w; } else cur = test;
+            });
+            if (cur) lines.push(cur);
+            return lines;
+        }
+        function drawArrow(x1, y1, x2, y2, col, lw, hs) {
+            const a = Math.atan2(y2 - y1, x2 - x1);
+            ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 - Math.cos(a) * hs * 0.8, y2 - Math.sin(a) * hs * 0.8); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - Math.cos(a - 0.45) * hs, y2 - Math.sin(a - 0.45) * hs);
+            ctx.lineTo(x2 - Math.cos(a + 0.45) * hs, y2 - Math.sin(a + 0.45) * hs); ctx.closePath(); ctx.fill();
+        }
+        function josa(word, a, b) {
+            const m = word.match(/[가-힣](?=[^가-힣]*$)/);
+            return m && (m[0].charCodeAt(0) - 0xAC00) % 28 ? a : b;
+        }
+        function haloText(t, x, y, col, ui) {
+            ctx.lineJoin = 'round'; ctx.lineWidth = 3.5 * ui; ctx.strokeStyle = 'rgba(255,255,255,0.92)';
+            ctx.strokeText(t, x, y); ctx.fillStyle = col; ctx.fillText(t, x, y);
+        }
+
+        /* ── 배치: 캔버스 크기에서 ui 배율 하나를 구해 모두 비례 ── */
+        function computeLayout(w, h) {
+            const ui = clamp(Math.min(w / 1080, h / 700), 0.75, 1.5);
+            const pad = 10 * ui, top = 56;
+            const eqH = 86 * ui;
+            const eq = { y: h - eqH - 6, h: eqH, right: w - 124 };   /* 오른쪽 아래 초기화 버튼을 피함 */
+            const areaBot = eq.y - 6 * ui, H = Math.max(40, areaBot - top);
+            const stacked = h > w * 0.95;
+            let app, model;
+            if (stacked) {
+                const ah = H * 0.56;
+                app = { x: pad, y: top, w: w - 2 * pad, h: ah };
+                model = { x: pad, y: top + ah + 4 * ui, w: w - 2 * pad, h: H - ah - 4 * ui };
+            } else {
+                const W = w - 3 * pad, aw = W * 0.52;
+                app = { x: pad, y: top, w: aw, h: H };
+                model = { x: 2 * pad + aw, y: top, w: W - aw, h: H };
+            }
+            return { w, h, ui, eq, app, model, stacked };
+        }
+
+        /* ── 실험 장치 (기준 좌표로 그리고 상자에 맞춰 축소·확대) ── */
+        let labelBuf = [];
+        const lab = (x, y, t, align = 'center', c) => labelBuf.push({ x, y, t, align, c });
+
+        function drawLamp(cx, by, on, t) {
+            const wickY = by - 62;
+            if (on) {
+                const fh = 44 * (1 + 0.08 * Math.sin(t * 23) + 0.05 * Math.sin(t * 37));
+                const g = ctx.createLinearGradient(cx, wickY, cx, wickY - fh);
+                g.addColorStop(0, 'rgba(59,130,246,0.85)'); g.addColorStop(0.35, 'rgba(251,146,60,0.9)'); g.addColorStop(1, 'rgba(253,224,71,0.15)');
+                ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(cx - 8, wickY);
+                ctx.quadraticCurveTo(cx - 11, wickY - fh * 0.45, cx, wickY - fh);
+                ctx.quadraticCurveTo(cx + 11, wickY - fh * 0.45, cx + 8, wickY); ctx.closePath(); ctx.fill();
+            }
+            ctx.fillStyle = '#f5f5f4'; ctx.fillRect(cx - 2, wickY, 4, 8);
+            ctx.fillStyle = '#94a3b8'; rrect(cx - 8, wickY + 7, 16, 9, 2); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx - 10, by - 46); ctx.quadraticCurveTo(cx - 34, by - 36, cx - 32, by - 6);
+            ctx.quadraticCurveTo(cx - 32, by, cx - 26, by); ctx.lineTo(cx + 26, by); ctx.quadraticCurveTo(cx + 32, by, cx + 32, by - 6);
+            ctx.quadraticCurveTo(cx + 34, by - 36, cx + 10, by - 46); ctx.closePath();
+            ctx.fillStyle = 'rgba(224,242,254,0.75)'; ctx.fill(); ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.save(); ctx.clip(); ctx.fillStyle = 'rgba(147,197,253,0.5)'; ctx.fillRect(cx - 40, by - 24, 80, 24); ctx.restore();
+        }
+
+        /* ① 산화 구리(II) + 숯가루: 스탠드·시험관·고무관·석회수 (교과서 p.40) */
+        function drawO0(p) {
+            const on = isRun() && p < 1, t = simData.time;
+            const A = { x: 48, y: 128 }, B = { x: 238, y: 146 };
+            const ang = Math.atan2(B.y - A.y, B.x - A.x), len = Math.hypot(B.x - A.x, B.y - A.y), R = 12;
+            ctx.fillStyle = '#334155'; rrect(20, 244, 250, 12, 3); ctx.fill();
+            ctx.fillStyle = '#a1a1aa'; ctx.fillRect(147, 34, 6, 212);
+            drawLamp(80, 244, on, t);
+            ctx.save(); ctx.translate(A.x, A.y); ctx.rotate(ang);
+            const tubePath = () => { ctx.beginPath(); ctx.moveTo(len, -R); ctx.lineTo(0, -R); ctx.arc(0, 0, R, -Math.PI / 2, Math.PI / 2, true); ctx.lineTo(len, R); };
+            ctx.save(); tubePath(); ctx.closePath(); ctx.clip();
+            ctx.fillStyle = 'rgba(226,232,240,0.45)'; ctx.fillRect(-R, -R, len + R, 2 * R);
+            const k = smooth(0.05, 0.95, p);
+            ctx.beginPath(); ctx.moveTo(-R, R); ctx.lineTo(112, R); ctx.quadraticCurveTo(104, 3, 84, 2); ctx.lineTo(8, 0); ctx.quadraticCurveTo(-6, 1, -R, 6); ctx.closePath();
+            ctx.fillStyle = mixHex('#1c1917', '#c8643c', k); ctx.fill();
+            ctx.fillStyle = '#0a0a0a';
+            for (let i = 0; i < 34; i++) {   /* 숯가루: 일부는 반응하지 않고 남는다 */
+                if (hr(i + 50) < 0.55 * k) continue;
+                ctx.beginPath(); ctx.arc(-4 + hr(i) * 108, 3 + hr(i + 9) * 8, 1.6 + hr(i + 3) * 0.8, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.restore();
+            tubePath(); ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.moveTo(10, -R + 4); ctx.lineTo(len - 10, -R + 4); ctx.stroke();
+            ctx.fillStyle = '#dc4a2a'; rrect(len - 6, -R - 2, 18, 2 * R + 4, 3); ctx.fill();
+            ctx.restore();
+            ctx.fillStyle = '#52525b'; ctx.fillRect(141, 136, 18, 12); ctx.fillRect(153, 139, 36, 6);
+            ctx.fillStyle = '#f97316'; rrect(186, 127, 14, 30, 3); ctx.fill();
+            /* 석회수 비커 */
+            const turb = smooth(0.15, 0.9, p);
+            ctx.fillStyle = `rgba(219,234,254,${0.55 - 0.25 * turb})`; ctx.fillRect(297, 186, 76, 69);
+            ctx.fillStyle = `rgba(203,213,225,${0.85 * turb})`; ctx.fillRect(297, 186, 76, 69);
+            ctx.fillStyle = `rgba(148,163,184,${0.6 * turb})`;
+            for (let i = 0; i < 40; i++) { ctx.beginPath(); ctx.arc(300 + hr(i + 70) * 70, 190 + hr(i + 110) * 62, 1.2, 0, Math.PI * 2); ctx.fill(); }
+            const S = { x: A.x + Math.cos(ang) * (len + 12), y: A.y + Math.sin(ang) * (len + 12) };
+            ctx.strokeStyle = '#eab308'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(S.x, S.y); ctx.bezierCurveTo(S.x + 50, S.y - 4, 334, 140, 334, 190); ctx.lineTo(334, 240); ctx.stroke();
+            ctx.lineWidth = 1;
+            simData.bubbles.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,0.75)'; ctx.fill(); ctx.strokeStyle = '#64748b'; ctx.stroke(); });
+            ctx.strokeStyle = 'rgba(148,163,184,0.8)'; ctx.beginPath(); ctx.moveTo(297, 186); ctx.lineTo(373, 186); ctx.stroke();
+            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(292, 156); ctx.lineTo(296, 160); ctx.lineTo(296, 252);
+            ctx.quadraticCurveTo(296, 256, 300, 256); ctx.lineTo(370, 256); ctx.quadraticCurveTo(374, 256, 374, 252); ctx.lineTo(374, 160); ctx.stroke();
+            lab(130, 106, p >= 1 ? '구리 가루 + 남은 숯가루' : '산화 구리(II) + 숯가루');
+            lab(80, 267, '알코올램프');
+            lab(380, 214, '석회수', 'left');
+        }
+
+        /* ② 산화 구리(II) + 수소: 수소가 흐르는 유리관 가열 (R 대조 결정) */
+        function drawO1(p) {
+            const on = isRun() && p < 1, t = simData.time, R = 13, cy = 105;
+            ctx.fillStyle = '#334155'; rrect(130, 222, 300, 10, 3); ctx.fill();
+            ctx.fillStyle = '#a1a1aa'; ctx.fillRect(389, 40, 6, 182);
+            drawLamp(210, 222, on, t);
+            ctx.fillStyle = 'rgba(226,232,240,0.45)'; ctx.fillRect(40, cy - R, 378, 2 * R);
+            if (on) {
+                ctx.lineWidth = 0.8; ctx.strokeStyle = '#64748b'; ctx.fillStyle = '#f8fafc';
+                for (let i = 0; i < 9; i++) {
+                    const x = 48 + ((t * 50 + i * 14) % 116), y = cy - 4 + (i % 3) * 4;
+                    [-2.6, 2.6].forEach(dx => { ctx.beginPath(); ctx.arc(x + dx, y, 2.6, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); });
+                }
+            }
+            const k = smooth(0.05, 0.95, p);
+            ctx.beginPath(); ctx.moveTo(165, cy + R - 1); ctx.quadraticCurveTo(210, cy - 4, 255, cy + R - 1); ctx.closePath();
+            ctx.fillStyle = mixHex('#1c1917', '#c8643c', k); ctx.fill();
+            const n = Math.floor(16 * smooth(0.3, 1, p));
+            ctx.fillStyle = 'rgba(59,130,246,0.85)';
+            for (let i = 0; i < n; i++) {
+                const y = i % 2 === 0 ? cy - R + 3.2 : cy + R - 3.2;
+                ctx.beginPath(); ctx.arc(300 + hr(i + 20) * 105, y, 2 + hr(i + 40) * 1.6, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.beginPath();
+            ctx.moveTo(40, cy - R); ctx.lineTo(418, cy - R); ctx.moveTo(40, cy + R); ctx.lineTo(418, cy + R); ctx.stroke();
+            ctx.beginPath(); ctx.ellipse(418, cy, 4, R, 0, 0, Math.PI * 2); ctx.stroke();
+            ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.moveTo(50, cy - R + 4); ctx.lineTo(410, cy - R + 4); ctx.stroke();
+            ctx.fillStyle = '#dc4a2a'; rrect(30, cy - R - 2, 14, 2 * R + 4, 3); ctx.fill();
+            drawArrow(4, cy, 28, cy, '#64748b', 3, 9);
+            ctx.fillStyle = '#52525b'; ctx.fillRect(380, cy - 3, 9, 6);
+            ctx.fillStyle = '#f97316'; rrect(372, cy - R - 3, 12, 2 * R + 6, 3); ctx.fill();
+            lab(20, 82, '수소');
+            lab(210, 78, p >= 1 ? '구리' : '산화 구리(II)');
+            if (p > 0.35) lab(352, 80, '물방울');
+            lab(168, 196, '알코올램프', 'right');
+        }
+
+        /* ③ 용광로: 위로 철광석·코크스·석회석, 아래로 뜨거운 공기 (교과서 p.45) */
+        function drawFurnace(p) {
+            const on = isRun() && p < 1, t = simData.time;
+            const P = [[128, 52], [98, 178], [110, 224], [110, 272], [210, 272], [210, 224], [222, 178], [192, 52]];
+            const path = () => { ctx.beginPath(); P.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); };
+            ctx.fillStyle = '#a8a29e'; ctx.fillRect(46, 214, 66, 11); ctx.fillRect(208, 214, 66, 11);
+            path(); ctx.lineWidth = 14; ctx.strokeStyle = '#78716c'; ctx.lineJoin = 'round'; ctx.stroke();
+            const g = ctx.createLinearGradient(0, 52, 0, 272);
+            g.addColorStop(0, '#3f3a36'); g.addColorStop(0.6, on ? '#9a3412' : '#57534e'); g.addColorStop(1, on ? '#f97316' : '#78716c');
+            path(); ctx.fillStyle = g; ctx.fill();
+            ctx.save(); path(); ctx.clip();
+            const fall = on || p > 0 ? t * 12 : 0, shift = fall % 16, base = Math.floor(fall / 16);
+            const kinds = ['#9a3412', '#1c1917', '#e7e5e4'];
+            for (let row = -1; row < 11; row++) for (let c = 0; c < 9; c++) {
+                const x = 100 + c * 15 + (((row - base) % 2 + 2) % 2 ? 7 : 0), y = 52 + row * 16 + shift;
+                if (y > 200) continue;
+                const gi = row - base;
+                ctx.fillStyle = kinds[(((gi * 7 + c * 5) % 3) + 3) % 3];
+                ctx.beginPath(); ctx.arc(x, y, 5.5, 0, Math.PI * 2); ctx.fill();
+            }
+            if (on) {
+                const gl = ctx.createRadialGradient(160, 219, 4, 160, 219, 60);
+                gl.addColorStop(0, 'rgba(253,186,116,0.8)'); gl.addColorStop(1, 'rgba(253,186,116,0)');
+                ctx.fillStyle = gl; ctx.fillRect(90, 160, 140, 112);
+            }
+            const lv = 272 - (6 + 28 * p);
+            ctx.fillStyle = '#fb923c'; ctx.fillRect(100, lv, 120, 272 - lv);
+            ctx.fillStyle = '#fde047'; ctx.fillRect(100, lv, 120, 2.5);
+            ctx.restore();
+            ctx.fillStyle = '#78716c'; ctx.fillRect(210, 258, 30, 8);
+            if (p > 0.05) { ctx.fillStyle = '#fb923c'; ctx.fillRect(212, 260, 26, 3); }
+            const air = on ? '#ef4444' : '#a8a29e';
+            drawArrow(36, 219, 100, 219, air, 3, 9); drawArrow(284, 219, 220, 219, air, 3, 9);
+            drawArrow(160, 20, 160, 46, '#57534e', 3, 9);
+            lab(160, 10, '철광석·코크스·석회석');
+            lab(74, 242, '뜨거운 공기');
+            if (p > 0.05) lab(246, 262, '철', 'left');
+        }
+
+        function shapePts(shape, cx, cy) {
+            const pts = [];
+            if (shape === 'heart') for (let t = 0; t <= Math.PI * 2 + 0.001; t += 0.02) {
+                pts.push([cx + 16 * Math.pow(Math.sin(t), 3) * 3.9, cy - 10 - (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * 3.9]);
+            } else if (shape === 'spiral') for (let th = 0; th <= Math.PI * 5; th += 0.04) {
+                const r = 5 + 57 * th / (Math.PI * 5); pts.push([cx + r * Math.cos(th), cy + r * Math.sin(th)]);
+            } else for (let x = -68; x <= 68; x += 2) pts.push([cx + x, cy]);
+            return pts;
+        }
+        function sites(pts, step) {
+            const out = []; let acc = 0;
+            for (let i = 1; i < pts.length; i++) {
+                const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], d = Math.hypot(x1 - x0, y1 - y0);
+                if (!d) continue;
+                acc += d;
+                while (acc >= step) { acc -= step; const u = 1 - acc / d; out.push({ x: x0 + (x1 - x0) * u, y: y0 + (y1 - y0) * u, nx: -(y1 - y0) / d, ny: (x1 - x0) / d }); }
+            }
+            return out;
+        }
+
+        /* ④ 페트리 접시: 구리줄+질산 은(교과서 p.42) / 아연+황산 구리(II)(지도서 p.114) */
+        function drawPetri(p, zinc) {
+            ctx.fillStyle = '#f1f5f9'; ctx.fillRect(24, 30, 316, 236);
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(20, 26, 316, 236);
+            ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1.5; ctx.strokeRect(20, 26, 316, 236);
+            const cx = 178, cy = 144, R = 100;
+            const a = zinc ? 0.42 - 0.32 * smooth(0.05, 1, p) : 0.03 + 0.32 * smooth(0.05, 1, p);
+            ctx.beginPath(); ctx.arc(cx, cy, R - 4, 0, Math.PI * 2); ctx.fillStyle = `rgba(37,99,235,${a})`; ctx.fill();
+            ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 3; ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, cy, R - 6, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(148,163,184,0.6)'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, cy, R - 12, Math.PI * 1.1, Math.PI * 1.45); ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 3; ctx.stroke();
+            const pts = shapePts(simData.shape, cx, cy);
+            const line = () => { ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); };
+            ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+            line(); ctx.strokeStyle = zinc ? '#64748b' : '#7c3a12'; ctx.lineWidth = zinc ? 10 : 6.5; ctx.stroke();
+            line(); ctx.strokeStyle = zinc ? '#b6c0cc' : '#d0814e'; ctx.lineWidth = zinc ? 7 : 4; ctx.stroke();
+            const S = sites(pts, 7);
+            if (!zinc) {
+                const path = new Path2D();
+                S.forEach((q, i) => {
+                    const g = smooth(0.02 + 0.25 * hr(i), 1, p); if (g <= 0) return;
+                    [1, -1].forEach(side => {
+                        const ln = (5 + 12 * hr(i * 3 + (side > 0 ? 1 : 2))) * g;
+                        const ang = Math.atan2(q.ny * side, q.nx * side) + (hr(i * 7 + side) - 0.5) * 1.1;
+                        const sx = q.x + Math.cos(ang) * 2.5, sy = q.y + Math.sin(ang) * 2.5;
+                        const ex = sx + Math.cos(ang) * ln, ey = sy + Math.sin(ang) * ln;
+                        path.moveTo(sx, sy); path.lineTo(ex, ey);
+                        const mx = sx + Math.cos(ang) * ln * 0.55, my = sy + Math.sin(ang) * ln * 0.55;
+                        [0.6, -0.6].forEach(b => { path.moveTo(mx, my); path.lineTo(mx + Math.cos(ang + b) * ln * 0.45, my + Math.sin(ang + b) * ln * 0.45); });
+                    });
+                });
+                ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2.6; ctx.stroke(path);
+                ctx.strokeStyle = '#eef2f7'; ctx.lineWidth = 1.3; ctx.stroke(path);
+            } else {
+                S.forEach((q, i) => {
+                    const g = smooth(0.02 + 0.25 * hr(i), 1, p); if (g <= 0) return;
+                    for (let j = 0; j < 3; j++) {
+                        const side = j % 2 ? 1 : -1, off = (4.5 + 2.5 * hr(i * 5 + j)) * side, tj = (hr(i * 11 + j) - 0.5) * 4;
+                        ctx.fillStyle = j % 2 ? '#b45309' : '#9a3412';
+                        ctx.beginPath(); ctx.arc(q.x + q.nx * off + q.ny * tj, q.y + q.ny * off - q.nx * tj, (1.6 + 2.4 * hr(i * 13 + j)) * g, 0, Math.PI * 2); ctx.fill();
+                    }
+                });
+            }
+            lab(178, 12, zinc ? '아연' : '구리줄');
+            lab(178, 280, zinc ? '황산 구리(II) 수용액' : '질산 은 수용액');
+            if (p > 0.3) lab(300, 44, zinc ? '석출된 구리' : '석출된 은');
+        }
+
+        /* ⑤ 마그네슘의 연소: 집게로 잡은 리본을 가열 (교과서 p.43) */
+        function drawMg(p) {
+            const on = isRun() && p < 1, t = simData.time;
+            const g = ctx.createLinearGradient(0, 0, 0, 270);
+            g.addColorStop(0, '#e2e8f0'); g.addColorStop(1, '#cbd5e1');
+            rrect(6, 6, 348, 252, 14); ctx.fillStyle = g; ctx.fill();
+            drawLamp(95, 255, on, t);
+            const xb = 72 + 140 * smooth(0, 1, p);
+            for (let x = 70; x < xb; x += 5) {
+                const k = (x - 70) / 5, y = 150 + 3 * Math.sin(k * 1.7) + (xb - x) * 0.04;
+                ctx.beginPath(); ctx.ellipse(x, y, 4.5 + 1.5 * hr(k), 3.5 + hr(k + 4), 0, 0, Math.PI * 2);
+                ctx.fillStyle = '#fafafa'; ctx.fill(); ctx.strokeStyle = '#a1a1aa'; ctx.lineWidth = 0.8; ctx.stroke();
+            }
+            ctx.fillStyle = '#9ca3af'; ctx.fillRect(xb, 147.5, Math.max(0, 222 - xb), 5);
+            ctx.fillStyle = '#e5e7eb'; ctx.fillRect(xb, 148, Math.max(0, 222 - xb), 1.5);
+            ctx.strokeStyle = '#4b5563'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.beginPath(); ctx.moveTo(212, 146); ctx.lineTo(258, 146); ctx.lineTo(345, 116); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(212, 154); ctx.lineTo(258, 154); ctx.lineTo(345, 184); ctx.stroke();
+            ctx.fillStyle = '#374151'; ctx.beginPath(); ctx.arc(258, 150, 5, 0, Math.PI * 2); ctx.fill();
+            if (on && p > 0.02) {
+                const r = 60 * (1 + 0.1 * Math.sin(t * 31));
+                const gl = ctx.createRadialGradient(xb, 150, 2, xb, 150, r);
+                gl.addColorStop(0, 'rgba(255,255,255,1)'); gl.addColorStop(0.3, 'rgba(254,252,232,0.9)'); gl.addColorStop(1, 'rgba(254,240,138,0)');
+                ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(xb, 150, r, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 1.5;
+                for (let i = 0; i < 10; i++) {
+                    const a = i * Math.PI / 5 + t * 2;
+                    ctx.beginPath(); ctx.moveTo(xb + Math.cos(a) * 12, 150 + Math.sin(a) * 12); ctx.lineTo(xb + Math.cos(a) * r * 0.9, 150 + Math.sin(a) * r * 0.9); ctx.stroke();
+                }
+            }
+            lab(310, 100, '집게');
+            if (p < 0.9) lab(170, 180, '마그네슘 리본');
+            if (p > 0.2) lab(105, 124, '산화 마그네슘');
+            lab(95, 270, '알코올램프');
+        }
+
+        const APP = {
+            o0: { w: 420, h: 275, f: drawO0 }, o1: { w: 440, h: 240, f: drawO1 }, o2: { w: 320, h: 285, f: drawFurnace },
+            e0: { w: 356, h: 290, f: p => drawPetri(p, false) }, e1: { w: 360, h: 280, f: drawMg }, e2: { w: 356, h: 290, f: p => drawPetri(p, true) }
+        };
+
+        function drawApparatus(L) {
+            const k = key(), A = APP[k], r = L.app, ui = L.ui;
+            ctx.font = font(13 * ui, 500);
+            const obsW = r.w * 0.96, lines = wrap('관찰: ' + OBS[k], obsW - 20 * ui);
+            const lh = 18 * ui, obsH = lines.length * lh + 14 * ui, gap = 8 * ui;
+            const s = Math.max(0.05, Math.min(r.w / A.w, (r.h - obsH - gap) / A.h));
+            const ox = r.x + (r.w - A.w * s) / 2, oy = r.y + Math.max(0, (r.h - (A.h * s + gap + obsH)) / 2);
+            labelBuf = [];
+            ctx.save(); ctx.translate(ox, oy); ctx.scale(s, s); A.f(simData.progress); ctx.restore();
+            ctx.font = font(12.5 * ui); ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+            labelBuf.forEach(l => {
+                const tw = ctx.measureText(l.t).width, x = ox + l.x * s;
+                let left = l.align === 'left' ? x : l.align === 'right' ? x - tw : x - tw / 2;
+                left = clamp(left, r.x + 2, r.x + r.w - tw - 2);
+                haloText(l.t, left, clamp(oy + l.y * s, r.y + 8 * ui, r.y + r.h - 8 * ui), l.c || '#334155', ui);
+            });
+            if (simData.done) {
+                const bx = r.x + (r.w - obsW) / 2, by = oy + A.h * s + gap;
+                rrect(bx, by, obsW, obsH, 8 * ui); ctx.fillStyle = '#fffbeb'; ctx.fill();
+                ctx.strokeStyle = '#fcd34d'; ctx.lineWidth = 1.2 * ui; ctx.stroke();
+                ctx.font = font(13 * ui, 500); ctx.fillStyle = '#78350f'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                lines.forEach((ln, i) => ctx.fillText(ln, bx + obsW / 2, by + 7 * ui + lh * (i + 0.5)));
+            }
+        }
+
+        /* ── 산화·환원 꼬리표 ── */
+        function measureTag(kind, sub, fs) {
+            ctx.font = font(fs); const w1 = ctx.measureText(kind === 'ox' ? '산화' : '환원').width + fs * 1.0;
+            ctx.font = font(fs, 500); const w2 = sub ? ctx.measureText(sub).width + fs * 0.9 : 0;
+            return { w: w1 + w2, h: fs * 1.7, w1 };
+        }
+        function drawTag(x, y, kind, sub, fs) {
+            const m = measureTag(kind, sub, fs), col = kind === 'ox' ? COL.ox : COL.red;
+            rrect(x, y, m.w, m.h, m.h / 2); ctx.fillStyle = '#ffffff'; ctx.fill();
+            ctx.strokeStyle = col; ctx.lineWidth = Math.max(1, fs * 0.1); ctx.stroke();
+            rrect(x, y, m.w1, m.h, m.h / 2); ctx.fillStyle = col; ctx.fill();
+            ctx.textBaseline = 'middle'; ctx.textAlign = 'center'; ctx.font = font(fs); ctx.fillStyle = '#ffffff';
+            ctx.fillText(kind === 'ox' ? '산화' : '환원', x + m.w1 / 2, y + m.h / 2 + fs * 0.04);
+            if (sub) { ctx.textAlign = 'left'; ctx.font = font(fs, 500); ctx.fillStyle = col; ctx.fillText(sub, x + m.w1 + fs * 0.4, y + m.h / 2 + fs * 0.04); }
+        }
+
+        /* ── 입자·전자 모형 ── */
+        function atomPos(a, tm) {
+            if (!a.to) return [a.at[0], a.at[1], 0];
+            const e = ease(clamp((tm - a.t[0]) / (a.t[1] - a.t[0]), 0, 1));
+            return [lerp(a.at[0], a.to[0], e), lerp(a.at[1], a.to[1], e) - (a.arc || 0) * Math.sin(Math.PI * e), e];
+        }
+        function drawElectron(x, y, r) {
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = COL.e; ctx.fill();
+            ctx.strokeStyle = COL.eLine; ctx.lineWidth = Math.max(1, r * 0.25); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x - r * 0.5, y); ctx.lineTo(x + r * 0.5, y); ctx.strokeStyle = '#713f12'; ctx.stroke();
+        }
+        function drawAtom(x, y, R, el, charge, fs, hl, ui) {
+            const E = EL[el];
+            if (hl) { ctx.beginPath(); ctx.arc(x, y, R * 1.35, 0, Math.PI * 2); ctx.fillStyle = 'rgba(250,204,21,0.4)'; ctx.fill(); }
+            const g = ctx.createRadialGradient(x - R * 0.35, y - R * 0.35, R * 0.1, x, y, R);
+            g.addColorStop(0, mixHex(E.c, '#ffffff', 0.5)); g.addColorStop(1, E.c);
+            ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+            ctx.strokeStyle = mixHex(E.c, '#000000', 0.35); ctx.lineWidth = Math.max(1, R * 0.07); ctx.stroke();
+            ctx.fillStyle = E.t; ctx.font = font(Math.max(7, R * 0.78)); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(el, x, y + R * 0.04);
+            if (charge) { ctx.font = font(fs); ctx.textAlign = 'left'; haloText(charge, x + R * 0.72, y - R * 0.9, '#0f172a', ui); }
+        }
+        function drawModel(L) {
+            const r = L.model, ui = L.ui, M = MODELS[key()], p = simData.progress, tm = modelTime();
+            const titleH = 24 * ui;
+            const s = Math.max(0.05, Math.min(r.w / 400, (r.h - titleH) / 240));
+            const bw = 400 * s, bh = 240 * s;
+            const ox = r.x + (r.w - bw) / 2, oy = r.y + titleH + Math.max(0, (r.h - titleH - bh) / 2);
+            const P = (x, y) => [ox + x * s, oy + y * s];
+            const title = simData.mode === 'oxygen' ? '입자 모형' : '전자 모형';
+            ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.font = font(14 * ui); ctx.fillStyle = COL.text;
+            ctx.fillText(title, ox, oy - 8 * ui);
+            if (simData.mode === 'electron') {
+                const ex = ox + ctx.measureText(title).width + 16 * ui;
+                drawElectron(ex, oy - 13 * ui, 5 * ui);
+                ctx.font = font(12 * ui, 500); ctx.fillStyle = COL.sub; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+                ctx.fillText('전자', ex + 9 * ui, oy - 8 * ui);
+            }
+            rrect(ox, oy, bw, bh, 10 * ui); ctx.fillStyle = '#f8fafc'; ctx.fill(); ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1; ctx.stroke();
+            if (M.sol) {
+                ctx.save(); rrect(ox, oy, bw, bh, 10 * ui); ctx.clip();
+                const a = M.sol === 'ag' ? 0.03 + 0.16 * smooth(0.1, 1, p) : 0.2 - 0.14 * smooth(0.1, 1, p);
+                ctx.fillStyle = `rgba(37,99,235,${a})`; ctx.fillRect(ox, oy, bw, 176 * s); ctx.restore();
+            }
+            const pos = M.atoms.map(a => atomPos(a, tm));
+            /* 옮겨 가는 원자의 경로 */
+            M.atoms.forEach((a, i) => {
+                const e = pos[i][2]; if (!a.to || a.el === 'H' || e <= 0 || e >= 1) return;
+                ctx.setLineDash([4 * ui, 4 * ui]); ctx.strokeStyle = 'rgba(100,116,139,0.7)'; ctx.lineWidth = 1.5 * ui; ctx.beginPath();
+                for (let j = 0; j <= 20; j++) { const q = atomPos(a, a.t[0] + (a.t[1] - a.t[0]) * j / 20), sp = P(q[0], q[1]); j ? ctx.lineTo(sp[0], sp[1]) : ctx.moveTo(sp[0], sp[1]); }
+                ctx.stroke(); ctx.setLineDash([]);
+            });
+            M.atoms.forEach((a, i) => {
+                const [x, y, e] = pos[i], sp = P(x, y), ch = a.ch ? (tm >= a.ch[2] && tm > 0 ? a.ch[1] : a.ch[0]) : '';
+                drawAtom(sp[0], sp[1], EL[a.el].r * s, a.el, ch, 11 * ui, e > 0 && e < 1, ui);
+            });
+            /* 전자: 출발 전에는 원자 곁에, 이동 중에는 곡선을 따라, 도착하면 사라짐 */
+            const cnt = {};
+            M.electrons.forEach(ev => {
+                const [t0, t1] = ev.t; let pt;
+                if (tm <= t0) {
+                    const n = cnt[ev.from] = (cnt[ev.from] || 0) + 1, [x, y] = pos[ev.from], R = EL[M.atoms[ev.from].el].r + 7;
+                    const ang = ev.lift < 0 ? Math.PI * 0.25 + (n - 1) * 0.9 : -Math.PI * 0.25 - (n - 1) * 0.9;
+                    pt = [x + Math.cos(ang) * R, y + Math.sin(ang) * R];
+                } else if (tm < t1) {
+                    const u = ease((tm - t0) / (t1 - t0)), a0 = atomPos(M.atoms[ev.from], t0), a1 = atomPos(M.atoms[ev.to], t1);
+                    const cx = (a0[0] + a1[0]) / 2, cy = (a0[1] + a1[1]) / 2 - ev.lift * 2;
+                    pt = [(1 - u) * (1 - u) * a0[0] + 2 * u * (1 - u) * cx + u * u * a1[0], (1 - u) * (1 - u) * a0[1] + 2 * u * (1 - u) * cy + u * u * a1[1]];
+                } else return;
+                const sp = P(pt[0], pt[1]); drawElectron(sp[0], sp[1], Math.max(3, 6 * s));
+            });
+            ctx.font = font(12.5 * ui); ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            M.labels.forEach(lb => {
+                const [x, y, t] = tm >= lb.t && tm > 0 ? lb.a : lb.b, sp = P(x, y), tw = ctx.measureText(t).width;
+                haloText(t, clamp(sp[0] - tw / 2, r.x + 2, r.x + r.w - tw - 2), sp[1], COL.text, ui);
+            });
+            if (tagOn()) {
+                const fs = 12 * ui, sub = SIM_CONFIG.tagText[simData.mode], placed = [];
+                [['red', M.tags.red], ['ox', M.tags.ox]].forEach(([kind, [bx, by]]) => {
+                    const m = measureTag(kind, sub[kind], fs);
+                    const x = clamp(ox + bx * s - m.w / 2, r.x, r.x + r.w - m.w);
+                    let y = clamp(oy + by * s - m.h / 2, oy + 2, oy + bh - m.h - 2);
+                    placed.forEach(q => { if (x < q.x + q.w + 4 && x + m.w + 4 > q.x && y < q.y + q.h + 3 && y + m.h + 3 > q.y) y = q.y + q.h + 4 * ui; });
+                    placed.push({ x, y, w: m.w, h: m.h });
+                    drawTag(x, y, kind, sub[kind], fs);
+                });
+            }
+        }
+
+        /* ── 반응식 띠: 산화(위)·환원(아래) 꺾쇠가 같은 순간에 켜진다 ── */
+        function drawEquation(L) {
+            const toks = EQ[key()], ui = L.ui, on = tagOn(), sub = SIM_CONFIG.tagText[simData.mode];
+            let fs = 22 * ui; ctx.font = font(fs);
+            let total = toks.reduce((a, t) => a + ctx.measureText(t[0]).width, 0);
+            const avail = L.eq.right - 16;
+            if (total > avail) { fs *= avail / total; ctx.font = font(fs); total = toks.reduce((a, t) => a + ctx.measureText(t[0]).width, 0); }
+            const cx = Math.max(8 + total / 2, Math.min(L.w / 2, L.eq.right - total / 2));
+            const base = L.eq.y + L.eq.h / 2 + fs * 0.35;
+            let x = cx - total / 2;
+            const pos = toks.map(t => { const w = ctx.measureText(t[0]).width, o = { x, c: x + w / 2, role: t[1] }; x += w; return o; });
+            ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+            toks.forEach((t, i) => {
+                const role = t[1] || '';
+                ctx.fillStyle = on && role.startsWith('ox') ? COL.ox : on && role.startsWith('red') ? COL.red : COL.text;
+                ctx.fillText(t[0], pos[i].x, base);
+            });
+            if (!on) return;
+            const find = r => pos.find(q => q.role === r).c, tfs = 12 * ui;
+            const bracket = (x1, x2, y0, dir, kind) => {
+                const col = kind === 'ox' ? COL.ox : COL.red, yL = y0 + dir * 12 * ui;
+                ctx.strokeStyle = col; ctx.lineWidth = 1.6 * ui; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                ctx.beginPath(); ctx.moveTo(x1, y0); ctx.lineTo(x1, yL); ctx.lineTo(x2, yL); ctx.lineTo(x2, y0 + dir * 5 * ui); ctx.stroke();
+                ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x2, y0); ctx.lineTo(x2 - 4 * ui, y0 + dir * 6 * ui); ctx.lineTo(x2 + 4 * ui, y0 + dir * 6 * ui); ctx.closePath(); ctx.fill();
+                const m = measureTag(kind, sub[kind], tfs);
+                drawTag(clamp((x1 + x2) / 2 - m.w / 2, 4, L.eq.right - m.w), yL - m.h / 2, kind, sub[kind], tfs);
+            };
+            bracket(find('ox'), find('oxP'), base - fs * 0.85, -1, 'ox');
+            bracket(find('red'), find('redP'), base + fs * 0.3, 1, 'red');
+        }
+
+        /* ── 생활 속 산화·환원 카드 ── */
+        function lifeMessage() {
+            return simData.judged ? simData.judged.msg : '산화되는 물질과 환원되는 물질을 하나씩 고른 뒤 판정하기를 누른다.';
+        }
+        function cardMetrics(C, k, ui, maxW) {
+            const S = ui * k, m = { S, fF: 24 * S, fC: 12.5 * S, fT: 17 * S, fM: 13.5 * S };
+            ctx.font = font(m.fF);
+            m.slots = C.tokens.map(([t, si]) => { const fw = ctx.measureText(t).width; return { t, si, fw, w: fw }; });
+            ctx.font = font(m.fC);
+            m.slots.forEach(sl => { if (sl.si !== undefined) { sl.cw = ctx.measureText(C.subs[sl.si]).width + 18 * S; sl.w = Math.max(sl.fw, sl.cw) + 10 * S; } });
+            m.rowW = m.slots.reduce((a, b) => a + b.w, 0);
+            m.W = Math.max(m.rowW + 48 * S, Math.min(440 * S, maxW));
+            ctx.font = font(m.fM, 500);
+            m.msg = wrap(lifeMessage(), m.W - 56 * S);
+            m.mh = m.msg.length * m.fM * 1.5 + 16 * S;
+            m.H = 16 * S + m.fT * 1.2 + 14 * S + 22 * S + m.fF * 1.2 + 10 * S + 26 * S + 8 * S + 28 * S + m.mh + 16 * S;
+            return m;
+        }
+        function drawLife(L) {
+            const C = SIM_CONFIG.cards[simData.card], ui = L.ui, w = L.w;
+            const top = 58, bot = L.h - 62, maxW = w - 24;
+            let k = 1, M = cardMetrics(C, k, ui, maxW);
+            for (let i = 0; i < 3 && (M.W > maxW + 0.5 || M.H > bot - top + 0.5); i++) {
+                k *= Math.min(maxW / M.W, (bot - top) / M.H, 1) * 0.98; M = cardMetrics(C, k, ui, maxW);
+            }
+            const S = M.S, x0 = (w - M.W) / 2, y0 = top + Math.max(0, (bot - top - M.H) / 2);
+            const ok = simData.judged && simData.judged.state === 'ok', pr = simData.progress;
+            const arrowIdx = C.tokens.findIndex(t => t[0].includes('→'));
+            const fade = i => i > arrowIdx ? 0.25 + 0.75 * pr : 1;
+            rrect(x0, y0, M.W, M.H, 16 * S); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1.5; ctx.stroke();
+            let y = y0 + 16 * S;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.font = font(M.fT); ctx.fillStyle = COL.text;
+            ctx.fillText(C.name, w / 2, y);
+            y += M.fT * 1.2 + 14 * S;
+            const tagY = y; y += 22 * S;
+            const fy = y + M.fF * 0.6;
+            let x = w / 2 - M.rowW / 2;
+            M.slots.forEach(sl => { sl.x = x; sl.c = x + sl.w / 2; x += sl.w; });
+            ctx.font = font(M.fF); ctx.textBaseline = 'middle';
+            M.slots.forEach((sl, i) => { ctx.globalAlpha = fade(i); ctx.fillStyle = sl.si === undefined ? COL.sub : COL.text; ctx.fillText(sl.t, sl.c, fy); });
+            ctx.globalAlpha = 1;
+            if (pr < 1) { const a = M.slots[arrowIdx]; ctx.fillStyle = '#4f46e5'; ctx.fillRect(a.c - a.fw * 0.4, fy + M.fF * 0.5, a.fw * 0.8 * pr, 3 * S); }
+            y = fy + M.fF * 0.6 + 10 * S;
+            const chipH = 26 * S;
+            ctx.font = font(M.fC);
+            M.slots.forEach((sl, i) => {
+                if (sl.si === undefined) return;
+                const cx = sl.c - sl.cw / 2, isO = simData.pickOx === sl.si, isR = simData.pickRed === sl.si;
+                ctx.globalAlpha = fade(i);
+                rrect(cx, y, sl.cw, chipH, chipH / 2);
+                ctx.fillStyle = ok && sl.si === C.ox ? '#fce7f3' : ok && sl.si === C.red ? '#ffedd5' : '#f1f5f9'; ctx.fill();
+                ctx.lineWidth = isO || isR ? 2.5 * S : 1; ctx.strokeStyle = isO ? COL.ox : isR ? COL.red : '#cbd5e1'; ctx.stroke();
+                if (isO && isR) { rrect(cx + 3 * S, y + 3 * S, sl.cw - 6 * S, chipH - 6 * S, (chipH - 6 * S) / 2); ctx.strokeStyle = COL.red; ctx.lineWidth = 2 * S; ctx.stroke(); }
+                ctx.fillStyle = COL.text; ctx.fillText(C.subs[sl.si], sl.c, y + chipH / 2 + 0.5 * S);
+            });
+            ctx.globalAlpha = 1;
+            if (ok) [['ox', C.ox], ['red', C.red]].forEach(([kind, si]) => {
+                const sl = M.slots.find(q => q.si === si), m = measureTag(kind, '', 12.5 * S);
+                drawTag(sl.c - m.w / 2, tagY, kind, '', 12.5 * S);
+            });
+            y += chipH + 8 * S;
+            const span = (a, b, text) => {
+                const x1 = a.x + 4 * S, x2 = b.x + b.w - 4 * S;
+                ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1.2 * S;
+                ctx.beginPath(); ctx.moveTo(x1, y - 2 * S); ctx.lineTo(x1, y + 2 * S); ctx.lineTo(x2, y + 2 * S); ctx.lineTo(x2, y - 2 * S); ctx.stroke();
+                ctx.font = font(11.5 * S, 500); ctx.fillStyle = COL.sub; ctx.textBaseline = 'top'; ctx.fillText(text, (x1 + x2) / 2, y + 6 * S);
+            };
+            span(M.slots[0], M.slots[arrowIdx - 1], '반응물');
+            span(M.slots[arrowIdx + 1], M.slots[M.slots.length - 1], '생성물');
+            y += 28 * S;
+            const st = simData.judged ? simData.judged.state : '', mx = x0 + 16 * S, mw = M.W - 32 * S;
+            rrect(mx, y, mw, M.mh, 10 * S);
+            ctx.fillStyle = st === 'ok' ? '#ecfdf5' : st === 'no' ? '#fff1f2' : '#f8fafc'; ctx.fill();
+            ctx.strokeStyle = st === 'ok' ? '#6ee7b7' : st === 'no' ? '#fda4af' : '#e2e8f0'; ctx.lineWidth = 1.2 * S; ctx.stroke();
+            ctx.font = font(M.fM, 500); ctx.fillStyle = st === 'ok' ? '#065f46' : st === 'no' ? '#9f1239' : COL.sub; ctx.textBaseline = 'middle';
+            M.msg.forEach((ln, i) => ctx.fillText(ln, w / 2, y + 8 * S + M.fM * 1.5 * (i + 0.5)));
+        }
+
+        /* ── 상태·패널 ── */
+        function buildRxnList() {
+            const list = DOM.customSelectList; if (!list) return;
+            list.innerHTML = (SIM_CONFIG.rxnNames[simData.mode] || []).map((n, i) =>
+                `<li role="option" tabindex="0" class="p-2 desktop-only:hover:bg-indigo-50 focus:bg-indigo-50 focus:outline-none cursor-pointer truncate" data-value="${i}">${n}</li>`).join('');
+        }
+        function buildPickers() {
+            const C = SIM_CONFIG.cards[simData.card], cols = C.subs.length === 4 ? 'grid-cols-2' : 'grid-cols-1';
+            ['pickOx', 'pickRed'].forEach(name => {
+                const el = document.getElementById(name + 'Container'); if (!el) return;
+                el.className = `grid ${cols} gap-2 w-full`;
+                el.innerHTML = C.subs.map((s, i) => `<label class="radio-label min-w-0"><input type="radio" name="${name}" value="${i}" class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0"><span class="select-option-text whitespace-nowrap">${s}</span></label>`).join('');
+            });
+        }
+        function showJudge() {
+            const el = document.getElementById('judgeResult');
+            if (el) el.textContent = simData.judged ? simData.judged.msg : '';
+        }
+        function judge() {
+            const C = SIM_CONFIG.cards[simData.card], o = simData.pickOx, r = simData.pickRed;
+            if (o === null || r === null) simData.judged = { state: 'need', msg: '산화되는 물질과 환원되는 물질을 하나씩 모두 골라야 판정할 수 있다.' };
+            else if (o === C.ox && r === C.red) simData.judged = { state: 'ok', msg: '정답! ' + C.note + ' 산화와 환원은 항상 동시에 일어난다.' };
+            else {
+                const parts = new Set();
+                [[o, C.ox, '산화되는 물질'], [r, C.red, '환원되는 물질']].forEach(([pick, ans, what]) => {
+                    if (pick === ans) return;
+                    const n = C.subs[pick], j = josa(n, '은', '는');
+                    parts.add(pick >= C.nReact ? `'${n}'${j} 반응 후 생긴 물질(생성물)이다.` : `'${n}'${j} ${what}이 아니다.`);
+                });
+                simData.judged = { state: 'no', msg: [...parts, '다시 골라 보자.'].join(' ') };
+            }
+            showJudge(); draw();
+        }
+        function resetRun() {
+            simData.progress = simData.mode === 'life' ? 1 : 0;
+            simData.done = simData.mode === 'life';
+            simData.bubbles = []; simData.spawn = 0; simData.lastTs = 0;
+            sysState.isStarted = false; sysState.isPaused = false;
+            stopLoop(); updateUIState();
+        }
+        function syncPanel() {
+            const m = simData.mode, hide = (id, h) => document.getElementById(id)?.classList.toggle('hidden', h);
+            hide('rxnBlock', m === 'life'); hide('shapeBlock', !(m === 'electron' && simData.rxn !== 1));
+            hide('cardBlock', m !== 'life'); hide('judgeBlock', m !== 'life'); hide('gaugeBlock', m === 'life');
+            const chk = (name, v) => { const el = document.querySelector(`input[name="${name}"][value="${v}"]`); if (el) el.checked = true; };
+            chk('simOption', m); chk('metalShape', simData.shape); chk('lifeCard', simData.card);
+            const cv = document.getElementById('customSelectValue');
+            if (cv && m !== 'life') cv.textContent = SIM_CONFIG.rxnNames[m][simData.rxn];
+            DOM.customSelectTrigger?.setAttribute('data-selected-value', simData.rxn);
+            const env = document.getElementById('env-label-canvas');
+            if (env) env.textContent = SIM_CONFIG.modeNames[m] + ' · ' + (m === 'life' ? SIM_CONFIG.cards[simData.card].name : SIM_CONFIG.rxnNames[m][simData.rxn]);
+            showJudge();
+        }
+        function setMode(m) { simData.mode = m; simData.rxn = 0; buildRxnList(); resetRun(); syncPanel(); draw(); }
+        function setRxn(i) { simData.rxn = i; resetRun(); syncPanel(); draw(); }
+        function setCard(i) { simData.card = i; simData.pickOx = null; simData.pickRed = null; simData.judged = null; buildPickers(); resetRun(); syncPanel(); draw(); }
+        function syncLive() {
+            const run = isRun();
+            document.querySelectorAll('input[name="metalShape"], input[name="lifeCard"]').forEach(el => { el.disabled = run; });
+            const pct = Math.round(simData.progress * 100);
+            if (simData.pct !== pct) {
+                simData.pct = pct;
+                const v = document.getElementById('val-1'), b = document.getElementById('bar-1');
+                if (v) v.textContent = `${pct} %`;
+                if (b) b.style.width = `${pct}%`;
+            }
+        }
+        function selfCheck() {
+            SIM_CONFIG.cards.forEach(c => console.assert(c.ox < c.nReact && c.red < c.nReact && c.ox !== c.red, '카드 정답 오류', c.name));
+            Object.entries(EQ).forEach(([k, t]) => ['ox', 'red', 'oxP', 'redP'].forEach(r => console.assert(t.some(x => x[1] === r), '반응식 역할 없음', k, r)));
+            Object.keys(EQ).forEach(k => console.assert(MODELS[k] && APP[k] && OBS[k], '반응 데이터 없음', k));
+        }
+
+        /** 시뮬레이션 초기화 — 리셋 버튼 시 자동 호출 (고른 모드·반응·모양·카드는 유지) */
+        function initSimulation() {
+            if (!simData.checked) {
+                simData.checked = true; selfCheck();
+                if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => draw());
+            }
+            simData.pickOx = null; simData.pickRed = null; simData.judged = null;
+            buildRxnList(); buildPickers();
+            sysState.zoomLevel = 1.0; sysState.offsetX = 0; sysState.offsetY = 0;
+            resetRun(); syncPanel(); draw();
+        }
+
+        function draw() {
+            if (!ctx || !canvas) return;
+            const w = sysState.canvasLogicalWidth, h = sysState.canvasLogicalHeight;
+            ctx.clearRect(0, 0, w, h);
+            if (!w || !h) return;
+            syncLive();
+            const L = computeLayout(w, h);
+            ctx.save();
+            if (simData.mode === 'life') drawLife(L);
+            else { drawApparatus(L); drawModel(L); drawEquation(L); }
+            ctx.restore();
+        }
+
+        function updatePhysics() {
+            if (!sysState.isStarted || sysState.isPaused || sysState.isDragging) return;
+            const now = performance.now();
+            const dt = simData.lastTs ? Math.min(0.05, (now - simData.lastTs) / 1000) : 0;
+            simData.lastTs = now;
+            if (simData.done) { simData.done = false; simData.progress = 0; simData.bubbles = []; }   /* 완료 뒤 다시 시작 = 처음부터 */
+            simData.time += dt;
+            simData.progress = Math.min(1, simData.progress + dt / SIM_CONFIG.duration[simData.mode]);
+            if (key() === 'o0') {
+                if (simData.progress > 0.08 && simData.progress < 1) {
+                    simData.spawn += dt * 14;
+                    while (simData.spawn > 1) { simData.spawn--; simData.bubbles.push({ x: 334 + (Math.random() - 0.5) * 5, y: 242, r: 1.8 + Math.random() * 1.8 }); }
+                }
+                simData.bubbles.forEach(b => { b.y -= dt * 45; b.x += Math.sin(b.y * 0.3) * 0.15; });
+                simData.bubbles = simData.bubbles.filter(b => b.y > 188);
+            }
+            if (simData.progress >= 1) {
+                simData.done = true; simData.lastTs = 0; simData.bubbles = [];
+                sysState.isStarted = false; sysState.isPaused = false;
+                stopLoop(); updateUIState();
+            }
+        }
+        /* ████ ZONE F 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE G — LOOP & TAB STATE MANAGER (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        function startLoop() { if (!sysState.isLooping) { sysState.isLooping = true; updateLoop(); } }
+        function stopLoop() { sysState.isLooping = false; }
+        function updateLoop() {
+            if (!sysState.isLooping) return;
+            updatePhysics(); draw();
+            requestAnimationFrame(updateLoop);
+        }
+
+        function saveTabState(shape) {
+            const selectedRadio = document.querySelector('input[name="simOption"]:checked')?.value;
+            const selectedVal = DOM.customSelectTrigger?.getAttribute('data-selected-value') || null;
+            tabStates[shape] = {
+                ...simData,
+                isStarted: sysState.isStarted, isPaused: sysState.isPaused,
+                zoomLevel: sysState.zoomLevel, offsetX: sysState.offsetX, offsetY: sysState.offsetY,
+                selectVal: selectedVal, radioVal: selectedRadio
+            };
+        }
+
+        function loadTabState(shape) {
+            const state = tabStates[shape];
+            if (state) {
+                Object.assign(simData, state);
+                sysState.isStarted = state.isStarted; sysState.isPaused = state.isPaused;
+                sysState.zoomLevel = state.zoomLevel || 1.0;
+                sysState.offsetX = state.offsetX || 0;
+                sysState.offsetY = state.offsetY || 0;
+
+                const csvEl = document.getElementById('customSelectValue');
+                if (state.selectVal) {
+                    const li = document.querySelector(`#customSelectList li[data-value="${state.selectVal}"]`);
+                    if (li && csvEl) { csvEl.innerHTML = li.innerHTML; DOM.customSelectTrigger?.setAttribute('data-selected-value', state.selectVal); }
+                } else {
+                    if (csvEl) csvEl.textContent = '학습 내용을 선택하세요';
+                    DOM.customSelectTrigger?.removeAttribute('data-selected-value');
+                }
+                const radio = document.querySelector(`input[name="simOption"][value="${state.radioVal}"]`);
+                if (radio) radio.checked = true;
+            } else {
+                simData.value1 = SIM_CONFIG.slider.initialValue;
+                simData.diameter = SIM_CONFIG.object.radius * 2;
+                simData.radius = SIM_CONFIG.object.radius;
+                simData.ratioA = 1; simData.ratioB = 1;
+                sysState.isStarted = false; sysState.isPaused = false;
+                sysState.zoomLevel = 1.0; sysState.offsetX = 0; sysState.offsetY = 0;
+                if (canvas) { simData.x = sysState.canvasLogicalWidth / 2; simData.y = sysState.canvasLogicalHeight / 2; }
+                const csvEl = document.getElementById('customSelectValue');
+                if (csvEl) csvEl.textContent = '학습 내용을 선택하세요';
+                DOM.customSelectTrigger?.removeAttribute('data-selected-value');
+                const dr = document.querySelector('input[name="simOption"][value="parallel"]');
+                if (dr) dr.checked = true;
+            }
+
+            if (varSlider1) varSlider1.value = simData.value1;
+            if (varDisplay1) varDisplay1.textContent = `${simData.value1} ${SIM_CONFIG.slider.unit}`;
+            if (DOM.directInputSingle) DOM.directInputSingle.value = simData.diameter;
+            if (DOM.ratioInputA) DOM.ratioInputA.value = simData.ratioA;
+            if (DOM.ratioInputB) DOM.ratioInputB.value = simData.ratioB;
+
+            sysState.isStarted && !sysState.isPaused ? startLoop() : stopLoop();
+            updateUIState(); draw();
+        }
+
+        function updateUIState() {
+            updateZoomButtons();
+            const { statusIndicator, pauseBtn, helperText } = DOM;
+            if (!statusIndicator || !pauseBtn || !helperText) return;
+
+            const isRunning = sysState.isStarted && !sysState.isPaused;
+            const isPaused = sysState.isPaused;
+            const lock = isRunning; /* 동작 중 입력 잠금 */
+
+            if (DOM.varSlider1) DOM.varSlider1.disabled = lock;
+            if (DOM.directInputSingle) DOM.directInputSingle.disabled = lock;
+            if (DOM.ratioInputA) DOM.ratioInputA.disabled = lock;
+            if (DOM.ratioInputB) DOM.ratioInputB.disabled = lock;
+            document.querySelectorAll('.ratio-step-btn').forEach(button => {
+                button.disabled = lock;
+            });
+            if (DOM.customSelectTrigger) {
+                DOM.customSelectTrigger.disabled = lock;
+                if (lock && DOM.customSelectList && !DOM.customSelectList.classList.contains('hidden')) {
+                    DOM.customSelectList.classList.add('hidden');
+                    DOM.customSelectTrigger.setAttribute('aria-expanded', 'false');
+                }
+            }
+            if (DOM.radioOptions) DOM.radioOptions.forEach(r => r.disabled = lock);
+
+            if (isRunning) {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-rose-500 border border-rose-300 animate-pulse translate-y-[1px]";
+                pauseBtn.className = "btn-action-pause col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = '|| 일시정지';
+                helperText.textContent = sysState.isDragging ? "🖐️ 위치 이동 중" : "▶️ 시뮬레이션 실행 중";
+                helperText.className = "helper-text-running whitespace-nowrap transition-colors";
+            } else if (isPaused) {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-amber-400 border border-amber-300 translate-y-[1px]";
+                pauseBtn.className = "btn-action-start col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = '▶ 계속하기';
+                helperText.textContent = sysState.isDragging ? "🖐️ 위치 이동 중" : "⏸️ 일시정지 중";
+                helperText.className = "helper-text-paused whitespace-nowrap transition-colors";
+            } else {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-emerald-500 border border-emerald-300 translate-y-[1px]";
+                pauseBtn.className = "btn-action-start col-span-2 py-2 border rounded-lg transition-colors";
+                pauseBtn.innerHTML = '▶ 시작';
+                helperText.textContent = "초기 상태를 설정하고 시작을 누르세요.";
+                helperText.className = "helper-text-default whitespace-nowrap transition-colors";
+            }
+        }
+        /* ════ ZONE G 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE H — CANVAS RESIZE (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        function limitOffset() {
+            if (!canvas) return;
+            if (sysState.zoomLevel <= 1.0) {
+                if (sysState.offsetX !== 0 || sysState.offsetY !== 0) {
+                    simData.x = Math.max(simData.radius, Math.min(sysState.canvasLogicalWidth - simData.radius, simData.x + sysState.offsetX));
+                    simData.y = Math.max(simData.radius, Math.min(sysState.canvasLogicalHeight - simData.radius, simData.y + sysState.offsetY));
+                    sysState.offsetX = 0; sysState.offsetY = 0;
+                }
+                return;
+            }
+            const R = simData.radius * sysState.zoomLevel;
+            sysState.offsetX = Math.max(R - simData.x, Math.min((sysState.canvasLogicalWidth - R) - simData.x, sysState.offsetX));
+            sysState.offsetY = Math.max(R - simData.y, Math.min((sysState.canvasLogicalHeight - R) - simData.y, sysState.offsetY));
+        }
+
+        function resizeCanvas() {
+            if (!container || !canvas || !ctx) return;
+            const dpr = window.devicePixelRatio || 1;
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+            canvas.style.width = `${rect.width}px`; canvas.style.height = `${rect.height}px`;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            sysState.canvasLogicalWidth = rect.width;
+            sysState.canvasLogicalHeight = rect.height;
+            simData.x = rect.width / 2; simData.y = rect.height / 2;
+            for (const k in tabStates) { if (tabStates[k]) { tabStates[k].x = rect.width / 2; tabStates[k].y = rect.height / 2; } }
+            limitOffset(); draw();
+        }
+
+        const isFullscreenActive = () =>
+            !!(document.fullscreenElement || document.webkitFullscreenElement);
+        const FULLSCREEN_HISTORY_KEY = '__templateFullscreen';
+        const FULLSCREEN_HISTORY_CLEANUP_DELAY = 400;
+        const isNaverInAppBrowser = () => /NAVER\s*\((?:inapp|higgs);/i.test(navigator.userAgent);
+        let fullscreenHistoryToken = null;
+        let fullscreenExitFromHistory = false;
+        let fullscreenHistoryCleanup = false;
+        let fullscreenHistoryCleanupTimer = null;
+        let previousScrollRestoration = null;
+
+        const addFullscreenHistoryToken = stateValue => {
+            if (!fullscreenHistoryToken) return stateValue;
+            return { ...stateValue, [FULLSCREEN_HISTORY_KEY]: fullscreenHistoryToken };
+        };
+
+        const clearFullscreenHistoryTracking = () => {
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = null;
+            if (previousScrollRestoration !== null && 'scrollRestoration' in history) {
+                history.scrollRestoration = previousScrollRestoration;
+            }
+            previousScrollRestoration = null;
+            fullscreenHistoryToken = null;
+            fullscreenExitFromHistory = false;
+            fullscreenHistoryCleanup = false;
+        };
+
+        const pushFullscreenHistoryEntry = () => {
+            if (!isNaverInAppBrowser() || fullscreenHistoryToken) return;
+            const token = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+            try {
+                if ('scrollRestoration' in history && previousScrollRestoration === null) {
+                    previousScrollRestoration = history.scrollRestoration;
+                    history.scrollRestoration = 'manual';
+                }
+                history.pushState({ [FULLSCREEN_HISTORY_KEY]: token }, '');
+                fullscreenHistoryToken = token;
+            } catch (_) {
+                clearFullscreenHistoryTracking();
+            }
+        };
+
+        const restoreFullscreenHistoryEntry = () => {
+            const shouldRestore = isFullscreenActive();
+            clearFullscreenHistoryTracking();
+            if (shouldRestore) pushFullscreenHistoryEntry();
+        };
+
+        const exitFullscreenFromHistory = () => {
+            const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+            if (!exitFullscreen) {
+                restoreFullscreenHistoryEntry();
+                return;
+            }
+            const token = fullscreenHistoryToken;
+            const restoreEntry = () => {
+                if (fullscreenHistoryToken === token) restoreFullscreenHistoryEntry();
+            };
+            fullscreenExitFromHistory = true;
+            try {
+                const result = exitFullscreen.call(document);
+                if (result && typeof result.catch === 'function') result.catch(restoreEntry);
+            } catch (_) {
+                restoreEntry();
+            }
+        };
+
+        const cleanupFullscreenHistoryEntry = () => {
+            const token = fullscreenHistoryToken;
+            if (!token || !history.state || history.state[FULLSCREEN_HISTORY_KEY] !== token) {
+                clearFullscreenHistoryTracking();
+                return;
+            }
+            fullscreenHistoryCleanup = true;
+            history.back();
+        };
+
+        const scheduleFullscreenHistoryCleanup = () => {
+            const token = fullscreenHistoryToken;
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = setTimeout(() => {
+                if (fullscreenHistoryToken !== token || isFullscreenActive()) return;
+                const state = history.state;
+                if (!state || state[FULLSCREEN_HISTORY_KEY] !== token) {
+                    clearFullscreenHistoryTracking();
+                    return;
+                }
+                /* 전체화면 종료와 history 이동을 분리해 iPad WebKit의 뷰포트 복원 충돌을 막는다.
+                   모달·메뉴 항목이 위에 있으면 해당 항목이 닫힌 뒤 다시 정리한다. */
+                if (Object.keys(state).length === 1) cleanupFullscreenHistoryEntry();
+            }, FULLSCREEN_HISTORY_CLEANUP_DELAY);
+        };
+
+        window.addEventListener('popstate', event => {
+            clearTimeout(fullscreenHistoryCleanupTimer);
+            fullscreenHistoryCleanupTimer = null;
+            const token = fullscreenHistoryToken;
+            if (!token) return;
+            const sameFullscreenEntry = !!(
+                event.state && event.state[FULLSCREEN_HISTORY_KEY] === token
+            );
+            if (fullscreenHistoryCleanup) {
+                if (sameFullscreenEntry) history.back();
+                else clearFullscreenHistoryTracking();
+                return;
+            }
+            if (sameFullscreenEntry) {
+                if (!isFullscreenActive()) scheduleFullscreenHistoryCleanup();
+                return;
+            }
+            if (isFullscreenActive()) exitFullscreenFromHistory();
+            else clearFullscreenHistoryTracking();
+        });
+
+        function toggleFullScreen() {
+            uiSound.playClick();
+            const workspace = document.getElementById('workspace');
+            if (!workspace) return;
+
+            if (!isFullscreenActive()) {
+                if (workspace.requestFullscreen) workspace.requestFullscreen().catch(e => console.error(e));
+                else if (workspace.webkitRequestFullscreen) workspace.webkitRequestFullscreen();
+                else alert("현재 브라우저는 전체화면을 지원하지 않습니다.");
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            }
+        }
+
+        const resetFullscreenButtonFeedback = () => {
+            ['fullscreen-btn', 'fullscreen-btn-mobile'].forEach(id => {
+                const button = document.getElementById(id);
+                if (!button) return;
+                clearTimeout(button._tapFeedbackTimer);
+                button.classList.remove('is-tap-feedback', 'is-pen-hover');
+                button.blur();
+            });
+        };
+
+        const showSimulationToast = message => {
+            document.getElementById('sim-toast')?.remove();
+            const toast = document.createElement('div');
+            toast.id = 'sim-toast';
+            toast.setAttribute('role', 'status');
+            toast.className = 'fixed top-30 left-1/2 transform -translate-x-1/2 bg-slate-800/90 backdrop-blur-sm text-white px-6 py-3 rounded-full shadow-lg z-[9999] font-bold text-[0.95rem] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-2';
+            toast.innerHTML = '<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
+            toast.appendChild(document.createTextNode(message));
+            (document.getElementById('workspace') || document.body).appendChild(toast);
+            setTimeout(() => toast.classList.remove('opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 1500);
+        };
+
+        let fullscreenExitForNumberInput = false;
+        let fullscreenNumberExitResetTimer = null;
+
+        const resetFullscreenNumberExitTracking = () => {
+            clearTimeout(fullscreenNumberExitResetTimer);
+            fullscreenNumberExitResetTimer = null;
+            fullscreenExitForNumberInput = false;
+        };
+
+        const markFullscreenNumberInputPress = event => {
+            if (!isIPadDevice || !isFullscreenActive()) return;
+            const input = event.target.closest?.('#workspace input[type="number"]');
+            if (!input || input.disabled) return;
+
+            fullscreenExitForNumberInput = true;
+            clearTimeout(fullscreenNumberExitResetTimer);
+            fullscreenNumberExitResetTimer = setTimeout(
+                resetFullscreenNumberExitTracking,
+                2000
+            );
+        };
+
+        const fullscreenNumberPressEvent = window.PointerEvent ? 'pointerdown' : 'touchstart';
+        document.addEventListener(fullscreenNumberPressEvent, markFullscreenNumberInputPress, {
+            capture: true,
+            passive: true
+        });
+
+        const handleFullscreenChange = () => {
+            if (!isFullscreenActive() && fullscreenExitForNumberInput) {
+                resetFullscreenNumberExitTracking();
+                showSimulationToast('숫자 입력을 위해 전체화면이 종료되었습니다.');
+            }
+            if (isFullscreenActive()) {
+                pushFullscreenHistoryEntry();
+            } else if (fullscreenHistoryToken) {
+                if (fullscreenExitFromHistory) {
+                    clearFullscreenHistoryTracking();
+                } else {
+                    scheduleFullscreenHistoryCleanup();
+                }
+            }
+            if (!isFullscreenActive()) resetFullscreenButtonFeedback();
+            requestAnimationFrame(() => {
+                if (!isFullscreenActive()) resetFullscreenButtonFeedback();
+                resizeCanvas();
+            });
+
+            const exitUI = document.getElementById('fullscreen-exit-ui');
+            if (!exitUI) return;
+            if (isFullscreenActive()) { exitUI.classList.remove('hidden', 'opacity-100'); exitUI.classList.add('opacity-0'); }
+            else { exitUI.classList.add('hidden', 'opacity-0'); exitUI.classList.remove('opacity-100'); }
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        /* ════ ZONE H 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ████████████████████████████████████████████████████████████████████████
+           ████                                                               ████
+           ████   ✏️  ZONE I — INPUT EVENT HANDLERS (입력 이벤트 핸들러)       ████
+           ████   폼 변경 시 simData를 어떻게 업데이트할지 여기서 작성하세요.     ████
+           ████                                                               ████
+           ████████████████████████████████████████████████████████████████████████ */
+        function bindInputEvents() {
+            const locked = () => sysState.isStarted && !sysState.isPaused;
+
+            /* 모드 (simOption은 실행 중 ZONE G가 잠금) */
+            bindEvent('radioSelectContainer', 'change', (e) => {
+                if (e.target.name !== 'simOption') return;
+                setMode(e.target.value);
+            });
+
+            /* 금속 모양 · 생활 속 카드: 실행 중에는 무시 */
+            bindEvent('shapeContainer', 'change', (e) => {
+                if (e.target.name !== 'metalShape') return;
+                if (locked()) { syncPanel(); return; }
+                simData.shape = e.target.value; resetRun(); draw();
+            });
+            bindEvent('cardContainer', 'change', (e) => {
+                if (e.target.name !== 'lifeCard') return;
+                if (locked()) { syncPanel(); return; }
+                setCard(parseInt(e.target.value, 10));
+            });
+
+            /* 산화·환원되는 물질 고르기 (시작 버튼과 상관없음) */
+            bindEvent('judgeBlock', 'change', (e) => {
+                const v = parseInt(e.target.value, 10);
+                if (e.target.name === 'pickOx') simData.pickOx = v;
+                else if (e.target.name === 'pickRed') simData.pickRed = v;
+                else return;
+                simData.judged = null; showJudge(); draw();
+            });
+            bindEvent('judgeBtn', 'click', () => { uiSound.playClick(); judge(); });
+
+            /* 드롭다운 커스텀 셀렉트 — 목록이 모드마다 바뀌므로 위임 방식 */
+            const trigger = DOM.customSelectTrigger;
+            const list = DOM.customSelectList;
+            if (trigger && list) {
+                const items = () => Array.from(list.querySelectorAll('li'));
+                const toggleDropdown = (show) => {
+                    show = show !== undefined ? show : list.classList.contains('hidden');
+                    if (show) { list.classList.remove('hidden'); trigger.setAttribute('aria-expanded', 'true'); }
+                    else { list.classList.add('hidden'); trigger.setAttribute('aria-expanded', 'false'); }
+                };
+                trigger.addEventListener('click', (e) => { e.stopPropagation(); toggleDropdown(); });
+                trigger.addEventListener('keydown', (e) => {
+                    if (['Enter', ' ', 'ArrowDown'].includes(e.key)) { e.preventDefault(); toggleDropdown(true); items()[0]?.focus(); }
+                });
+                list.addEventListener('click', (e) => {
+                    const item = e.target.closest('li'); if (!item) return;
+                    e.stopPropagation();
+                    toggleDropdown(false);
+                    setRxn(parseInt(item.getAttribute('data-value'), 10));
+                });
+                list.addEventListener('keydown', (e) => {
+                    const item = e.target.closest('li'); if (!item) return;
+                    const all = items(), i = all.indexOf(item);
+                    if (['Enter', ' '].includes(e.key)) { e.preventDefault(); item.click(); trigger.focus(); }
+                    else if (e.key === 'ArrowDown') { e.preventDefault(); all[(i + 1) % all.length]?.focus(); }
+                    else if (e.key === 'ArrowUp') { e.preventDefault(); all[(i - 1 + all.length) % all.length]?.focus(); }
+                    else if (e.key === 'Escape') { e.preventDefault(); toggleDropdown(false); trigger.focus(); }
+                });
+                document.addEventListener('click', () => { if (!list.classList.contains('hidden')) toggleDropdown(false); });
+            }
+        }
+        /* ████ ZONE I 끝 ████████████████████████████████████████████████████████ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE J — CORE EVENT BINDING (수정 금지)
+           전체화면·모달·셔터·캔버스 드래그·줌·탭·토스트 이벤트 처리
+           ════════════════════════════════════════════════════════════════════════ */
+        function bindCoreEvents() {
+
+            /* 동작 중 입력 차단 토스트 */
+            const showDisabledToast = (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                showSimulationToast('일시정지 후 설정을 변경해 주세요.');
+            };
+
+            const interceptInteraction = (e) => {
+                if (!(sysState.isStarted && !sysState.isPaused)) return;
+                const disabledControl = e.target.closest?.(':disabled, [aria-disabled="true"], .tab-btn');
+                const disabledLabel = e.target.closest?.('label');
+                if (!disabledControl && !disabledLabel?.querySelector(':disabled')) return;
+                showDisabledToast(e);
+            };
+
+            ['controlsWrapper', 'shapeTabs'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('pointerdown', interceptInteraction, true);
+                    el.addEventListener('click', interceptInteraction, true);
+                    el.addEventListener('keydown', interceptInteraction, true);
+                }
+            });
+
+            /* 손가락·펜 입력 피드백 — 모바일 펜의 hover/press 상태도 버튼과 옵션에 동일 적용 */
+            const TAP_FEEDBACK_SELECTOR = 'button, [role="button"], .radio-label, #customSelectList [role="option"]';
+            const isFeedbackDisabled = (control) =>
+                control.matches(':disabled, [aria-disabled="true"]') || !!control.querySelector(':disabled');
+            document.addEventListener('pointerdown', (e) => {
+                if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || isFeedbackDisabled(control)) return;
+                control.classList.add('is-tap-feedback');
+                clearTimeout(control._tapFeedbackTimer);
+                const feedbackDuration = control.matches('.ratio-step-btn') ? 500 : 250;
+                control._tapFeedbackTimer = setTimeout(() => {
+                    control.classList.remove('is-tap-feedback');
+                    control.blur();
+                }, feedbackDuration);
+            });
+            document.addEventListener('pointerover', (e) => {
+                if (e.pointerType !== 'pen' || e.buttons !== 0) return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || isFeedbackDisabled(control)) return;
+                control.classList.add('is-pen-hover');
+            });
+            document.addEventListener('pointerout', (e) => {
+                if (e.pointerType !== 'pen') return;
+                const control = e.target.closest?.(TAP_FEEDBACK_SELECTOR);
+                if (!control || control.contains(e.relatedTarget)) return;
+                control.classList.remove('is-pen-hover');
+            });
+            document.addEventListener('pointerup', (e) => {
+                if (e.pointerType !== 'pen' || matchMedia('(any-hover: hover)').matches) return;
+                e.target.closest?.(TAP_FEEDBACK_SELECTOR)?.classList.remove('is-pen-hover');
+            });
+
+            /* 사운드 */
+            const soundBtn = document.getElementById('sound-toggle-btn');
+            const popup = document.getElementById('volume-popup');
+            const muteBtn = document.getElementById('popup-mute-btn');
+            const slider = document.getElementById('volume-slider');
+            if (soundBtn && popup && muteBtn && slider) {
+                uiSound.setDOM(document.getElementById('sound-icon-main'), document.getElementById('sound-icon-popup'), slider);
+                soundBtn.addEventListener('click', (e) => { e.stopPropagation(); popup.classList.toggle('w-48'); popup.classList.toggle('w-0'); popup.classList.toggle('opacity-0'); popup.classList.toggle('opacity-100'); });
+                muteBtn.addEventListener('click', (e) => { e.stopPropagation(); uiSound.toggleMute(); if (parseFloat(slider.value) === 0) { popup.classList.remove('w-48', 'opacity-100'); popup.classList.add('w-0', 'opacity-0'); } });
+                slider.addEventListener('input', (e) => uiSound.setVolume(e.target.value));
+                window.addEventListener('click', (e) => { if (!soundBtn.contains(e.target) && !popup.contains(e.target) && popup.classList.contains('w-48')) { popup.classList.remove('w-48', 'opacity-100'); popup.classList.add('w-0', 'opacity-0'); } });
+            }
+
+            /* 모바일 메뉴 */
+            const moreMenuBtn = document.getElementById('moreMenuBtn');
+            const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+            if (moreMenuBtn && mobileMenuPanel) {
+                const close = () => { mobileMenuPanel.classList.remove('w-[84px]', 'opacity-100'); mobileMenuPanel.classList.add('w-0', 'opacity-0'); };
+                const toggle = () => {
+                    uiSound.playClick();
+                    const isOpen = mobileMenuPanel.classList.contains('w-[84px]');
+                    if (!isOpen) { mobileMenuPanel.classList.remove('w-0', 'opacity-0'); mobileMenuPanel.classList.add('w-[84px]', 'opacity-100'); }
+                    else { close(); }
+                };
+                moreMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+                window.addEventListener('resize', () => { if (isFullscreenActive()) return; if (getComputedStyle(moreMenuBtn).display === 'none' && mobileMenuPanel.classList.contains('w-[84px]')) { close(); } });
+                window.addEventListener('click', (e) => { if (!moreMenuBtn.contains(e.target) && !mobileMenuPanel.contains(e.target) && mobileMenuPanel.classList.contains('w-[84px]')) { close(); } });
+            }
+
+            /* 전체화면 */
+            bindEvent('fullscreen-btn', 'click', toggleFullScreen);
+            bindEvent('fullscreen-btn-mobile', 'click', toggleFullScreen);
+
+            /* 모달 */
+            const toggleModal = (id, show) => {
+                uiSound.playClick();
+                const modal = document.getElementById(id); if (!modal) return;
+                if (show) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; history.pushState(addFullscreenHistoryToken({ modalOpen: id }), ''); }
+                else { modal.classList.add('hidden'); document.body.style.overflow = ''; if (history.state?.modalOpen === id) history.back(); }
+            };
+            window.addEventListener('popstate', () => {
+                ['helpBox', 'conceptBox', 'quizBox'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+                document.body.style.overflow = '';
+            });
+            document.addEventListener('keydown', (event) => {
+                if (event.key !== 'Escape') return;
+                const openModalId = ['helpBox', 'conceptBox', 'quizBox'].find(id => {
+                    const modal = document.getElementById(id);
+                    return modal && !modal.classList.contains('hidden');
+                });
+                if (!openModalId) return;
+                event.preventDefault();
+                toggleModal(openModalId, false);
+            });
+            bindEvent('helpBtn', 'click', () => toggleModal('helpBox', true));
+            bindEvent('help-Btn', 'click', () => toggleModal('helpBox', true));
+            bindEvent('closeHelpBtn', 'click', () => toggleModal('helpBox', false));
+            bindEvent('conceptBtn', 'click', () => toggleModal('conceptBox', true));
+            bindEvent('closeConceptBtn', 'click', () => toggleModal('conceptBox', false));
+            bindEvent('closeQuizBtn', 'click', () => toggleModal('quizBox', false));
+
+            /* 셔터 */
+            const shutterToggle = document.getElementById('shutter-toggle');
+            const shutterContent = document.getElementById('shutter-content');
+            const shutterIcon = document.getElementById('shutter-icon');
+            if (shutterToggle && shutterContent) {
+                const shutterText = shutterToggle.querySelector('span');
+                shutterToggle.addEventListener('click', () => {
+                    uiSound.playClick();
+                    const isOpen = shutterContent.classList.toggle('is-open');
+                    shutterToggle.classList.toggle('is-open', isOpen);
+                    if (shutterIcon) shutterIcon.classList.toggle('rotate-180', isOpen);
+                    if (shutterText) shutterText.textContent = isOpen ? '학습 가이드 닫기' : '학습 가이드 보기';
+                });
+            }
+
+            /* 시작/일시정지 */
+            bindEvent('pauseBtn', 'click', () => {
+                uiSound.playClick();
+                if (!sysState.isStarted) { sysState.isStarted = true; sysState.isPaused = false; startLoop(); }
+                else { sysState.isPaused = !sysState.isPaused; sysState.isPaused ? stopLoop() : startLoop(); }
+                updateUIState(); draw();
+            });
+
+            /* 리셋 */
+            bindEvent('resetBtn', 'click', () => { uiSound.playClick(); initSimulation(); });
+
+            /* 퀴즈 */
+            function stabilizeQuizLayout() {
+                if (!CONTENT_CONFIG.quizzes?.length) return;
+                const sizerQ = document.getElementById('sizerQ');
+                const sizerA = document.getElementById('sizerA');
+                if (!sizerQ || !sizerA) return; // 뼈대가 없으면 작동 안 함
+
+                let longestQ = '', longestA = '';
+
+                // 1) 전체 퀴즈를 순회하면서 가장 긴 질문과 정답을 찾습니다.
+                CONTENT_CONFIG.quizzes.forEach(({ q, a }) => {
+                    if (q.length > longestQ.length) longestQ = q;
+                    if (a.length > longestA.length) longestA = a;
+                });
+
+                // 2) 찾아낸 가장 긴 텍스트를 투명 뼈대(Sizer)에 꽂아 넣습니다. (끝!)
+                sizerQ.textContent = longestQ;
+                sizerA.textContent = longestA;
+            }
+
+            function updateQuizUI() {
+                if (!CONTENT_CONFIG.quizzes?.length) return;
+                const q = CONTENT_CONFIG.quizzes[sysState.currentQuizIndex];
+                const stepEl = document.getElementById('quizStep');
+                const qEl = document.getElementById('questionText');
+                const aEl = document.getElementById('answerText');
+                const showBtn = document.getElementById('showAnswerBtn');
+                const prevBtn = document.getElementById('prevQuizBtn');
+                const nextBtn = document.getElementById('nextQuizBtn');
+                if (stepEl) stepEl.textContent = `질문 ${sysState.currentQuizIndex + 1} / ${CONTENT_CONFIG.quizzes.length}`;
+                if (qEl) qEl.innerText = q.q;
+                if (aEl) { aEl.textContent = q.a; aEl.classList.add('hidden'); }
+                if (showBtn) showBtn.classList.remove('hidden');
+                if (prevBtn) prevBtn.disabled = sysState.currentQuizIndex === 0;
+                if (nextBtn) nextBtn.disabled = sysState.currentQuizIndex === CONTENT_CONFIG.quizzes.length - 1;
+            }
+            bindEvent('quizBtn', 'click', () => { sysState.currentQuizIndex = 0; updateQuizUI(); toggleModal('quizBox', true); requestAnimationFrame(stabilizeQuizLayout); });
+            bindEvent('showAnswerBtn', 'click', () => { uiSound.playClick(); document.getElementById('answerText')?.classList.remove('hidden'); document.getElementById('showAnswerBtn')?.classList.add('hidden'); });
+            bindEvent('nextQuizBtn', 'click', () => { if (sysState.currentQuizIndex < CONTENT_CONFIG.quizzes.length - 1) { uiSound.playClick(); sysState.currentQuizIndex++; updateQuizUI(); } });
+            bindEvent('prevQuizBtn', 'click', () => { if (sysState.currentQuizIndex > 0) { uiSound.playClick(); sysState.currentQuizIndex--; updateQuizUI(); } });
+            window.addEventListener('resize', debounce(stabilizeQuizLayout, 100));
+
+            /* 캔버스 상단 탭 */
+            const shapeTabsDOM = document.getElementById('shapeTabs');
+            if (shapeTabsDOM) {
+                const updateTabScrollIndicators = () => {
+                    const leftInd = document.getElementById('tabScrollLeft');
+                    const rightInd = document.getElementById('tabScrollRight');
+                    if (!leftInd || !rightInd) return;
+                    const maxSL = shapeTabsDOM.scrollWidth - shapeTabsDOM.clientWidth;
+                    leftInd.classList.toggle('opacity-0', shapeTabsDOM.scrollLeft <= 1);
+                    leftInd.classList.toggle('pointer-events-none', shapeTabsDOM.scrollLeft <= 1);
+                    leftInd.classList.toggle('opacity-100', shapeTabsDOM.scrollLeft > 1);
+                    rightInd.classList.toggle('opacity-0', Math.ceil(shapeTabsDOM.scrollLeft) >= maxSL - 1 || maxSL <= 0);
+                    rightInd.classList.toggle('pointer-events-none', Math.ceil(shapeTabsDOM.scrollLeft) >= maxSL - 1 || maxSL <= 0);
+                    rightInd.classList.toggle('opacity-100', Math.ceil(shapeTabsDOM.scrollLeft) < maxSL - 1 && maxSL > 0);
+                };
+                shapeTabsDOM.addEventListener('scroll', updateTabScrollIndicators);
+                window.addEventListener('resize', debounce(updateTabScrollIndicators, 100));
+                setTimeout(updateTabScrollIndicators, 150);
+
+                bindEvent('btnScrollLeft', 'click', () => { uiSound.playClick(); shapeTabsDOM.scrollBy({ left: -120, behavior: 'smooth' }); });
+                bindEvent('btnScrollRight', 'click', () => { uiSound.playClick(); shapeTabsDOM.scrollBy({ left: 120, behavior: 'smooth' }); });
+
+                let isDownTab = false, startXTab = 0, scrollLeftTab = 0;
+                shapeTabsDOM.addEventListener('mousedown', (e) => { isDownTab = true; startXTab = e.pageX - shapeTabsDOM.offsetLeft; scrollLeftTab = shapeTabsDOM.scrollLeft; });
+                shapeTabsDOM.addEventListener('mouseleave', () => isDownTab = false);
+                shapeTabsDOM.addEventListener('mouseup', () => isDownTab = false);
+                shapeTabsDOM.addEventListener('mousemove', (e) => { if (!isDownTab) return; e.preventDefault(); shapeTabsDOM.scrollLeft = scrollLeftTab - (e.pageX - shapeTabsDOM.offsetLeft - startXTab) * 1.5; });
+
+                const tabBtns = shapeTabsDOM.querySelectorAll('.tab-btn');
+                shapeTabsDOM.addEventListener('click', (e) => {
+                    const target = e.target.closest('.tab-btn');
+                    if (!target || (sysState.isStarted && !sysState.isPaused)) return;
+                    const newShape = target.getAttribute('data-shape');
+                    if (simData.shape === newShape) return;
+                    saveTabState(simData.shape);
+                    tabBtns.forEach(b => { b.classList.remove('border-indigo-600', 'text-indigo-600', 'bg-white'); b.classList.add('border-transparent', 'text-slate-500', 'bg-transparent', 'desktop-only:hover:bg-slate-200/50'); });
+                    target.classList.remove('border-transparent', 'text-slate-500', 'bg-transparent', 'desktop-only:hover:bg-slate-200/50');
+                    target.classList.add('border-indigo-600', 'text-indigo-600', 'bg-white');
+                    simData.shape = newShape;
+                    loadTabState(simData.shape);
+                });
+            }
+
+            /* 전체화면 마우스 오버 */
+            let fullscreenHoverTimer;
+            document.addEventListener('mousemove', (e) => {
+                if (!document.fullscreenElement) return;
+                const exitUI = document.getElementById('fullscreen-exit-ui'); if (!exitUI) return;
+                if (e.clientY < 80) { exitUI.classList.remove('opacity-0'); exitUI.classList.add('opacity-100'); clearTimeout(fullscreenHoverTimer); }
+                else { clearTimeout(fullscreenHoverTimer); fullscreenHoverTimer = setTimeout(() => { exitUI.classList.remove('opacity-100'); exitUI.classList.add('opacity-0'); }, 10); }
+            });
+        }
+        /* ════ ZONE J 끝 ════════════════════════════════════════════════════════ */
+
+
+        /* ════════════════════════════════════════════════════════════════════════
+           🚫 ZONE K — 초기 실행 (수정 금지)
+           ════════════════════════════════════════════════════════════════════════ */
+        const resizeObserver = new ResizeObserver(() => resizeCanvas());
+
+        window.addEventListener('load', () => {
+            if (container) resizeObserver.observe(container);
+            bindCoreEvents();   /* 🚫 코어 이벤트 바인딩 */
+            bindInputEvents();  /* ✏️ 입력 이벤트 바인딩 (ZONE I) */
+            initSimulation();   /* ✏️ 시뮬레이션 초기화  (ZONE F) */
+        });
+        /* ════ ZONE K 끝 ════════════════════════════════════════════════════════ */
+    </script>
+</body>
+
+</html>

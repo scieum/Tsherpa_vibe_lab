@@ -1,0 +1,340 @@
+{
+ "viewport": [
+  1440,
+  900
+ ],
+ "steps": [
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "oxygen"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "0"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "shot",
+   "name": "q1_cuo_c_0before"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 4500
+  },
+  {
+   "do": "shot",
+   "name": "q1_cuo_c_1mid"
+  },
+  {
+   "do": "wait",
+   "ms": 6000
+  },
+  {
+   "do": "shot",
+   "name": "q1_cuo_c_2after"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "oxygen"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "1"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "shot",
+   "name": "q2_cuo_h2_0before"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 4500
+  },
+  {
+   "do": "shot",
+   "name": "q2_cuo_h2_1mid"
+  },
+  {
+   "do": "wait",
+   "ms": 6000
+  },
+  {
+   "do": "shot",
+   "name": "q2_cuo_h2_2after"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "oxygen"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "2"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "shot",
+   "name": "q3_furnace_0before"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 4500
+  },
+  {
+   "do": "shot",
+   "name": "q3_furnace_1mid"
+  },
+  {
+   "do": "wait",
+   "ms": 6000
+  },
+  {
+   "do": "shot",
+   "name": "q3_furnace_2after"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "electron"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "0"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "metalShape",
+   "value": "heart"
+  },
+  {
+   "do": "shot",
+   "name": "q4_ag_cu_0before"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 4500
+  },
+  {
+   "do": "shot",
+   "name": "q4_ag_cu_1mid"
+  },
+  {
+   "do": "wait",
+   "ms": 6000
+  },
+  {
+   "do": "shot",
+   "name": "q4_ag_cu_2after"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "electron"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "1"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "shot",
+   "name": "q5_mg_0before"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 4500
+  },
+  {
+   "do": "shot",
+   "name": "q5_mg_1mid"
+  },
+  {
+   "do": "wait",
+   "ms": 6000
+  },
+  {
+   "do": "shot",
+   "name": "q5_mg_2after"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "simOption",
+   "value": "electron"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "click",
+   "id": "customSelectTrigger"
+  },
+  {
+   "do": "option",
+   "value": "2"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  },
+  {
+   "do": "radio",
+   "name": "metalShape",
+   "value": "spiral"
+  },
+  {
+   "do": "shot",
+   "name": "q6_zn_0before"
+  },
+  {
+   "do": "click",
+   "id": "pauseBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 4500
+  },
+  {
+   "do": "shot",
+   "name": "q6_zn_1mid"
+  },
+  {
+   "do": "wait",
+   "ms": 6000
+  },
+  {
+   "do": "shot",
+   "name": "q6_zn_2after"
+  },
+  {
+   "do": "click",
+   "id": "resetBtn"
+  },
+  {
+   "do": "wait",
+   "ms": 300
+  }
+ ]
+}
