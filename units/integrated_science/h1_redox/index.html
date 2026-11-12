@@ -2510,6 +2510,7 @@
                     haloText(l.t, left, y, l.c || '#334155', ui);
                 });
             });
+            L.contentBot = Math.max(L.contentBot || 0, oy + A.h * s + band + gap + obsH);   /* 반응식 띠를 내용 바로 아래에 붙이기 위함 (관찰 상자 자리 포함) */
             if (showObs) {
                 const bx = r.x + (r.w - obsW) / 2, by = oy + A.h * s + band + gap;   /* 아래 라벨 띠 밑에 두어 라벨·그림을 덮지 않음 */
                 rrect(bx, by, obsW, obsH, 8 * ui); ctx.fillStyle = '#fffbeb'; ctx.fill();
@@ -2557,9 +2558,11 @@
             g.addColorStop(0, mixHex(E.c, '#ffffff', 0.5)); g.addColorStop(1, E.c);
             ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
             ctx.strokeStyle = mixHex(E.c, '#000000', 0.35); ctx.lineWidth = Math.max(1, R * 0.07); ctx.stroke();
-            ctx.fillStyle = E.t; ctx.font = font(Math.max(9, R * 0.78)); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(el, x, y + R * 0.04);
-            if (charge) { ctx.font = font(Math.max(9, fs)); ctx.textAlign = 'left'; haloText(charge, x + R * 0.72, y - R * 0.9, '#0f172a', ui); }
+            /* 이온 전하는 원 안에 기호와 함께 위첨자로 (예: Ag⁺, Cu²⁺) */
+            const SUP = { '+': '⁺', '−': '⁻', '-': '⁻', '2': '²', '3': '³' };
+            const txt = el + (charge ? [...charge].map(c => SUP[c] || c).join('') : '');
+            ctx.fillStyle = E.t; ctx.font = font(Math.max(9, R * (charge ? 0.62 : 0.78))); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(txt, x, y + R * 0.04);
         }
         function drawModel(L) {
             const r = L.model, ui = L.ui, M = MODELS[phaseKey()], p = lp(), tm = modelTime();
@@ -2569,6 +2572,7 @@
             const bw = 400 * s, bh = 240 * s;
             const ox = r.x + (r.w - bw) / 2, oy = r.y + titleH + strip + Math.max(0, (r.h - titleH - strip - bh) / 2);
             M.strip = strip;
+            L.contentBot = Math.max(L.contentBot || 0, oy + bh);
             const P = (x, y) => [ox + x * s, oy + y * s];
             const rad = el => (M.rs && M.rs[el]) || EL[el].r;
             const hasE = M.electrons && M.electrons.length > 0;
@@ -2588,7 +2592,11 @@
                 const a = M.sol === 'ag' ? 0.03 + 0.16 * smooth(0.1, 1, p) : 0.2 - 0.14 * smooth(0.1, 1, p);
                 ctx.fillStyle = `rgba(37,99,235,${a})`; ctx.fillRect(ox, oy, bw, 176 * s); ctx.restore();
             }
-            if (M.mol) { drawMolModel(M, P, s, tm, ui, r); drawModelTags(M, ox, oy, s, bh, r, ui); return; }
+            if (M.mol) {
+                drawMolModel(M, P, s, tm, ui, r);
+                drawModelTags(M, ox, oy, s, bh, r, ui, { labelX: M.labels.map(lb => P(lb.x, lb.y)[0]) });
+                return;
+            }
             const pos = M.atoms.map(a => atomPos(a, tm));
             /* 움직이는 원자를 맨 위에 그려 다른 원자 글자가 찍히지 않게 */
             const moving = i => pos[i][2] > 0 && pos[i][2] < 1;
@@ -2596,15 +2604,11 @@
                 const a = M.atoms[i], [x, y, e] = pos[i], sp = P(x, y), ch = a.ch ? (tm >= a.ch[2] && tm > 0 ? a.ch[1] : a.ch[0]) : '';
                 drawAtom(sp[0], sp[1], Math.max(7.5, rad(a.el) * s), a.el, ch, 11 * ui, e > 0 && e < 1 && !a.ch && a.el === 'O', ui);
             });
-            /* 전자: 출발 전에는 원자 곁에, 이동 중에는 곡선을 따라, 도착하면 사라짐 */
-            const cnt = {};
+            /* 전자: 미리 그려 두지 않고, 산화가 일어나는 순간 원자에서 나와 곡선을 따라 이동하고, 도착하면 사라짐 */
             M.electrons.forEach(ev => {
                 const [t0, t1] = ev.t; let pt;
-                if (tm <= t0) {
-                    const n = cnt[ev.from] = (cnt[ev.from] || 0) + 1, [x, y] = pos[ev.from], R = rad(M.atoms[ev.from].el) + 7;
-                    const ang = ev.lift < 0 ? Math.PI * 0.25 + (n - 1) * 0.9 : -Math.PI * 0.25 - (n - 1) * 0.9;
-                    pt = [x + Math.cos(ang) * R, y + Math.sin(ang) * R];
-                } else if (tm < t1) {
+                if (tm <= t0) return;
+                else if (tm < t1) {
                     const u = ease((tm - t0) / (t1 - t0)), a0 = atomPos(M.atoms[ev.from], t0), a1 = atomPos(M.atoms[ev.to], t1);
                     const cx = (a0[0] + a1[0]) / 2, cy = (a0[1] + a1[1]) / 2 - ev.lift * 2;
                     pt = [(1 - u) * (1 - u) * a0[0] + 2 * u * (1 - u) * cx + u * u * a1[0], (1 - u) * (1 - u) * a0[1] + 2 * u * (1 - u) * cy + u * u * a1[1]];
@@ -2621,17 +2625,25 @@
                 const sp = P(x, y), tw = ctx.measureText(t).width;
                 haloText(t, clamp(sp[0] - tw / 2, r.x + 2, r.x + r.w - tw - 2), sp[1], COL.text, ui);
             });
-            drawModelTags(M, ox, oy, s, bh, r, ui);
+            /* 꼬리표 자리: 멈춰 있는 원자 중 가장 위 원자보다 위, 가로는 물질명 라벨 가운데 */
+            let topPx = Infinity;
+            M.atoms.forEach((a, i) => { if (!moving(i)) topPx = Math.min(topPx, P(pos[i][0], pos[i][1])[1] - Math.max(7.5, rad(a.el) * s)); });
+            const labelX = M.labels.filter(lb => lb.atom === undefined && !(lb.end !== undefined && tm >= lb.end))
+                .map(lb => { const v = tm >= lb.t && tm > 0 ? lb.a : lb.b; return v && v[2] ? P(v[0], v[1])[0] : null; }).filter(x => x !== null);
+            /* 전자 모형은 이온이 용액으로 흩어져 '가장 위 원자'가 의미 없으므로 정해 둔 자리(M.tags)를 쓴다 */
+            drawModelTags(M, ox, oy, s, bh, r, ui, hasE ? {} : { topPx, labelX });
         }
-        function drawModelTags(M, ox, oy, s, bh, r, ui) {
+        function drawModelTags(M, ox, oy, s, bh, r, ui, at = {}) {
             if (!tagOn()) return;
-            /* 산화·환원 꼬리표: 각 물질 묶음 바로 위, 두 꼬리표는 같은 높이(M.tags.y, 기준 좌표). 겹치면 옆으로 민다 */
+            /* 산화·환원 꼬리표: 각 물질 위, 두 꼬리표는 같은 높이. 가로는 가장 가까운 물질명 라벨 가운데에 맞춘다. 겹치면 옆으로 민다 */
             const T = M.tags.after && modelTime() >= M.tags.after.t ? M.tags.after : M.tags;   /* 반응물이 사라진 뒤에는 생성물 위 */
             const fs = Math.max(9, 12 * ui), sub = tagSub(), th = fs * 1.7;
-            const y = clamp(oy + (T.y || 20) * s - th / 2, oy + 2, oy + bh - th - 2);
+            const yBase = isFinite(at.topPx) ? at.topPx - 8 * ui - th : oy + (T.y || 20) * s - th / 2;
+            const y = clamp(yBase, oy + 2, oy + bh - th - 2);
+            const snap = x => (at.labelX && at.labelX.length) ? at.labelX.reduce((b, lx) => Math.abs(lx - x) < Math.abs(b - x) ? lx : b) : x;
             const items = [['red', T.red[0]], ['ox', T.ox[0]]].map(([kind, bx]) => {
                 const m = measureTag(kind, sub[kind], fs);
-                return { kind, m, x: clamp(ox + bx * s - m.w / 2, r.x, r.x + r.w - m.w) };
+                return { kind, m, x: clamp(snap(ox + bx * s) - m.w / 2, r.x, r.x + r.w - m.w) };
             }).sort((a, b) => a.x - b.x);
             if (items[1].x < items[0].x + items[0].m.w + 6) items[1].x = items[0].x + items[0].m.w + 6;
             if (items[1].x + items[1].m.w > r.x + r.w) { items[1].x = r.x + r.w - items[1].m.w; items[0].x = Math.max(r.x, items[1].x - 6 - items[0].m.w); }
@@ -2701,7 +2713,9 @@
             const avail = L.eq.right - 16;
             if (total > avail) { fs *= avail / total; ctx.font = font(fs); total = toks.reduce((a, t) => a + ctx.measureText(t[0]).width, 0); }
             const cx = Math.max(8 + total / 2, Math.min(L.w / 2, L.eq.right - total / 2));
-            const base = L.eq.y + L.eq.h / 2 + fs * 0.35;
+            /* 반응식 띠는 장치·모형 바로 아래에 붙인다 (캔버스 맨 아래 고정이면 사이가 너무 벌어짐) */
+            const eqY = Math.min(L.eq.y, (L.contentBot || L.eq.y) + 8 * ui);
+            const base = eqY + L.eq.h / 2 + fs * 0.35;
             let x = cx - total / 2;
             const pos = toks.map(t => { const w = ctx.measureText(t[0]).width, o = { x, c: x + w / 2, role: t[1] }; x += w; return o; });
             ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
