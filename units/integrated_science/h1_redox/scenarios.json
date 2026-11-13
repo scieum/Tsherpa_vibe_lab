@@ -113,16 +113,12 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
    "do": "wait",
    "ms": 300
   },
   {
    "do": "shot",
-   "name": "a06_dropdown_open"
+   "name": "a06_rxn_list"
   },
   {
    "do": "option",
@@ -142,11 +138,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "0"
   },
   {
@@ -204,11 +197,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "1"
   },
   {
@@ -245,11 +235,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "2"
   },
   {
@@ -291,11 +278,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "2"
   },
   {
@@ -343,11 +327,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "0"
   },
   {
@@ -389,11 +370,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "1"
   },
   {
@@ -438,11 +416,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "2"
   },
   {
@@ -495,11 +470,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "0"
   },
   {
@@ -544,11 +516,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "1"
   },
   {
@@ -585,11 +554,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "2"
   },
   {
@@ -626,11 +592,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "3"
   },
   {
@@ -678,11 +641,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "0"
   },
   {
@@ -727,11 +687,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "1"
   },
   {
@@ -776,11 +733,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "2"
   },
   {
@@ -836,11 +790,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "2"
   },
   {
@@ -877,11 +828,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "0"
   },
   {
@@ -929,11 +877,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "0"
   },
   {
@@ -970,11 +915,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "0"
   },
   {
@@ -1016,11 +958,8 @@
    "ms": 300
   },
   {
-   "do": "click",
-   "id": "customSelectTrigger"
-  },
-  {
-   "do": "option",
+   "do": "radio",
+   "name": "rxnOption",
    "value": "3"
   },
   {
