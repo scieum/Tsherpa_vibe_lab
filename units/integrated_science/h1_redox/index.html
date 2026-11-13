@@ -2685,7 +2685,8 @@
 
         /* ── 반응식 띠: 산화(위)·환원(아래) 꺾쇠가 같은 순간에 켜진다 ── */
         function drawEquation(L) {
-            const toks = EQ[phaseKey()], ui = L.ui, on = tagOn(), sub = tagSub();
+            /* 반응식의 산화·환원 꺾쇠는 반응이 끝난 뒤에 정리로 보여 준다 (모형 안 꼬리표는 진행 중에도 보임, 2026-11-13 사용자 수정) */
+            const toks = EQ[phaseKey()], ui = L.ui, on = simData.done, sub = tagSub();
             if (L.compact) {
                 /* 작은 캔버스: 반응식 한 줄 + 오른쪽에 '산화'·'환원' 꼬리표를 함께 (물질은 같은 색으로 표시) */
                 const tfs = 9, pw = measureTag('ox', '', tfs).w + measureTag('red', '', tfs).w + 14;
