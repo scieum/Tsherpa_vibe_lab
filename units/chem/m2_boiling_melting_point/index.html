@@ -852,7 +852,7 @@
                                         <span class="select-option-text whitespace-nowrap">종류 비교</span>
                                     </label>
                                 </div>
-                                <p class="slider-limit-label">양 비교: 적음(실선)과 많음(점선) / 종류 비교: 같은 양의 두 물질</p>
+                                <p class="slider-limit-label">양 비교 : 적음(실선)과 많음(점선) / 종류 비교 : 같은 양의 두 물질</p>
                             </div>
 
                             <!-- 표시 요소 -->
@@ -2123,10 +2123,10 @@
                 if (m.t < m.heatEnd) return info(`${nm}이 모두 녹아 액체가 되자 온도가 다시 올라간다. 이제 '진행'에서 '냉각'을 고를 수 있다.`);
                 return { kind: 'warn', text: `${nm}이 모두 녹아 가열을 멈췄다. '진행'에서 '냉각'을 골라 같은 그래프에 이어서 측정하자.${cmp}` };
             }
-            if (m.t < m.plan.fs) return info(`냉각 중: 액체 ${nm}의 온도가 내려가고 있다.`);
+            if (m.t < m.plan.fs) return info(`냉각 중 : 액체 ${nm}의 온도가 내려가고 있다.`);
             if (m.t < m.plan.fe) return ok(`${nm}이 어는 동안 온도가 ${Tp} ℃로 일정하다. 이 온도가 어는점이며 녹는점과 같다.`);
             if (!m.done) return info(`${nm}이 모두 얼어 고체가 되자 온도가 다시 내려간다.`);
-            return ok(`가열냉각 곡선 완성: ${nm}의 녹는점과 어는점은 모두 ${Tp} ℃로 같다.${cmp}`);
+            return ok(`가열냉각 곡선 완성 : ${nm}의 녹는점과 어는점은 모두 ${Tp} ℃로 같다.${cmp}`);
         }
         function bannerSize(msg, w) {
             if (!msg) return { lines: [], bw: 0, bh: 0, fs: 12, lh: 16 };

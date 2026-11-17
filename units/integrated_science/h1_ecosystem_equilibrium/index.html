@@ -817,97 +817,76 @@
                                 </ul>
                             </div>
                             <p id="scenarioDesc" class="var-label-var leading-relaxed"></p>
-                            <button id="dogBtn" type="button"
-                                class="btn-sub hidden min-h-[44px] py-2 border rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">아프리카들개
-                                도입</button>
                         </div>
 
-                        <!-- 교란 버튼 (2열 × 3행) -->
+                        <!-- 교란 + 예측 한 표 (열: 영양단계, 행: ① 교란 증가·감소 / ② 예측 증가·감소) -->
                         <div class="panel-block">
-                            <label class="var-label-control">① 교란 고르기</label>
-                            <p class="var-label-var leading-relaxed">바꿀 개체군 하나를 고릅니다. 시작을 누르면 적용됩니다.</p>
-                            <div class="grid grid-cols-2 gap-2" id="perturbGrid">
-                                <button type="button" id="perturb0up" data-level="0" data-dir="up"
-                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">생산자
-                                    증가</button>
-                                <button type="button" id="perturb0down" data-level="0" data-dir="down"
-                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">생산자
-                                    감소</button>
-                                <button type="button" id="perturb1up" data-level="1" data-dir="up"
-                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">1차
-                                    소비자 증가</button>
-                                <button type="button" id="perturb1down" data-level="1" data-dir="down"
-                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">1차
-                                    소비자 감소</button>
-                                <button type="button" id="perturb2up" data-level="2" data-dir="up"
-                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">2차
-                                    소비자 증가</button>
-                                <button type="button" id="perturb2down" data-level="2" data-dir="down"
-                                    class="btn-sub min-h-[44px] min-w-0 px-1 py-2 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">2차
-                                    소비자 감소</button>
-                            </div>
-                        </div>
-
-                        <!-- 폼 2: 라디오 버튼 — 예측 -->
-                        <div class="panel-block">
-                            <label class="var-label-control">② 예측하기 (시작 전에)</label>
-                            <p class="var-label-var leading-relaxed" id="predictHint">먼저 교란을 고르세요.</p>
-                            <div class="flex flex-col gap-2 w-full" id="predictContainer">
-                                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-                                    <span class="var-label-var w-[4.5rem] flex-none" id="predLbl0">생산자</span>
-                                    <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2 flex-1 min-w-[8.5rem]">
-                                        <label class="radio-label min-w-0">
-                                            <input type="radio" name="pred0" value="up" id="pred0up"
-                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
-                                            <span class="select-option-text whitespace-nowrap">증가</span>
-                                        </label>
-                                        <label class="radio-label min-w-0">
-                                            <input type="radio" name="pred0" value="down" id="pred0down"
-                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
-                                            <span class="select-option-text whitespace-nowrap">감소</span>
-                                        </label>
-                                    </div>
-                                    <p id="predRes0" class="hidden basis-full text-sm font-bold leading-snug"></p>
+                            <label class="var-label-control">교란 고르고 예측하기</label>
+                            <div class="grid grid-cols-[2.75rem_repeat(3,minmax(0,1fr))] gap-1.5 items-stretch">
+                                <span></span>
+                                <span class="var-label-var text-center leading-tight self-end" id="predLbl0">생산자</span>
+                                <span class="var-label-var text-center leading-tight self-end" id="predLbl1">1차 소비자</span>
+                                <span class="var-label-var text-center leading-tight self-end" id="predLbl2">2차 소비자</span>
+                                <div class="contents" id="perturbGrid">
+                                    <span class="row-span-2 var-label-var self-center text-center leading-tight">①<br>교란</span>
+                                    <button type="button" id="perturb0up" data-level="0" data-dir="up" aria-label="생산자 증가"
+                                        class="btn-sub min-h-[40px] min-w-0 px-1 py-1.5 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">증가</button>
+                                    <button type="button" id="perturb1up" data-level="1" data-dir="up" aria-label="1차 소비자 증가"
+                                        class="btn-sub min-h-[40px] min-w-0 px-1 py-1.5 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">증가</button>
+                                    <button type="button" id="perturb2up" data-level="2" data-dir="up" aria-label="2차 소비자 증가"
+                                        class="btn-sub min-h-[40px] min-w-0 px-1 py-1.5 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">증가</button>
+                                    <button type="button" id="perturb0down" data-level="0" data-dir="down" aria-label="생산자 감소"
+                                        class="btn-sub min-h-[40px] min-w-0 px-1 py-1.5 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">감소</button>
+                                    <button type="button" id="perturb1down" data-level="1" data-dir="down" aria-label="1차 소비자 감소"
+                                        class="btn-sub min-h-[40px] min-w-0 px-1 py-1.5 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">감소</button>
+                                    <button type="button" id="perturb2down" data-level="2" data-dir="down" aria-label="2차 소비자 감소"
+                                        class="btn-sub min-h-[40px] min-w-0 px-1 py-1.5 border rounded-lg transition-colors leading-tight disabled:opacity-50 disabled:cursor-not-allowed">감소</button>
                                 </div>
-                                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-                                    <span class="var-label-var w-[4.5rem] flex-none" id="predLbl1">1차 소비자</span>
-                                    <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2 flex-1 min-w-[8.5rem]">
-                                        <label class="radio-label min-w-0">
-                                            <input type="radio" name="pred1" value="up" id="pred1up"
-                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                <div class="col-span-4 border-t border-slate-200 my-0.5"></div>
+                                <div class="contents" id="predictContainer">
+                                    <span class="var-label-var self-center text-center leading-tight">②<br>예측</span>
+                                    <div class="flex flex-col justify-center gap-1.5 min-w-0">
+                                        <label class="radio-label min-w-0 justify-center items-center min-h-[40px] px-1 py-1.5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-300">
+                                            <input type="radio" name="pred0" value="up" id="pred0up" class="sr-only" aria-label="생산자 증가 예측">
                                             <span class="select-option-text whitespace-nowrap">증가</span>
                                         </label>
-                                        <label class="radio-label min-w-0">
-                                            <input type="radio" name="pred1" value="down" id="pred1down"
-                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                        <label class="radio-label min-w-0 justify-center items-center min-h-[40px] px-1 py-1.5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-300">
+                                            <input type="radio" name="pred0" value="down" id="pred0down" class="sr-only" aria-label="생산자 감소 예측">
                                             <span class="select-option-text whitespace-nowrap">감소</span>
                                         </label>
+                                        <p id="predRes0" class="hidden text-xs font-bold leading-snug text-center"></p>
                                     </div>
-                                    <p id="predRes1" class="hidden basis-full text-sm font-bold leading-snug"></p>
-                                </div>
-                                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-                                    <span class="var-label-var w-[4.5rem] flex-none" id="predLbl2">2차 소비자</span>
-                                    <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2 flex-1 min-w-[8.5rem]">
-                                        <label class="radio-label min-w-0">
-                                            <input type="radio" name="pred2" value="up" id="pred2up"
-                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                    <div class="flex flex-col justify-center gap-1.5 min-w-0">
+                                        <label class="radio-label min-w-0 justify-center items-center min-h-[40px] px-1 py-1.5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-300">
+                                            <input type="radio" name="pred1" value="up" id="pred1up" class="sr-only" aria-label="1차 소비자 증가 예측">
                                             <span class="select-option-text whitespace-nowrap">증가</span>
                                         </label>
-                                        <label class="radio-label min-w-0">
-                                            <input type="radio" name="pred2" value="down" id="pred2down"
-                                                class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
+                                        <label class="radio-label min-w-0 justify-center items-center min-h-[40px] px-1 py-1.5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-300">
+                                            <input type="radio" name="pred1" value="down" id="pred1down" class="sr-only" aria-label="1차 소비자 감소 예측">
                                             <span class="select-option-text whitespace-nowrap">감소</span>
                                         </label>
+                                        <p id="predRes1" class="hidden text-xs font-bold leading-snug text-center"></p>
                                     </div>
-                                    <p id="predRes2" class="hidden basis-full text-sm font-bold leading-snug"></p>
+                                    <div class="flex flex-col justify-center gap-1.5 min-w-0">
+                                        <label class="radio-label min-w-0 justify-center items-center min-h-[40px] px-1 py-1.5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-300">
+                                            <input type="radio" name="pred2" value="up" id="pred2up" class="sr-only" aria-label="2차 소비자 증가 예측">
+                                            <span class="select-option-text whitespace-nowrap">증가</span>
+                                        </label>
+                                        <label class="radio-label min-w-0 justify-center items-center min-h-[40px] px-1 py-1.5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-300">
+                                            <input type="radio" name="pred2" value="down" id="pred2down" class="sr-only" aria-label="2차 소비자 감소 예측">
+                                            <span class="select-option-text whitespace-nowrap">감소</span>
+                                        </label>
+                                        <p id="predRes2" class="hidden text-xs font-bold leading-snug text-center"></p>
+                                    </div>
                                 </div>
                             </div>
+                            <p class="var-label-var leading-relaxed" id="predictHint">먼저 ① 교란을 하나 고르세요.</p>
                         </div>
 
-                        <!-- 폼 2: 라디오 버튼 — 속도 (실행 중에도 바꿀 수 있게 simOption이 아닌 name) -->
-                        <div class="panel-block">
-                            <label class="var-label-control">속도</label>
-                            <div class="grid grid-cols-3 gap-2 w-full" id="speedContainer">
+                        <!-- 폼 2: 라디오 버튼 — 속도 (실행 중에도 바꿀 수 있게 simOption이 아닌 name). 넓은 화면에서는 한 줄 -->
+                        <div class="panel-block xl:flex-row xl:items-center">
+                            <label class="var-label-control flex-none">속도</label>
+                            <div class="grid grid-cols-3 gap-2 w-full min-w-0" id="speedContainer">
                                 <label class="radio-label min-w-0">
                                     <input type="radio" name="simSpeed" value="slow" id="speedSlow"
                                         class="w-4 h-4 mt-[2px] accent-indigo-600 cursor-pointer flex-shrink-0">
@@ -1089,7 +1068,7 @@
                 intro: "해달이 성게를 잡아먹어 해초가 유지되듯(교과서 80쪽), 생산자·초식동물(1차 소비자)·육식동물(2차 소비자)의 먹이 관계로 개체수가 연쇄적으로 조절되어 생태계평형이 유지되는 과정을 확인할 수 있다.",
                 steps: [
                     "시나리오에서 자유 탐구, 고롱고사 국립공원, 복원 한계 중 하나를 고른다.",
-                    "① 교란에서 바꿀 개체군 하나를 고른다(예: 1차 소비자 증가). 고롱고사 국립공원에서는 아프리카들개 도입을 고른다.",
+                    "① 교란에서 바꿀 개체군 하나를 고른다(예 : 1차 소비자 증가). 고롱고사 국립공원에서는 아프리카들개 도입을 고른다.",
                     "② 나머지 두 개체군이 처음에 증가할지 감소할지 예측한 뒤 시작 버튼을 누른다. 속도는 느림·보통·빠름 중에서 고른다.",
                     "예측이 맞았는지 화면의 판정(맞음/틀림)을 확인하고, 개체수피라미드와 시간–개체수 그래프에서 세 개체군이 연쇄적으로 증감하는 모습을 관찰한다. 그래프의 시간은 상대적인 값으로, 실제 기간(일·월·년)을 나타내지 않는다.",
                     "상태 표시가 생태계평형 상태 → 생태계평형 깨짐 → 회복 중 → 생태계평형 회복으로 바뀌는지 읽는다(회복되면 자동으로 멈춘다). 복원 한계 시나리오에서는 사라진 영양단계를 다시 들여올 때와 비교한다."
@@ -1101,7 +1080,7 @@
                 {
                     color: "orange",
                     title: "먹이사슬·먹이그물과 영양단계",
-                    desc: "생산자에서부터 최종소비자까지 먹고 먹히는 사슬 형태의 먹이 관계를 먹이사슬(예: 식물의 열매 → 들쥐 → 너구리)이라 하고, 여러 먹이사슬이 그물처럼 얽힌 것이 먹이그물입니다. 먹이사슬의 각 단계에서 생물이 차지하는 위치를 영양단계라 하며, 생산자 → 1차 소비자(초식동물) → 2차 소비자(육식동물) 순으로 이어집니다. (교과서 80쪽, 지도서 137쪽)"
+                    desc: "생산자에서부터 최종소비자까지 먹고 먹히는 사슬 형태의 먹이 관계를 먹이사슬(예 : 식물의 열매 → 들쥐 → 너구리)이라 하고, 여러 먹이사슬이 그물처럼 얽힌 것이 먹이그물입니다. 먹이사슬의 각 단계에서 생물이 차지하는 위치를 영양단계라 하며, 생산자 → 1차 소비자(초식동물) → 2차 소비자(육식동물) 순으로 이어집니다. (교과서 80쪽, 지도서 137쪽)"
                 },
                 {
                     color: "green",
@@ -1457,9 +1436,9 @@
         const STATUS_TEXT = { eq: '생태계평형 상태', broken: '생태계평형 깨짐', recovering: '회복 중', recovered: '생태계평형 회복' };
         const STATUS_COLORS = { eq: '#059669', broken: '#e11d48', recovering: '#d97706', recovered: '#4f46e5' };
         const SCENARIOS = {
-            free: { name: '자유 탐구', desc: '생태계평형 상태에서 시작합니다. 바꿀 개체군을 고르고, 다른 개체군이 처음에 어떻게 변할지 예측한 뒤 시작을 눌러 확인합니다.' },
-            gorongosa: { name: '고롱고사 국립공원', desc: '오랜 전쟁으로 대형 육식동물이 돌아오지 못해 육식동물(2차 소비자)이 사라지고, 생산자에 비해 초식동물(1차 소비자)이 많은 상태입니다. 아프리카들개 도입을 고르고, 예측한 뒤 시작을 누릅니다. 도입한 뒤에는 교란 버튼도 쓸 수 있습니다.' },
-            limit: { name: '복원 한계', desc: '처음에는 감소만 고를 수 있습니다. 감소를 고르고 시작하면 그 영양단계의 생물이 모두 사라집니다(개체수 0). 그다음에는 사라진 영양단계의 증가만 고를 수 있고, 고르고 시작하면 다시 들여옵니다.' }
+            free: { name: '자유 탐구', desc: '생태계평형 상태에서 교란을 고르고, 다른 개체군의 처음 변화를 예측한 뒤 시작합니다.' },
+            gorongosa: { name: '고롱고사 국립공원', desc: '오랜 전쟁으로 육식동물(2차 소비자)이 사라져 초식동물(1차 소비자)이 많은 상태입니다. 들개 도입을 고르고 예측한 뒤 시작합니다.' },
+            limit: { name: '복원 한계', desc: '처음에는 감소만 고를 수 있고, 시작하면 그 영양단계가 모두 사라집니다(개체수 0). 그다음에는 사라진 영양단계의 증가(다시 들여오기)만 고를 수 있습니다.' }
         };
         const LIMIT_MSG = '먹이 관계만으로는 회복되지 않음 / 회복에 매우 긴 시간';
         const GORONGOSA_END = '아프리카들개 도입 뒤, 깨진 상태보다 초식동물(1차 소비자)은 줄고 육식동물(2차 소비자)과 생산자는 늘어 안정된 개체수피라미드가 되었습니다.';
@@ -1724,7 +1703,7 @@
             ctx.fillRect(0, 0, W, H);
             const f = simData.feedback;
             const rows = [];
-            if (f) rows.push({ t: `교란: ${f.title}`, c: '#334155', w: 700 });
+            if (f) rows.push({ t: `교란 : ${f.title}`, c: '#334155', w: 700 });
             if (f && f.judge === 'ok') rows.push({ t: `예측 ${f.lines.length}개 중 ${f.right}개 맞음`, c: f.right === f.lines.length ? '#047857' : '#be123c', w: 700 });
             /* 캔버스 위 HTML(위쪽 실행 상태 안내, 오른쪽 아래 초기화 버튼)과 겹치지 않는 세로 구간 */
             const top = 56, bottom = H - 60;
@@ -1800,12 +1779,12 @@
 
         /* 시나리오마다 의미 있는 교란만 고를 수 있다
            - 복원 한계: 사라진 영양단계가 없으면 감소만, 있으면 그 영양단계 '증가'(다시 들여오기)만
-           - 고롱고사: 육식동물이 없는 동안은 아프리카들개 도입만 (교란 버튼 잠금)
+           - 고롱고사: 육식동물이 없는 동안은 아프리카들개 도입(= 2차 소비자 증가 버튼)만
            - 공통: 이미 0인 개체군의 감소는 바뀌는 것이 없어 잠금 */
         function perturbAllowed(lv, dir) {
             const u = simData.u;
             if (dir === 'down' && u[lv] === 0) return false;
-            if (simData.scenario === 'gorongosa' && u[2] === 0) return false;
+            if (simData.scenario === 'gorongosa' && u[2] === 0) return lv === 2 && dir === 'up';
             if (simData.scenario === 'limit') {
                 const gone = [0, 1, 2].filter(i => u[i] === 0);
                 return gone.length ? dir === 'up' && gone.includes(lv) : dir === 'down';
@@ -1831,11 +1810,12 @@
                 SEL.forEach(c => b.classList.toggle(c, on));
                 b.setAttribute('aria-pressed', on ? 'true' : 'false');
             });
-            const dog = document.getElementById('dogBtn');
-            if (dog) {
-                dog.classList.toggle('hidden', simData.scenario !== 'gorongosa');
-                dog.disabled = running || simData.u[2] > 0;
-                SEL.forEach(c => dog.classList.toggle(c, isSel(2, 'up')));
+            /* 고롱고사에서 육식동물이 없는 동안 2차 소비자 증가 = 아프리카들개 도입 */
+            const dogBtn = document.getElementById('perturb2up');
+            if (dogBtn) {
+                const isDog = simData.scenario === 'gorongosa' && simData.u[2] === 0;
+                setHTMLOnce(dogBtn, isDog ? '들개<br>도입' : '증가');
+                dogBtn.setAttribute('aria-label', isDog ? '아프리카들개 도입' : '2차 소비자 증가');
             }
             /* 예측: 교란을 고른 뒤에 나머지 두 개체군만 고른다. 판정이 나면 줄마다 맞음/틀림 */
             const f = simData.feedback;
@@ -1844,11 +1824,11 @@
             const ICON_NO = '<svg aria-hidden="true" class="inline w-4 h-4 mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
             [0, 1, 2].forEach(i => {
                 const isPert = i === shownLevel;
+                /* 교란한 개체군 칸은 증가·감소를 숨기고 '교란한 개체군'만 */
                 document.querySelectorAll(`input[name="pred${i}"]`).forEach(r => {
                     r.disabled = running || !pd || isPert;
+                    r.closest('label')?.classList.toggle('hidden', isPert);
                 });
-                /* 교란한 개체군 줄은 버튼 칸을 숨기고 이름 옆에 '교란한 개체군'만 */
-                document.getElementById(`pred${i}up`)?.closest('.grid')?.classList.toggle('hidden', isPert);
                 const lbl = document.getElementById(`predLbl${i}`);
                 if (lbl) lbl.classList.toggle('text-indigo-600', isPert);
                 const res = document.getElementById(`predRes${i}`);
@@ -1857,21 +1837,22 @@
                 if (isPert) html = '<span class="text-indigo-600">교란한 개체군</span>';
                 else if (f && f.judge === 'ok' && !pd) {
                     const l = f.lines.find(x => x.level === i);
-                    if (l) html = l.ok ? `<span class="text-emerald-700">${ICON_OK}맞음 (실제 처음 ${l.obs})</span>`
-                                      : `<span class="text-rose-600">${ICON_NO}틀림 (실제 처음 ${l.obs})</span>`;
+                    if (l) html = l.ok ? `<span class="text-emerald-700">${ICON_OK}맞음</span>`
+                                      : `<span class="text-rose-600">${ICON_NO}틀림</span>`;
                 }
                 if (res._shown !== html) { res._shown = html; res.innerHTML = html; }
                 res.classList.toggle('hidden', !html);
-                res.classList.toggle('basis-full', !isPert);
             });
-            setHTMLOnce(document.getElementById('predictHint'), !pd && !(f && f.judge === 'ok')
-                ? '먼저 ① 교란을 고르세요.'
-                : pd ? '고른 교란 때문에 나머지 두 개체군이 처음에 증가할지 감소할지 고릅니다.'
-                     : '예측과 실제 첫 반응을 비교합니다.');
+            /* 판정이 나면 칸마다 맞음/틀림이 보이므로 안내 문장은 숨긴다 (자세한 결과는 캔버스 판정 상자) */
+            const hint = !pd && !(f && f.judge === 'ok') ? '먼저 ① 교란을 하나 고르세요.'
+                       : pd ? '② 나머지 두 개체군이 처음에 증가할지 감소할지 고릅니다.' : '';
+            const hintEl = document.getElementById('predictHint');
+            setHTMLOnce(hintEl, hint);
+            hintEl?.classList.toggle('hidden', !hint);
             const envEl = document.getElementById('env-label-canvas');
             if (envEl) {
                 const narrow = (container ? container.clientWidth : 0) < 520;
-                const html = (narrow ? '' : `${CONTENT_CONFIG.envLabel}<span class="mx-2 text-slate-300">|</span>`) + `상태: <span class="text-indigo-600">${STATUS_TEXT[status]}</span>`;
+                const html = (narrow ? '' : `${CONTENT_CONFIG.envLabel}<span class="mx-2 text-slate-300">|</span>`) + `상태 : <span class="text-indigo-600">${STATUS_TEXT[status]}</span>`;
                 if (envEl.innerHTML !== html) envEl.innerHTML = html;
             }
             setHTMLOnce(document.getElementById('scenarioDesc'), SCENARIOS[simData.scenario].desc);
@@ -2855,13 +2836,6 @@
                     });
                 });
             }
-
-            /* 고롱고사: 아프리카들개 도입 = 2차 소비자 증가 */
-            bindEvent('dogBtn', 'click', () => {
-                if (isRunning()) return;
-                uiSound.playClick();
-                selectDisturbance(2, 'up');
-            });
 
             /* 예측 */
             const predictBox = document.getElementById('predictContainer');

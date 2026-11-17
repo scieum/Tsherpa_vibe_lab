@@ -2329,9 +2329,9 @@
             ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
             ctx.font = `700 ${fs}px ${FONT}`;
             ctx.fillStyle = simData.valveOpen ? '#047857' : '#be123c';
-            haloText(simData.valveOpen ? '꼭지: 열림' : '꼭지: 닫힘', L.FX(4), L.FY(FN.valveY));
+            haloText(simData.valveOpen ? '꼭지 : 열림' : '꼭지 : 닫힘', L.FX(4), L.FY(FN.valveY));
             ctx.fillStyle = simData.stopperOpen ? '#047857' : '#be123c';
-            haloText(simData.stopperOpen ? '마개: 열림' : '마개: 닫힘', L.FX(24), L.FY(16));
+            haloText(simData.stopperOpen ? '마개 : 열림' : '마개 : 닫힘', L.FX(24), L.FY(16));
             ctx.font = `500 ${F(12, 11)}px ${FONT}`;
             ctx.fillStyle = COLORS.light;
             haloText('(눌러서 열기·닫기)', L.FX(4), L.FY(FN.valveY) + fs + U(4));
@@ -2435,7 +2435,7 @@
                 /* 분리용 액체 이름 */
                 ctx.font = `700 ${fs}px ${FONT}`;
                 ctx.fillStyle = liq.line; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                haloText(`분리용 액체: ${NAME[liqKey]}`, B.x(BK.cx), B.y(0) - U(12));
+                haloText(`분리용 액체 : ${NAME[liqKey]}`, B.x(BK.cx), B.y(0) - U(12));
 
                 /* 뜬 것 / 가라앉은 것 */
                 if (simData.showLabels && sysState.isStarted && simData.settled) {
@@ -2447,9 +2447,9 @@
                     ctx.font = `600 ${fs}px ${FONT}`;
                     const ty = B.y(BK.h) + fs;
                     ctx.fillStyle = '#0369a1';
-                    haloText(`뜬 것: ${fl.length ? fl.join(', ') : '없음'}`, B.x(BK.cx), ty);
+                    haloText(`뜬 것 : ${fl.length ? fl.join(', ') : '없음'}`, B.x(BK.cx), ty);
                     ctx.fillStyle = '#92400e';
-                    haloText(`가라앉은 것: ${skText}`, B.x(BK.cx), ty + fs + U(6));
+                    haloText(`가라앉은 것 : ${skText}`, B.x(BK.cx), ty + fs + U(6));
                 }
                 ctx.restore();
             });

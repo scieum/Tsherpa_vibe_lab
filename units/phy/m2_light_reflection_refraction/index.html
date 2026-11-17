@@ -1512,8 +1512,8 @@
 
             // 물질 이름 레이블 (굴절률 수치는 표시하지 않음)
             const mediumName = (n) => (n === 1.33 ? "물" : n === 1.5 ? "유리" : "공기");
-            const firstLine1 = simData.mode === 'reflect' ? "공기" : `물질: ${mediumName(simData.n1)}`;
-            const secondLine1 = simData.mode === 'reflect' ? "거울" : `물질: ${mediumName(simData.n2)}`;
+            const firstLine1 = simData.mode === 'reflect' ? "공기" : `물질 : ${mediumName(simData.n1)}`;
+            const secondLine1 = simData.mode === 'reflect' ? "거울" : `물질 : ${mediumName(simData.n2)}`;
 
             ctx.save();
             ctx.fillStyle = '#64748b';
