@@ -881,6 +881,8 @@
                                 </div>
                             </div>
                             <p class="var-label-var leading-relaxed" id="predictHint">먼저 ① 교란을 하나 고르세요.</p>
+                            <button type="button" id="predictResultBtn"
+                                class="btn-sub hidden w-full py-2 border rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">예측 결과 다시 보기</button>
                         </div>
 
                         <!-- 폼 2: 라디오 버튼 — 속도 (실행 중에도 바꿀 수 있게 simOption이 아닌 name). 넓은 화면에서는 한 줄 -->
@@ -1650,6 +1652,7 @@
             }
             simData.feedback = {
                 title: `${LV_SHORT[p.level]} ${p.dir === 'up' ? '증가' : '감소'}`,
+                key: p.key,
                 judge: p.judge,
                 lines: p.others.map(i => ({ level: i, name: LV_NAMES[i], obs: word(p.got[i]), pred: p.preds[i] ? word(p.preds[i]) : '', ok: p.preds[i] === table[i] }))
             };
@@ -1817,11 +1820,9 @@
                 setHTMLOnce(dogBtn, isDog ? '들개<br>도입' : '증가');
                 dogBtn.setAttribute('aria-label', isDog ? '아프리카들개 도입' : '2차 소비자 증가');
             }
-            /* 예측: 교란을 고른 뒤에 나머지 두 개체군만 고른다. 판정이 나면 줄마다 맞음/틀림 */
+            /* 예측: 교란을 고른 뒤에 나머지 두 개체군만 고른다. 맞음/틀림은 '예측 결과' 팝업에서 확인 */
             const f = simData.feedback;
             const shownLevel = pd ? pd.level : (simData.pert ? simData.pert.level : -1);
-            const ICON_OK = '<svg aria-hidden="true" class="inline w-4 h-4 mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-            const ICON_NO = '<svg aria-hidden="true" class="inline w-4 h-4 mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
             [0, 1, 2].forEach(i => {
                 const isPert = i === shownLevel;
                 /* 교란한 개체군 칸은 증가·감소를 숨기고 '교란한 개체군'만 */
@@ -1833,22 +1834,19 @@
                 if (lbl) lbl.classList.toggle('text-indigo-600', isPert);
                 const res = document.getElementById(`predRes${i}`);
                 if (!res) return;
-                let html = '';
-                if (isPert) html = '<span class="text-indigo-600">교란한 개체군</span>';
-                else if (f && f.judge === 'ok' && !pd) {
-                    const l = f.lines.find(x => x.level === i);
-                    if (l) html = l.ok ? `<span class="text-emerald-700">${ICON_OK}맞음</span>`
-                                      : `<span class="text-rose-600">${ICON_NO}틀림</span>`;
-                }
+                const html = isPert ? '<span class="text-indigo-600">교란한 개체군</span>' : '';
                 if (res._shown !== html) { res._shown = html; res.innerHTML = html; }
                 res.classList.toggle('hidden', !html);
             });
-            /* 판정이 나면 칸마다 맞음/틀림이 보이므로 안내 문장은 숨긴다 (자세한 결과는 캔버스 판정 상자) */
-            const hint = !pd && !(f && f.judge === 'ok') ? '먼저 ① 교란을 하나 고르세요.'
+            /* 판정이 나면 안내 문장 대신 '예측 결과 다시 보기' 버튼 */
+            const judged = !!(f && f.judge === 'ok' && !pd);
+            const hint = !pd && !judged ? '먼저 ① 교란을 하나 고르세요.'
                        : pd ? '② 나머지 두 개체군이 처음에 증가할지 감소할지 고릅니다.' : '';
             const hintEl = document.getElementById('predictHint');
             setHTMLOnce(hintEl, hint);
             hintEl?.classList.toggle('hidden', !hint);
+            const resBtn = document.getElementById('predictResultBtn');
+            if (resBtn) { resBtn.classList.toggle('hidden', !judged); resBtn.disabled = running; }
             const envEl = document.getElementById('env-label-canvas');
             if (envEl) {
                 const narrow = (container ? container.clientWidth : 0) < 520;
@@ -2042,53 +2040,6 @@
 
             /* 아래쪽 안내 상자들이 쌓이는 기준선 */
             let stackBottom = L.tabs ? L.tabs[0].y - 6 : r.y + r.h - 8 * ui;
-
-            /* 예측 판정: 장면 아래쪽에 크게 (맞음 초록 ✓ / 틀림 빨강 ✕, 글자 아이콘이 아니라 선으로 그림) */
-            const f = simData.feedback;
-            if (f && f.judge === 'ok' && !simData.pending) {
-                const allOk = f.right === f.lines.length;
-                const fs = textPx(14.5, ui, 11.5, 20);
-                const lh = fs * 1.55;
-                const iconS = fs * 0.95;
-                const rows = [{ text: `예측 ${f.lines.length}개 중 ${f.right}개 맞음`, ok: allOk, bold: true }];
-                if (r.h >= 200) f.lines.forEach(l => rows.push({ text: `${l.name}: 예측 ${l.pred} → 실제 처음 ${l.obs}`, ok: l.ok }));
-                ctx.font = font(fs, 700);
-                const padX = 14 * ui, gapI = 8 * ui;
-                const bw = Math.min(r.w - 16 * ui, Math.max(...rows.map(t => ctx.measureText(t.text).width)) + iconS + gapI + padX * 2);
-                const bh = rows.length * lh + 12 * ui;
-                const bx = r.x + (r.w - bw) / 2, by = stackBottom - bh;
-                rrect(bx, by, bw, bh, 10 * ui);
-                ctx.fillStyle = 'rgba(255,255,255,0.96)';
-                ctx.fill();
-                ctx.strokeStyle = allOk ? '#059669' : '#e11d48';
-                ctx.lineWidth = 2 * ui;
-                ctx.stroke();
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'middle';
-                rows.forEach((row, i) => {
-                    const cy = by + 6 * ui + lh * (i + 0.5);
-                    const ix = bx + padX;
-                    ctx.strokeStyle = row.ok ? '#059669' : '#e11d48';
-                    ctx.lineWidth = 2.6 * ui;
-                    ctx.lineCap = 'round';
-                    ctx.beginPath();
-                    if (row.ok) {
-                        ctx.moveTo(ix, cy);
-                        ctx.lineTo(ix + iconS * 0.38, cy + iconS * 0.36);
-                        ctx.lineTo(ix + iconS, cy - iconS * 0.4);
-                    } else {
-                        const d = iconS * 0.38;
-                        ctx.moveTo(ix + iconS / 2 - d, cy - d); ctx.lineTo(ix + iconS / 2 + d, cy + d);
-                        ctx.moveTo(ix + iconS / 2 + d, cy - d); ctx.lineTo(ix + iconS / 2 - d, cy + d);
-                    }
-                    ctx.stroke();
-                    ctx.lineCap = 'butt';
-                    ctx.font = font(row.bold ? fs : fs * 0.92, row.bold ? 700 : 600);
-                    ctx.fillStyle = row.bold ? (row.ok ? '#047857' : '#be123c') : '#334155';
-                    ctx.fillText(row.text, ix + iconS + gapI, cy + 0.5);
-                });
-                stackBottom = by - 6 * ui;
-            }
 
             /* 한 영양단계가 사라졌을 때 안내 */
             if (simData.u.some(v => v === 0)) {
@@ -2394,13 +2345,23 @@
             }
             let remain = real * (SIM_CONFIG.speed[simData.speed] || SIM_CONFIG.speed.normal);
             const wasRecovered = simData.phase === 'recovered';
+            const wasJudged = !!(simData.pert && simData.pert.done);
             while (remain > 1e-9) {
                 const h = Math.min(SIM_CONFIG.dt, remain);
                 advance(h);
                 remain -= h;
             }
+            const p = simData.pert;
+            /* 첫 반응 판정이 나면 잠시 멈추고 예측 결과 팝업을 연다 (닫으면 이어서 실행) */
+            if (!wasJudged && p && p.done && p.judge === 'ok') {
+                simData.lastNow = 0;
+                sysState.isPaused = true;
+                stopLoop();
+                updateUIState();
+                openPredictResult(true);
+            }
             /* 평형으로 돌아오면 자동으로 멈춘다 (사라진 영양단계가 있으면 회복되지 않으므로 멈추지 않음) */
-            if (!wasRecovered && simData.phase === 'recovered') {
+            else if (!wasRecovered && simData.phase === 'recovered') {
                 simData.autoStopped = true;
                 simData.popup = true;
                 uiSound.playDone();
@@ -2847,6 +2808,8 @@
                 });
             }
 
+            bindEvent('predictResultBtn', 'click', () => { if (isRunning()) return; uiSound.playClick(); openPredictResult(false); });
+
             /* 속도 — 실행 중에도 바꿀 수 있음 */
             const speedBox = document.getElementById('speedContainer');
             if (speedBox) {
@@ -2895,6 +2858,83 @@
                     canvas.style.cursor = (simData.popup ? inPopupBtn(e) : tabAt(e)) ? 'pointer' : 'default';
                 });
             }
+        }
+
+        /* 예측 결과 팝업: 개체군마다 내 예측·실제 첫 변화·맞음/틀림과 까닭 (지도서 p.139 표).
+           resume이면 닫을 때 이어서 실행한다 (판정 때 자동으로 멈춘 경우) */
+        function openPredictResult(resume) {
+            const f = simData.feedback;
+            if (!f || f.judge !== 'ok' || document.getElementById('predictResultBox')) return;
+            const table = FIRST_RESPONSE[f.key];
+            const lv = Number(f.key[0]), s0 = f.key.endsWith('up') ? 1 : -1;
+            /* 까닭: 바로 이웃한 영양단계는 교란한 개체군 때문에, 한 칸 건너면 가운데 1차 소비자 때문에 */
+            const reason = i => {
+                const [c, s] = Math.abs(i - lv) === 1 ? [lv, s0] : [1, table[1]];
+                const chg = s > 0 ? '늘어' : '줄어', w = table[i] > 0 ? '증가' : '감소';
+                return i > c ? `먹이인 ${LV_SHORT[c]}가 ${chg} ${LV_SHORT[i]}도 ${w}합니다.`
+                             : `${LV_SHORT[i]}를 먹는 ${LV_SHORT[c]}가 ${chg} ${LV_SHORT[i]}는 ${w}합니다.`;
+            };
+            const ICON = ok => ok
+                ? '<svg aria-hidden="true" class="inline w-4 h-4 mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+                : '<svg aria-hidden="true" class="inline w-4 h-4 mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+            const allOk = f.right === f.lines.length;
+            const box = document.createElement('div');
+            box.id = 'predictResultBox';
+            box.className = 'popup-overlay fixed inset-0 flex items-center justify-center z-50 p-4 text-left';
+            box.setAttribute('role', 'dialog');
+            box.setAttribute('aria-modal', 'true');
+            box.setAttribute('aria-labelledby', 'predictResultTitle');
+            box.innerHTML = `
+                <div class="modal-container max-w-xl">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="predictResultTitle">예측 결과</h3>
+                        <button type="button" data-close class="modal-close-btn transition-colors" aria-label="닫기"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                            <p class="font-bold text-slate-700">교란 : <span class="text-indigo-600">${f.title}</span></p>
+                            <p class="text-lg font-bold ${allOk ? 'text-emerald-700' : 'text-rose-600'}">예측 ${f.lines.length}개 중 ${f.right}개 맞음</p>
+                        </div>
+                        <table class="w-full text-sm lg:text-base">
+                            <thead><tr class="text-slate-500">
+                                <th scope="col" class="py-2 pr-2 text-left font-bold">개체군</th>
+                                <th scope="col" class="py-2 px-2 text-center font-bold">내 예측</th>
+                                <th scope="col" class="py-2 px-2 text-center font-bold">실제 첫 변화</th>
+                                <th scope="col" class="py-2 pl-2 text-center font-bold">결과</th>
+                            </tr></thead>
+                            <tbody>${f.lines.map(l => `<tr class="border-t border-slate-200">
+                                <th scope="row" class="py-2.5 pr-2 text-left font-bold text-slate-700">${LV_SHORT[l.level]}</th>
+                                <td class="py-2.5 px-2 text-center text-slate-700">${l.pred}</td>
+                                <td class="py-2.5 px-2 text-center font-bold text-slate-800">${l.obs}</td>
+                                <td class="py-2.5 pl-2 text-center font-bold whitespace-nowrap ${l.ok ? 'text-emerald-700' : 'text-rose-600'}">${ICON(l.ok)}${l.ok ? '맞음' : '틀림'}</td>
+                            </tr>`).join('')}</tbody>
+                        </table>
+                        <div class="guide-block">
+                            <h4 class="guide-title mb-2">왜 그럴까요?</h4>
+                            <ul class="guide-desc list-disc pl-5 space-y-1.5">${f.lines.map(l => `<li>${reason(l.level)}</li>`).join('')}</ul>
+                        </div>
+                        <button type="button" data-close class="btn-action-start self-center px-8 py-2 border rounded-lg transition-colors">${resume ? '계속 관찰하기' : '닫기'}</button>
+                    </div>
+                </div>`;
+            /* 전체 화면일 때도 보이도록 workspace 안에 넣는다 */
+            (document.getElementById('workspace') || document.body).appendChild(box);
+            const close = () => {
+                box.remove();
+                document.removeEventListener('keydown', onKey);
+                if (resume && sysState.isStarted && sysState.isPaused) {
+                    sysState.isPaused = false;
+                    simData.lastNow = 0;
+                    startLoop();
+                }
+                updateUIState();
+                draw();
+            };
+            const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); close(); } };
+            document.addEventListener('keydown', onKey);
+            box.addEventListener('click', e => {
+                if (e.target === box || e.target.closest('[data-close]')) { uiSound.playClick(); close(); }
+            });
+            box.querySelector('.btn-action-start')?.focus();
         }
         /* ████ ZONE I 끝 ████████████████████████████████████████████████████████ */
 

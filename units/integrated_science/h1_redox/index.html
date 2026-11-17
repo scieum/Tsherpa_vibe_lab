@@ -1073,17 +1073,18 @@
             duration: { oxygen: 6, electron: 6, life: 6 },   /* 진행도 0→100 %에 걸리는 시간(초) */
             modeNames: { oxygen: '산소의 이동', electron: '전자의 이동', life: '생활 속 산화·환원' },
             rxnNames: {
-                oxygen: ['산화 구리(II) + 탄소(숯가루)', '산화 구리(II) + 수소', '철의 제련(용광로)'],
+                oxygen: ['산화 구리(II) + 탄소(숯가루)', '산화 구리(II) + 수소', '철의 제련(용광로)', '마그네슘 + 이산화 탄소(드라이아이스)'],
                 electron: ['구리 + 질산 은 수용액', '마그네슘의 연소', '아연 + 황산 구리(II) 수용액'],
                 life: ['광합성', '세포호흡', '메테인의 연소', '철이 녹스는 반응']
             },
-            /* 꼬리표 근거 문구 (key = 모드 첫 글자 + 반응 번호). 광합성·세포호흡은 '산화'·'환원'만,
-               메테인은 메테인 쪽만 근거, 산소의 환원은 산소의 이동으로 설명하지 않음 (지도서 p.91, 교과서 p.162) */
+            /* 꼬리표 근거 문구 (key = 모드 첫 글자 + 반응 번호). 산소의 이동으로 설명할 수 있는 쪽에만 근거를 붙인다
+               (광합성의 이산화 탄소 환원·세포호흡의 포도당 산화·메테인 산화). 물의 산화·산소의 환원은 산소의 이동으로
+               설명하지 않으므로 '산화'·'환원'만 (지도서 p.91, 교과서 p.162, 2026-11-17 사용자 결정) */
             tagText: {
                 o: { ox: '산소를 얻음', red: '산소를 잃음' },
                 e: { ox: '전자를 잃음', red: '전자를 얻음' },
-                l0: { ox: '', red: '' },
-                l1: { ox: '', red: '' },
+                l0: { ox: '', red: '산소를 잃음' },
+                l1: { ox: '산소를 얻음', red: '' },
                 l2: { ox: '산소를 얻음', red: '' },
                 l3: { ox: '전자를 잃음', red: '전자를 얻음' }
             }
@@ -1367,6 +1368,8 @@
             o0: [['2CuO', 'red'], [' + '], ['C', 'ox'], [' → '], ['2Cu', 'redP'], [' + '], ['CO₂', 'oxP']],
             o1: [['CuO', 'red'], [' + '], ['H₂', 'ox'], [' → '], ['Cu', 'redP'], [' + '], ['H₂O', 'oxP']],
             o2: [['Fe₂O₃', 'red'], [' + '], ['3CO', 'ox'], [' → '], ['2Fe', 'redP'], [' + '], ['3CO₂', 'oxP']],
+            /* 드라이아이스 속 마그네슘 연소 (지도서 p.120 논술형 02) */
+            o3: [['2Mg', 'ox'], [' + '], ['CO₂', 'red'], [' → '], ['2MgO', 'oxP'], [' + '], ['C', 'redP']],
             e0: [['2Ag⁺', 'red'], [' + '], ['Cu', 'ox'], [' → '], ['2Ag', 'redP'], [' + '], ['Cu²⁺', 'oxP']],
             e1: [['2Mg', 'ox'], [' + '], ['O₂', 'red'], [' → '], ['2MgO'], [' ( '], ['2Mg²⁺', 'oxP'], [' + '], ['2O²⁻', 'redP'], [' )']],
             e2: [['Zn', 'ox'], [' + '], ['Cu²⁺', 'red'], [' → '], ['Zn²⁺', 'oxP'], [' + '], ['Cu', 'redP']],
@@ -1382,6 +1385,7 @@
             o0: '검은색 산화 구리(II) 가루가 붉은색 구리 가루로 변한다.\n반응하지 않은 숯가루가 남는다.\n이산화 탄소가 발생하여 석회수가 뿌옇게 흐려진다.',
             o1: '검은색 산화 구리(II)가 붉은색 구리로 변한다.\n유리관의 차가운 쪽 안쪽에 물방울이 맺힌다.',
             o2: '코크스가 산소와 결합하여 일산화 탄소가 생긴다.\n일산화 탄소가 산화 철(III)과 반응하여 철이 얻어진다.\n녹은 철이 아래쪽에 모인다.',
+            o3: '불이 붙은 마그네슘 리본이 드라이아이스 통 속에서도 계속 탄다.\n뚜껑을 열면 흰색 가루(산화 마그네슘)와 검은색 가루(탄소)가 생성되어 있다.',
             e0: '구리줄 표면에 반짝이는 은백색의 은이 석출된다.\n무색의 수용액이 점점 푸른색으로 변한다.',
             e1: '마그네슘 리본이 매우 밝은 빛을 내며 타서 산화 마그네슘이 된다.',
             e2: '아연 표면에 붉은색 구리가 붙는다.\n푸른색 수용액의 색이 점점 옅어진다.',
@@ -1443,6 +1447,20 @@
                 ], electrons: [],
                 labels: [{ b: [100, 205, '산화 철(III) (Fe₂O₃)'], a: [100, 205, '철 (Fe)'], t: 0.76 }, { b: [300, 205, '일산화 탄소 (CO)'], a: [300, 205, '이산화 탄소 (CO₂)'], t: 0.76 }],
                 tags: { red: [100], ox: [300], y: 30 }
+            },
+            /* 마그네슘 + 이산화 탄소 (o0의 거꾸로): CO₂ 2개의 O가 마그네슘 결정의 빈자리로 옮겨 가 Mg·O가 번갈아 놓인 MgO 결정이 되고, 탄소 원자가 남는다 */
+            o3: {
+                rs: { Mg: 18, O: 14, C: 14 },
+                atoms: [
+                    { el: 'Mg', at: [52, 104] }, { el: 'Mg', at: [116, 104] }, { el: 'Mg', at: [84, 136] }, { el: 'Mg', at: [148, 136] },
+                    { el: 'C', at: [250, 90] }, { el: 'C', at: [330, 150] },
+                    { el: 'O', at: [222, 90], to: [148, 104], t: [0, 0.55], via: [190, 56] },
+                    { el: 'O', at: [278, 90], to: [84, 104], t: [0.06, 0.61], via: [180, 18] },
+                    { el: 'O', at: [302, 150], to: [116, 136], t: [0.12, 0.67], via: [214, 196] },
+                    { el: 'O', at: [358, 150], to: [52, 136], t: [0.18, 0.73], via: [200, 236] }
+                ], electrons: [],
+                labels: [{ b: [100, 185, '마그네슘 (Mg)'], a: [100, 185, '산화 마그네슘 (MgO)'], t: 0.75 }, { b: [290, 185, '이산화 탄소 (CO₂)'], a: [290, 185, '탄소 (C)'], t: 0.75 }],
+                tags: { ox: [100], red: [290], y: 44 }
             },
             e0: surfaceModel('Cu', 'Ag', 2, 'ag', '구리 (Cu) 결정'),
             /* 마그네슘 결정 + 산소 분자 2개(가로 줄) → 전자 이동 → Mg²⁺·O²⁻가 번갈아 쌓인 산화 마그네슘 결정 (교과서 p.43) */
@@ -2173,7 +2191,8 @@
         [['apparatus_tube_heat', './contents/apparatus_tube_heat.webp'], ['apparatus_h2_tube', './contents/apparatus_h2_tube.webp'],
         ['gas_burner', './contents/gas_burner.webp'], ['iron_nail', './contents/iron_nail.webp'],
         ['leaf', './contents/leaf.webp'], ['mitochondrion', './contents/mitochondrion.webp'],
-        ['beaker_rod', './contents/beaker_rod.webp'], ['blast_furnace', './contents/blast_furnace.webp'], ['tongs_lamp', './contents/tongs_lamp.webp']].forEach(([n, src]) => {
+        ['beaker_rod', './contents/beaker_rod.webp'], ['blast_furnace', './contents/blast_furnace.webp'], ['tongs_lamp', './contents/tongs_lamp.webp'],
+        ['dryice_base', './contents/dryice_base.webp'], ['dryice_lid', './contents/dryice_lid.webp']].forEach(([n, src]) => {
             const im = new Image();
             im.onload = () => { IMG[n] = im; draw(); };
             im.src = src;
@@ -2476,10 +2495,119 @@
             blab('B', 0.38 * 160, '알코올램프');
         }
 
+        /* 드라이아이스 통 속 마그네슘 연소 (지도서 p.120): 뚜껑이 열린 통에 불붙은 리본 → 뚜껑을 덮고 타는 동안 이음매로 빛 →
+           뚜껑을 열면 흰색 가루(MgO)와 검은색 가루(C). 블록은 앞면·윗면·옆면을 그린 상자 */
+        function drawDryIce(p) {
+            const t = simData.time, on = isRun() && p > 0.08 && p < 0.82;
+            const D = 40, DY = 28;   /* 깊이 방향 (오른쪽 위) */
+            const block = (x, y, w, h) => {
+                const face = (pts, c) => { ctx.beginPath(); pts.forEach(([a, b], i) => i ? ctx.lineTo(a, b) : ctx.moveTo(a, b)); ctx.closePath(); ctx.fillStyle = c; ctx.fill(); ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.6; ctx.lineJoin = 'round'; ctx.stroke(); };
+                face([[x, y], [x + D, y - DY], [x + w + D, y - DY], [x + w, y]], '#f8fafc');
+                face([[x + w, y], [x + w + D, y - DY], [x + w + D, y + h - DY], [x + w, y + h]], '#dbe3ec');
+                const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#f1f5f9'); g.addColorStop(1, '#e2e8f0');
+                face([[x, y], [x + w, y], [x + w, y + h], [x, y + h]], g);
+                /* 얼음 결 */
+                ctx.strokeStyle = 'rgba(148,163,184,0.35)'; ctx.lineWidth = 1;
+                for (let i = 0; i < 4; i++) { const yy = y + h * (0.25 + 0.2 * i); ctx.beginPath(); ctx.moveTo(x + 10 + 30 * hr(i), yy); ctx.lineTo(x + w * (0.4 + 0.3 * hr(i + 9)), yy + 3); ctx.stroke(); }
+            };
+            const bg = ctx.createLinearGradient(0, 0, 0, 280);
+            bg.addColorStop(0, '#e2e8f0'); bg.addColorStop(1, '#cbd5e1');
+            rrect(6, 6, 408, 268, 14); ctx.fillStyle = bg; ctx.fill();
+            /* 아래 통 + 윗면의 오목한 홈 */
+            const bx = 90, by = 172, bw = 220, bh = 70, cx = bx + (bw + D) / 2, cy = by - DY / 2;
+            block(bx, by, bw, bh);
+            ctx.beginPath(); ctx.ellipse(cx, cy, 72, 10, 0, 0, Math.PI * 2); ctx.fillStyle = '#b6c3d1'; ctx.fill();
+            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.2; ctx.stroke();
+            if (p < 0.08) {   /* 불이 붙은 리본 */
+                ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.moveTo(cx - 44, cy + 2); ctx.lineTo(cx + 30, cy - 3); ctx.stroke();
+                {   /* 처음부터 불이 붙어 있다 (과정 (가)) */
+                    const gl = ctx.createRadialGradient(cx + 30, cy - 3, 1, cx + 30, cy - 3, 22);
+                    gl.addColorStop(0, 'rgba(255,255,255,1)'); gl.addColorStop(0.4, 'rgba(254,240,138,0.85)'); gl.addColorStop(1, 'rgba(254,240,138,0)');
+                    ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(cx + 30, cy - 3, 22, 0, Math.PI * 2); ctx.fill();
+                }
+            } else if (p > 0.82) {   /* 흰색 가루 + 검은색 가루 */
+                for (let i = 0; i < 26; i++) {
+                    const a = hr(i) * Math.PI * 2, rr = Math.sqrt(hr(i + 40));
+                    ctx.beginPath(); ctx.ellipse(cx + Math.cos(a) * 52 * rr, cy + Math.sin(a) * 6 * rr, 7, 3.5, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = i % 2 ? '#fafafa' : '#f4f4f5'; ctx.fill(); ctx.strokeStyle = '#a1a1aa'; ctx.lineWidth = 0.6; ctx.stroke();
+                }
+                ctx.fillStyle = '#1f2937';
+                for (let i = 0; i < 34; i++) {
+                    const a = hr(i + 80) * Math.PI * 2, rr = Math.sqrt(hr(i + 120));
+                    ctx.beginPath(); ctx.arc(cx + Math.cos(a) * 46 * rr, cy + Math.sin(a) * 5 * rr, 1.6 + 1.4 * hr(i + 160), 0, Math.PI * 2); ctx.fill();
+                }
+            }
+            /* 뚜껑: 처음에는 들려 있다가 덮이고, 반응이 끝나면 다시 들린다 */
+            const lift = p < 0.5 ? 1 - smooth(0, 0.08, p) : smooth(0.82, 0.94, p);
+            const lh = 50, ly = by - lh - 84 * lift;
+            block(bx, ly, bw, lh);
+            if (on) {   /* 통 속에서 타는 빛이 이음매로 새어 나온다 */
+                const fl = 1 + 0.12 * Math.sin(t * 29) + 0.06 * Math.sin(t * 41);
+                const gl = ctx.createRadialGradient(bx + bw * 0.55, by, 2, bx + bw * 0.55, by, 70 * fl);
+                gl.addColorStop(0, 'rgba(255,255,255,0.95)'); gl.addColorStop(0.25, 'rgba(253,224,71,0.75)'); gl.addColorStop(0.6, 'rgba(251,146,60,0.35)'); gl.addColorStop(1, 'rgba(251,146,60,0)');
+                ctx.fillStyle = gl; ctx.beginPath(); ctx.ellipse(bx + bw * 0.55, by, 90 * fl, 34 * fl, 0, 0, Math.PI * 2); ctx.fill();
+            }
+            /* 드라이아이스가 승화하며 피어오르는 흰 김 */
+            ctx.fillStyle = 'rgba(255,255,255,0.45)';
+            for (let i = 0; i < 6; i++) {
+                const ph = (t * 0.25 + hr(i)) % 1, x = bx - 10 + (bw + 60) * hr(i + 20) + 10 * Math.sin(t + i);
+                ctx.globalAlpha = (1 - ph) * 0.8;
+                ctx.beginPath(); ctx.ellipse(x, by + bh - 6 - 26 * ph, 16 + 10 * ph, 6 + 3 * ph, 0, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+            lab(cx - 20, 262, '드라이아이스');
+            if (p < 0.08) lab(cx, cy - 22, '불이 붙은 마그네슘 리본');
+            else if (on) lab(cx, ly - 34, '뚜껑을 덮고 반응');
+            else if (p > 0.9) lab(cx, cy - 22, '흰색 가루 + 검은색 가루');
+        }
+
+        /* 드라이아이스 통 이미지판 (통 544×258, 뚜껑 565×161): 뚜껑 오르내림, 리본·빛·가루·김만 코드로 얹는다 */
+        function drawDryIceImg(p) {
+            const t = simData.time, on = isRun() && p > 0.08 && p < 0.82;
+            const BX = 20, BY = 180, cx = BX + 283, cy = BY + 64;   /* 통 위치, 홈 가운데 */
+            withImg('dryice_base', BX, BY, 1);
+            /* 홈 속: 처음에는 불이 붙은 리본, 끝나면 흰색 가루 + 검은색 가루 */
+            if (p < 0.08) {
+                ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.moveTo(cx - 90, cy + 6); ctx.lineTo(cx + 50, cy - 2); ctx.stroke();
+                ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 2; ctx.stroke();
+                const gl = ctx.createRadialGradient(cx + 50, cy - 2, 2, cx + 50, cy - 2, 36);
+                gl.addColorStop(0, 'rgba(255,255,255,1)'); gl.addColorStop(0.4, 'rgba(254,240,138,0.85)'); gl.addColorStop(1, 'rgba(254,240,138,0)');
+                ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(cx + 50, cy - 2, 36, 0, Math.PI * 2); ctx.fill();
+            } else if (p > 0.82) {
+                ctx.beginPath(); ctx.ellipse(cx, cy + 3, 118, 21, 0, 0, Math.PI * 2); ctx.fillStyle = 'rgba(100,116,139,0.28)'; ctx.fill();
+                for (let i = 0; i < 40; i++) {
+                    const a = hr(i) * Math.PI * 2, rr = Math.sqrt(hr(i + 40));
+                    ctx.beginPath(); ctx.ellipse(cx + Math.cos(a) * 100 * rr, cy + 2 + Math.sin(a) * 16 * rr, 11, 5, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = i % 2 ? '#fafafa' : '#f4f4f5'; ctx.fill(); ctx.strokeStyle = '#a1a1aa'; ctx.lineWidth = 0.8; ctx.stroke();
+                }
+                ctx.fillStyle = '#1f2937';
+                for (let i = 0; i < 60; i++) {
+                    const a = hr(i + 80) * Math.PI * 2, rr = Math.sqrt(hr(i + 120));
+                    ctx.beginPath(); ctx.arc(cx + Math.cos(a) * 92 * rr, cy + 2 + Math.sin(a) * 14 * rr, 2.2 + 2 * hr(i + 160), 0, Math.PI * 2); ctx.fill();
+                }
+            }
+            /* 뚜껑: 처음에는 들려 있다가 덮이고, 반응이 끝나면 다시 들린다 (닫힌 자리 y 134.5) */
+            const lift = p < 0.5 ? 1 - smooth(0, 0.08, p) : smooth(0.82, 0.94, p);
+            if (imgOk('dryice_lid')) withImg('dryice_lid', 9, 134.5 - 125 * lift, 1);
+            if (on) {   /* 통 속에서 타는 빛이 이음매로 새어 나온다 */
+                const fl = 1 + 0.12 * Math.sin(t * 29) + 0.06 * Math.sin(t * 41), sx = 300, sy = 288;
+                const gl = ctx.createRadialGradient(sx, sy, 2, sx, sy, 120 * fl);
+                gl.addColorStop(0, 'rgba(255,255,255,0.95)'); gl.addColorStop(0.25, 'rgba(253,224,71,0.75)'); gl.addColorStop(0.6, 'rgba(251,146,60,0.35)'); gl.addColorStop(1, 'rgba(251,146,60,0)');
+                ctx.fillStyle = gl; ctx.beginPath(); ctx.ellipse(sx, sy, 170 * fl, 50 * fl, -0.08, 0, Math.PI * 2); ctx.fill();
+            }
+            blab('B', 300, '드라이아이스', [300, 400]);
+            if (p < 0.08) lab(cx, 186, '불이 붙은 마그네슘 리본');
+            else if (on) blab('T', 300, '뚜껑을 덮고 반응');
+            else if (p > 0.9) lab(cx, 186, '흰색 가루 + 검은색 가루');
+        }
+
         const APP = {
             o0: { w: 500, h: 293, img: 'apparatus_tube_heat', f: drawO0Img, fb: { w: 420, h: 275, f: drawO0 } },
             o1: { w: 500, h: 274, img: 'apparatus_h2_tube', f: drawO1Img, fb: { w: 440, h: 226, f: drawO1 } },
             o2: { w: 337, h: 333, img: 'blast_furnace', f: drawFurnaceImg, fb: { w: 320, h: 285, f: drawFurnace } },
+            o3: { w: 585, h: 440, img: 'dryice_base', f: drawDryIceImg, fb: { w: 420, h: 280, f: drawDryIce } },
             e0: { w: 351, h: 296, img: 'beaker_rod', f: p => drawBeakerImg(p, false), fb: { w: 340, h: 292, f: p => drawBeaker(p, false) } },
             e1: { w: 380, h: 232, img: 'tongs_lamp', f: drawMgImg, fb: { w: 360, h: 280, f: drawMg } },
             e2: { w: 351, h: 296, img: 'beaker_rod', f: p => drawBeakerImg(p, true), fb: { w: 340, h: 292, f: p => drawBeaker(p, true) } },
@@ -3272,7 +3400,7 @@
                         <canvas id="eqBoardInk" class="absolute inset-0 w-full h-full" style="touch-action:none;cursor:crosshair"></canvas>
                     </div>
                 </div>`;
-            document.body.appendChild(wrapEl);
+            (document.getElementById('workspace') || document.body).appendChild(wrapEl);   /* 전체 화면에서도 보이게 */
             const stage = wrapEl.querySelector('#eqBoardStage'), base = wrapEl.querySelector('#eqBoardBase'), ink = wrapEl.querySelector('#eqBoardInk');
             const tagsBox = wrapEl.querySelector('#eqBoardTags');
             let pen = COLORS[0][0], strokes = [], cur = null;

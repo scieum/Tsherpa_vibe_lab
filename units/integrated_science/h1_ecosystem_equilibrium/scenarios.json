@@ -94,11 +94,15 @@
   },
   {
    "do": "wait",
-   "ms": 3000
+   "ms": 4500
   },
   {
    "do": "shot",
    "name": "04_free_feedback_correct"
+  },
+  {
+   "do": "js",
+   "code": "document.querySelector('#predictResultBox .btn-action-start')?.click()"
   },
   {
    "do": "wait",
@@ -187,6 +191,10 @@
   {
    "do": "shot",
    "name": "08_gorongosa_feedback_wrong"
+  },
+  {
+   "do": "js",
+   "code": "document.querySelector('#predictResultBox .btn-action-start')?.click()"
   },
   {
    "do": "wait",
@@ -386,7 +394,15 @@
   },
   {
    "do": "wait",
-   "ms": 12000
+   "ms": 6000
+  },
+  {
+   "do": "js",
+   "code": "document.querySelector('#predictResultBox .btn-action-start')?.click()"
+  },
+  {
+   "do": "wait",
+   "ms": 6000
   },
   {
    "do": "viewport",
